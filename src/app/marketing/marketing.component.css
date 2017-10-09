@@ -1,0 +1,40 @@
+#top_nav >ul {
+    display: block;
+    list-style: none;
+    text-align: center;
+    margin-bottom: 0;
+    margin-top: 0;
+    border-bottom: 1px solid #ccc;
+}
+
+#top_nav >ul >li {
+    display: inline-block;
+    margin-bottom: -1px;
+}
+
+#top_nav ul a {
+    color: #999;
+    padding: 5px 15px;
+    display: block;
+}
+#main_nav a:hover {
+    background: blue;
+}
+#main_nav a i {
+    display: block;
+}
+#main_nav a,
+#main_nav span {
+    display: block;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: #fff;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    vertical-align: middle;
+}
+.newcampain {
+    display: block;
+    color: white;
+    text-decoration-color: blue;
+}
