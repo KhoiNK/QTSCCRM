@@ -80,7 +80,7 @@ namespace APIProject.Data
 
             modelBuilder.Entity<Staff>()
                 .HasMany(e => e.MarketingPlans)
-                .WithOptional(e => e.Staff)
+                .WithOptional(e => e.CreateStaff)
                 .HasForeignKey(e => e.CreateStaffID);
 
             modelBuilder.Entity<Staff>()
@@ -90,12 +90,12 @@ namespace APIProject.Data
 
             modelBuilder.Entity<Staff>()
                 .HasMany(e => e.MarketingPlans2)
-                .WithOptional(e => e.Staff2)
+                .WithOptional(e => e.ValidateStaff)
                 .HasForeignKey(e => e.ValidateStaffID);
 
             modelBuilder.Entity<Staff>()
                 .HasMany(e => e.MarketingPlans3)
-                .WithOptional(e => e.Staff3)
+                .WithOptional(e => e.AcceptStaff)
                 .HasForeignKey(e => e.AcceptStaffID);
 
             modelBuilder.Entity<Staff>()

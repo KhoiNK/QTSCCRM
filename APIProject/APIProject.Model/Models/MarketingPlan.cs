@@ -39,13 +39,13 @@ namespace APIProject.Model.Models
         public string AcceptNotes { get; set; }
 
 
-        public virtual Staff Staff { get; set; }
+        public virtual Staff CreateStaff { get; set; }
 
         public virtual Staff ModifiedStaff { get; set; }
 
-        public virtual Staff Staff2 { get; set; }
+        public virtual Staff ValidateStaff { get; set; }
 
-        public virtual Staff Staff3 { get; set; }
+        public virtual Staff AcceptStaff { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MarketingResult> MarketingResults { get; set; }

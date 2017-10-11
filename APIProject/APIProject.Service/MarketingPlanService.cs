@@ -13,7 +13,7 @@ namespace APIProject.Service
     public interface IMarketingPlanService
     {
         IEnumerable<MarketingPlan> GetMarketingPlans(int? id = null);
-        void CreateNewPlan(MarketingPlan marketingPlan, bool isFinished);
+        int CreateNewPlan(MarketingPlan marketingPlan, bool isFinished);
         bool UpdatePlan(MarketingPlan marketingPlan, bool isFinished);
         bool ValidatePlan(MarketingPlan marketingPlan, bool validate);
         bool AcceptPlan(MarketingPlan marketingPlan, bool accept);
@@ -30,6 +30,9 @@ namespace APIProject.Service
         private const string ValidatingName = "Validating";
         private const string AcceptingName = "Accepting";
         private const string PreparingName = "Preparing";
+        private const string RunningName = "Running";
+        private const string ReportingName = "Reporting";
+        private const string FinishedName = "Finished";
 
         private const string ValidateFailedName = "Validate Failed";
         private const string AcceptFailedName = "Accept Failed";
@@ -42,7 +45,7 @@ namespace APIProject.Service
             this._unitOfWork = _unitOfWork;
         }
 
-        public void CreateNewPlan(MarketingPlan marketingPlan, bool isFinished)
+        public int CreateNewPlan(MarketingPlan marketingPlan, bool isFinished)
         {
             _marketingPlanRepository.Add(marketingPlan);
             marketingPlan.CreateStaffID = marketingPlan.ModifiedStaffID;
@@ -58,10 +61,12 @@ namespace APIProject.Service
             }
 
             _unitOfWork.Commit();
+            return marketingPlan.ID;
         }
 
         public IEnumerable<MarketingPlan> GetMarketingPlans(int? id = null)
         {
+            BackgroundMoveStage(id);
             if (!id.HasValue)
             {
                 return _marketingPlanRepository.GetAll();
@@ -109,14 +114,80 @@ namespace APIProject.Service
             if (plan.Stage == DraftingName)
             {
                 plan.Stage = ValidatingName;
+                plan.AcceptStaffID = null;
+                plan.ValidateStaffID = null;
+                plan.ValidateNotes = null;
+                plan.AcceptNotes = null;
             }
             else if(plan.Stage == ValidatingName)
             {
                 plan.Stage = AcceptingName;
                 plan.ValidateStaffID = plan.ModifiedStaffID;
             }
+            else if(plan.Stage == AcceptingName)
+            {
+                plan.Stage = PreparingName;
+                plan.AcceptStaffID = plan.ModifiedStaffID;
+            }
+            else if(plan.Stage == PreparingName)
+            {
+                plan.Stage = RunningName;
+            }
+            else if(plan.Stage == RunningName)
+            {
+                plan.Stage = ReportingName;
+            }
+            else if(plan.Stage == ReportingName)
+            {
+                plan.Stage = FinishedName;
+            }
         }
-
+        
+        private void BackgroundMoveStage(int? planId = null)
+        {
+            var planList = _marketingPlanRepository.GetAll();
+            if (planId.HasValue)
+            {
+                var plan = planList.Where(c => c.ID == planId).Single();
+                if(plan != null)
+                {
+                    if(plan.Stage == PreparingName)
+                    {
+                        if(DateTime.Compare(plan.StartDate, DateTime.Today.Date) <= 0)
+                        {
+                            MoveToNextStage(plan);
+                        }
+                    }
+                    if(plan.Stage == RunningName)
+                    {
+                        if(DateTime.Compare(plan.EndDate, DateTime.Today.Date) < 0)
+                        {
+                            MoveToNextStage(plan);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                foreach(var planItem in planList)
+                {
+                    if (planItem.Stage == PreparingName)
+                    {
+                        if (DateTime.Compare(planItem.StartDate, DateTime.Today.Date) <= 0)
+                        {
+                            MoveToNextStage(planItem);
+                        }
+                    }
+                    if (planItem.Stage == RunningName)
+                    {
+                        if (DateTime.Compare(planItem.EndDate, DateTime.Today.Date) < 0)
+                        {
+                            MoveToNextStage(planItem);
+                        }
+                    }
+                }
+            }
+        }
         public bool ValidatePlan(MarketingPlan marketingPlan, bool validate)
         {
             MarketingPlan plan = _marketingPlanRepository.GetById(marketingPlan.ID);

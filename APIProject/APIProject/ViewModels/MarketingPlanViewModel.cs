@@ -17,5 +17,6 @@ namespace APIProject.ViewModels
         public DateTime EndDate { get; set; }
         public DateTime LastModifiedDate { get; set; }
         public string LastModifiedStaffName { get; set; }
+        public string Status { get; set; }
     }
 }
