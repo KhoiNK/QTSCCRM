@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="CategoryService.cs" />
     <Compile Include="MarketingPlanService.cs" />
+    <Compile Include="MarketingResultService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

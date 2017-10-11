@@ -9,14 +9,34 @@ namespace APIProject.Model.Models
     [Table("MarketingResult")]
     public partial class MarketingResult
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
         public int? CustomerID { get; set; }
 
         public int? ContactID { get; set; }
 
-        public int? MarketingPlanID { get; set; }
+        public int MarketingPlanID { get; set; }
+
+        public string CustomerName { get; set; }
+        public string CustomerAddress { get; set; }
+        public string ContactName { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string Notes { get; set; }
+        public int FacilityRate { get; set; }
+        public int ArrangingRate { get; set; }
+        public int ServicingRate { get; set; }
+        public int IndicatorRate { get; set; }
+        public int OthersRate { get; set; }
+        public bool IsFromMedia { get; set; }
+        public bool IsFromInvitation { get; set; }
+        public bool IsFromWebsite { get; set; }
+        public bool IsFromFriend { get; set; }
+        public bool IsFromOthers { get; set; }
+        public bool IsWantMore { get; set; }
+        public string CreatedDate { get; set; }
+        public string Status { get; set; }
 
         public virtual Contact Contact { get; set; }
 

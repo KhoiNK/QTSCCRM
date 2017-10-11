@@ -259,6 +259,7 @@
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MarketingPlanController.cs" />
+    <Compile Include="Controllers\MarketingResultController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -272,7 +273,9 @@
     <Compile Include="ViewModels\CategoryViewModel.cs" />
     <Compile Include="ViewModels\MarketingPlanDetailViewModel.cs" />
     <Compile Include="ViewModels\MarketingPlanViewModel.cs" />
+    <Compile Include="ViewModels\MarketingResultViewModel.cs" />
     <Compile Include="ViewModels\PostMarketingPlanViewModel.cs" />
+    <Compile Include="ViewModels\PostMarketingResultsViewModel.cs" />
     <Compile Include="ViewModels\PutAcceptMarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\PutDraftingMarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\PutValidateMarketingPlanViewModel.cs" />

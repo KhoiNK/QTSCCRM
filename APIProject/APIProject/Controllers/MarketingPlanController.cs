@@ -11,6 +11,7 @@ using System.Web.Http.Description;
 
 namespace APIProject.Controllers
 {
+    [RoutePrefix("api/marketingplan")]
     public class MarketingPlanController : ApiController
     {
         private readonly IMarketingPlanService _marketingPlanService;
@@ -21,49 +22,23 @@ namespace APIProject.Controllers
         }
 
         [Route("GetMarketingPlanList")]
+        [ResponseType(typeof(MarketingPlanViewModel))]
         public async Task<IHttpActionResult> GetMarketingPlanList()
         {
             var task = Task.Factory.StartNew(() => {
-                var list = _marketingPlanService.GetMarketingPlans().Select(c => new MarketingPlanViewModel()
-                {
-                    ID = c.ID,
-                    Title = c.Title,
-                    CreatedDate = c.CreatedDate,
-                    Stage = c.Stage,
-                    StartDate = c.StartDate,
-                    EndDate = c.EndDate,
-                    LastModifiedDate = c.LastModifiedDate,
-                    LastModifiedStaffName = c.ModifiedStaff.Name,
-                    Description = c.Description,
-                    Budget = c.Budget,
-                    Status = c.Status
-                });
+                var list = _marketingPlanService.GetMarketingPlans().Select(c => new MarketingPlanViewModel(c));
                 return list;
             });
             return Ok(await task);
         }
 
         [Route("GetMarketingPlan")]
+        [ResponseType(typeof(MarketingPlanDetailViewModel))]
         public IHttpActionResult GetMarketingPlan(int? id)
         {
             if (id.HasValue)
             {
-                var plan = _marketingPlanService.GetMarketingPlans().Where(x => x.ID == id).SingleOrDefault();
-
-                //return _marketingPlanService.GetMarketingPlans(id).Select(c => new MarketingPlanDetailViewModel()
-                //{
-                //    ID = c.ID,
-                //    Title = c.Title,
-                //    CreatedDate = c.CreatedDate,
-                //    Stage = c.Stage,
-                //    StartDate = c.StartDate,
-                //    EndDate = c.EndDate,
-                //    LastModifiedDate = c.LastModifiedDate,
-                //    LastModifiedStaffName = c.ModifiedStaff.Name,
-                //    Description = c.Description,
-                //    Budget = c.Budget,
-                //    ValidateStaffName = c.Staff2.Name
-                //});
+                var plan = _marketingPlanService.GetMarketingPlan(id.Value);
                 if (plan != null) {
                     MarketingPlanDetailViewModel item = new MarketingPlanDetailViewModel(plan);
                     return Ok(item);
@@ -84,9 +59,9 @@ namespace APIProject.Controllers
                 return BadRequest(ModelState);
             }
 
-            _marketingPlanService.CreateNewPlan(request.ToMarketingPlanModel(), request.IsFinished);
+            int requestID = _marketingPlanService.CreateNewPlan(request.ToMarketingPlanModel(), request.IsFinished);
 
-            return Ok();
+            return Ok(requestID);
         }
 
         [Route("PutDraftingMarketingPlan")]

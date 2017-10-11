@@ -12,7 +12,8 @@ namespace APIProject.Service
 
     public interface IMarketingPlanService
     {
-        IEnumerable<MarketingPlan> GetMarketingPlans(int? id = null);
+        IEnumerable<MarketingPlan> GetMarketingPlans();
+        MarketingPlan GetMarketingPlan(int id);
         int CreateNewPlan(MarketingPlan marketingPlan, bool isFinished);
         bool UpdatePlan(MarketingPlan marketingPlan, bool isFinished);
         bool ValidatePlan(MarketingPlan marketingPlan, bool validate);
@@ -64,17 +65,16 @@ namespace APIProject.Service
             return marketingPlan.ID;
         }
 
-        public IEnumerable<MarketingPlan> GetMarketingPlans(int? id = null)
+        public IEnumerable<MarketingPlan> GetMarketingPlans()
+        {
+            BackgroundMoveStage();
+            return _marketingPlanRepository.GetAll();
+        }
+
+        public MarketingPlan GetMarketingPlan(int id)
         {
             BackgroundMoveStage(id);
-            if (!id.HasValue)
-            {
-                return _marketingPlanRepository.GetAll();
-            }
-            else
-            {
-                return _marketingPlanRepository.GetAll().Where(c => c.ID == id);
-            }
+            return _marketingPlanRepository.GetById(id);
         }
 
         public bool UpdatePlan(MarketingPlan marketingPlan, bool isFinished)
@@ -148,7 +148,7 @@ namespace APIProject.Service
             var planList = _marketingPlanRepository.GetAll();
             if (planId.HasValue)
             {
-                var plan = planList.Where(c => c.ID == planId).Single();
+                var plan = planList.Where(c => c.ID == planId.Value).SingleOrDefault();
                 if(plan != null)
                 {
                     if(plan.Stage == PreparingName)
@@ -187,6 +187,7 @@ namespace APIProject.Service
                     }
                 }
             }
+            _unitOfWork.Commit();
         }
         public bool ValidatePlan(MarketingPlan marketingPlan, bool validate)
         {

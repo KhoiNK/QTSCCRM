@@ -14,9 +14,11 @@ namespace APIProject.Data
         {
             GetCategories().ForEach(c => context.Categories.Add(c));
             GetStaffs().ForEach(c => context.Staffs.Add(c));
+            GetCustomers().ForEach(c => context.Customers.Add(c));
             context.Commit();
 
             GetMarketingPlans().ForEach(c => context.MarketingPlans.Add(c));
+            GetContacts().ForEach(c => context.Contacts.Add(c));
             context.Commit();
         }
         private static List<Category> GetCategories()
@@ -118,11 +120,83 @@ namespace APIProject.Data
                     CreateStaffID = 5,
                     CreatedDate = DateTime.Today.Date,
                     Title = "Quang cao ban son",
-                    Stage = "Executing",
+                    Stage = "Running",
                     StartDate = DateTime.Today.Date,
                     EndDate = DateTime.Today.Date,
                     ModifiedStaffID = 5,
                     LastModifiedDate = DateTime.Today.Date
+                },
+            };
+        }
+
+        private static List<Customer> GetCustomers()
+        {
+            return new List<Customer>
+            {
+                new Customer
+                {
+                    Name = "FPT Software",
+                    Address = "39 Ông Địa",
+                    IsLead = true
+                },
+                new Customer
+                {
+                    Name = "FPT Software Cơ Sở 2",
+                    Address = "69 Ông Địa",
+                    IsLead = false,
+                    ConvertedDate = DateTime.Today.Date,
+                    CustomerType = "Thường"
+                },
+                new Customer
+                {
+                    Name = "FPT Software Cơ Sở 3",
+                    Address = "70 Ông Địa",
+                    IsLead = false,
+                    ConvertedDate = DateTime.Today.Date,
+                    CustomerType = "Thân Thiết"
+                },
+                new Customer
+                {
+                    Name = "FPT Software Cơ Sở 4",
+                    Address = "71 Ông Địa",
+                    IsLead = false,
+                    ConvertedDate = DateTime.Today.Date,
+                    CustomerType = "Mẹ Thiên Hạ"
+                }
+            };
+        }
+
+        private static List<Contact> GetContacts()
+        {
+            return new List<Contact>
+            {
+                new Contact
+                {
+                    CustomerID = 1,
+                    Name = "Anh Ba Một",
+                    Email = "abm@abm.abm",
+                    Phone = "111-111-111",
+                },
+                new Contact
+                {
+                    CustomerID = 2,
+                    Name = "Anh Ba Hai",
+                    Email = "abh@abh.abh",
+                    Phone = "222-222-222",
+                },
+                new Contact
+                {
+                    CustomerID = 3,
+                    Name = "Anh Ba Ba",
+                    Email = "abb@abb.abb",
+                    Phone = "333-333-333",
+                },
+                new Contact
+                {
+                    CustomerID = 4,
+                    Name = "Anh Ba Bốn",
+                    Email = "abb4@abb4.abb4",
+                    Phone = "444-444-444",
                 },
             };
         }
