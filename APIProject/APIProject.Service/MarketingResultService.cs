@@ -42,6 +42,8 @@ namespace APIProject.Service
         {
             int planID = list.First().MarketingPlanID;
             var foundPlan = _marketingPlanRepository.GetById(planID);
+
+            //verify customer and contact
             foreach(var item in list)
             {
                 //verify customer exist
