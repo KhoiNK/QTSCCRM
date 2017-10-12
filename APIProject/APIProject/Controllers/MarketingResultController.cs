@@ -32,7 +32,7 @@ namespace APIProject.Controllers
                 //check if specific plan
                 if (planID.HasValue)
                 {
-                    list = list.Where(c => c.ID == planID);
+                    list = list.Where(c => c.MarketingPlanID == planID);
                 }
 
                 var resultList = list.Select(c => new MarketingResultViewModel(c));
@@ -47,10 +47,13 @@ namespace APIProject.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }else if(request == null)
+            {
+                return BadRequest();
             }
 
-            _marketingResultService.CreateResults(request.ToMarketingResultModels(), request.IsFinished);
-            return Ok();
+            bool requestDone = _marketingResultService.CreateResults(request.ToMarketingResultModels(), request.IsFinished, request.StaffID);
+            return Ok(requestDone);
         }
     }
 }

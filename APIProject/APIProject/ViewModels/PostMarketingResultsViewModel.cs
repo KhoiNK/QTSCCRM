@@ -12,6 +12,8 @@ namespace APIProject.ViewModels
         [Required]
         public int PlanID { get; set; }
         [Required]
+        public int StaffID { get; set; }
+        [Required]
         public List<PostMarketingResultViewModel> Results { get; set; }
         [Required]
         public bool IsFinished { get; set; }

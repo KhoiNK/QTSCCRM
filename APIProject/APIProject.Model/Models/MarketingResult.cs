@@ -35,8 +35,9 @@ namespace APIProject.Model.Models
         public bool IsFromFriend { get; set; }
         public bool IsFromOthers { get; set; }
         public bool IsWantMore { get; set; }
-        public string CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; }
         public string Status { get; set; }
+        public bool IsLeadGenerated { get; set; }
 
         public virtual Contact Contact { get; set; }
 

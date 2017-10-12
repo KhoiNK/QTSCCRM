@@ -30,7 +30,7 @@ namespace APIProject.ViewModels
         public bool IsFromFriend { get; set; }
         public bool IsFromOthers { get; set; }
         public bool IsWantMore { get; set; }
-        public string CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; }
         public string Status { get; set; }
 
         public MarketingResultViewModel(MarketingResult c)

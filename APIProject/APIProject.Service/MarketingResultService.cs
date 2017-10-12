@@ -12,7 +12,7 @@ namespace APIProject.Service
     public interface IMarketingResultService
     {
         IEnumerable<MarketingResult> GetMarketingResults();
-        bool CreateResults(List<MarketingResult> list, bool isFinished);
+        bool CreateResults(List<MarketingResult> list, bool isFinished, int staffID);
     }
 
     public class MarketingResultService: IMarketingResultService
@@ -21,6 +21,7 @@ namespace APIProject.Service
         private readonly IMarketingPlanRepository _marketingPlanRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly IContactRepository _contactRepository;
+        private readonly IStaffRepository _staffRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         private const string RunningName = "Running";
@@ -29,19 +30,28 @@ namespace APIProject.Service
 
 
         public MarketingResultService(IMarketingResultRepository _marketingResultRepository, IMarketingPlanRepository _marketingPlanRepository,
-            ICustomerRepository _customerRepository, IContactRepository _contactRepository, IUnitOfWork _unitOfWork)
+            ICustomerRepository _customerRepository, IContactRepository _contactRepository, IStaffRepository _staffRepository,
+            IUnitOfWork _unitOfWork)
         {
             this._marketingResultRepository = _marketingResultRepository;
             this._marketingPlanRepository = _marketingPlanRepository;
             this._customerRepository = _customerRepository;
             this._contactRepository = _contactRepository;
+            this._staffRepository = _staffRepository;
             this._unitOfWork = _unitOfWork;
         }
 
-        public bool CreateResults(List<MarketingResult> list, bool isFinished)
+        public bool CreateResults(List<MarketingResult> list, bool isFinished, int staffID)
         {
             int planID = list.First().MarketingPlanID;
             var foundPlan = _marketingPlanRepository.GetById(planID);
+            var foundStaff = _staffRepository.GetById(staffID);
+            
+            //verify staff exist
+            if(foundStaff == null)
+            {
+                return false;
+            }
 
             //verify customer and contact
             foreach(var item in list)
@@ -101,7 +111,82 @@ namespace APIProject.Service
 
 
             //start adding result code here
+            InsertResultsAndLeads(list);
+
+            foundPlan.ModifiedStaffID = staffID;
+            foundPlan.LastModifiedDate = DateTime.Today.Date;
+            if (isFinished)
+            {
+                foundPlan.Stage = FinishedName;
+            }
+            _unitOfWork.Commit();
+
+            //start sending email code here
+
             return true;
+        }
+
+        //internal insert results and generate lead
+        private void InsertResultsAndLeads (List<MarketingResult> resultList)
+        {
+            foreach(MarketingResult resultItem in resultList)
+            {
+                if (resultItem.CustomerID.HasValue)
+                {
+                    if (resultItem.ContactID.HasValue)
+                    {
+                        //do nothing
+                    }
+                    else
+                    {
+                        Contact _item = new Contact
+                        {
+                            Name = resultItem.ContactName,
+                            Email = resultItem.Email,
+                            Phone = resultItem.Phone,
+                            CustomerID = resultItem.CustomerID
+                        };
+                        _contactRepository.Add(_item);
+                        _unitOfWork.Commit();
+                        resultItem.ContactID = _item.ID;
+                    }
+                }
+                else
+                {
+                    if (resultItem.ContactID.HasValue)
+                    {
+                        //do nothing
+                    }
+                    else
+                    {
+                        resultItem.IsLeadGenerated = true;
+                        //add new lead and it's contact
+                        Customer _customer = new Customer
+                        {
+                            Name = resultItem.CustomerName,
+                            Address = resultItem.CustomerAddress,
+                            IsLead = true
+                        };
+                        _customerRepository.Add(_customer);
+                        _unitOfWork.Commit();
+                        resultItem.CustomerID = _customer.ID;
+
+                        Contact _contact = new Contact
+                        {
+                            Name = resultItem.ContactName,
+                            Email = resultItem.Email,
+                            Phone = resultItem.Phone,
+                            CustomerID = resultItem.CustomerID
+                        };
+                        _contactRepository.Add(_contact);
+                        _unitOfWork.Commit();
+                        resultItem.ContactID = _contact.ID;
+                    }
+                }
+                resultItem.CreatedDate = DateTime.Today.Date;
+                _marketingResultRepository.Add(resultItem);
+            }
+            _unitOfWork.Commit();
         }
 
         public IEnumerable<MarketingResult> GetMarketingResults()
