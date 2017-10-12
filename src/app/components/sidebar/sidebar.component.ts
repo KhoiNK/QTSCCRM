@@ -16,8 +16,10 @@ export const ROUTES: RouteInfo[] = [
     { path: 'icons', title: 'Icons',  icon:'bubble_chart', class: '' },
     { path: 'maps', title: 'Maps',  icon:'location_on', class: '' },
     { path: 'notifications', title: 'Notifications',  icon:'notifications', class: '' },
-    { path: 'oppoturnity', title: 'Oppoturnity',  icon:'notifications', class: '' },
-];
+    { path: 'opportunity', title: 'Opportunity',  icon:'accessibility', class: '' },
+    { path: 'export', title: 'Export',  icon:'input', class: '' }
+    ,];
+    
 
 @Component({
   selector: 'app-sidebar',

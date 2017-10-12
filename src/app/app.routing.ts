@@ -13,7 +13,9 @@ import { NotificationsComponent } from './notifications/notifications.component'
 import { UserLogin } from './user-profile/user-login.component';
 import {MarketingComponent} from './marketing/marketing.component';
 import {MarketingDetailComponent} from './marketingdetail/marketing-detail.component';
-import {OppoturnityComponent} from './oppoturnity/oppoturnity.component';
+import {OpportunityComponent} from './opportunity/opportunity.component';
+import {ExportComponent} from './export/export.component';
+import {OpportunityDetailComponent} from './opportunity-detail/opportunity-detail.component';
 
 const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent },
@@ -22,7 +24,9 @@ const routes: Routes = [
   { path: 'marketing', component: MarketingComponent },
   { path: 'marketing/marketing-detail/:id', component: MarketingDetailComponent },
   { path: 'typography', component: TypographyComponent },
-  { path: 'oppoturnity', component: OppoturnityComponent },
+  { path: 'opportunity', component: OpportunityComponent },
+  { path: 'export', component: ExportComponent },
+  { path: 'opportunity/opportunity-detail/:id', component: OpportunityDetailComponent },
   { path: 'icons', component: IconsComponent },
   { path: 'maps', component: MapsComponent },
   { path: 'notifications', component: NotificationsComponent },

@@ -19,7 +19,11 @@ import { NotificationsComponent } from './notifications/notifications.component'
 import { UserLogin } from './user-profile/user-login.component';
 import { MarketingComponent } from './marketing/marketing.component';
 import { MarketingDetailComponent } from './marketingdetail/marketing-detail.component';
-import { OppoturnityComponent } from './oppoturnity/oppoturnity.component';
+import { OpportunityComponent } from './opportunity/opportunity.component';
+import { OpportunityDetailComponent } from './opportunity-detail/opportunity-detail.component';
+import { ExportComponent } from './export/export.component';
+
+
 
 @NgModule({
   declarations: [
@@ -34,7 +38,9 @@ import { OppoturnityComponent } from './oppoturnity/oppoturnity.component';
     UserLogin,
     MarketingComponent,
     MarketingDetailComponent,
-    OppoturnityComponent
+    OpportunityComponent,
+    OpportunityDetailComponent,
+    ExportComponent,
   ],
   imports: [
     BrowserModule,
