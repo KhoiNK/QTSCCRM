@@ -28,7 +28,7 @@ namespace APIProject.ViewModels
         [Required]
         public bool IsFinished { get; set; }
 
-        public MarketingPlan ToMarketingPlanModel(string fileRoot)
+        public MarketingPlan ToMarketingPlanModel()
         {
             MarketingPlan _plan = new MarketingPlan();
             _plan.ModifiedStaffID = this.StaffID;
@@ -37,26 +37,6 @@ namespace APIProject.ViewModels
             _plan.Description = this.Description;
             _plan.StartDate = this.StartDate;
             _plan.EndDate = this.EndDate;
-            if (BudgetFile.HasValue)
-            {
-                _plan.BudgetFileSrc = fileRoot + $@"\\{BudgetFile.Value.Name}";
-
-            }
-            if (EventScheduleFile.HasValue)
-            {
-                _plan.EventScheduleFileSrc = fileRoot + $@"\\{EventScheduleFile.Value.Name}";
-
-            }
-            if (TaskAssignFile.HasValue)
-            {
-                _plan.EventScheduleFileSrc = fileRoot + $@"\\{TaskAssignFile.Value.Name}";
-
-            }
-            if (LicenseFile.HasValue)
-            {
-                _plan.LicenseFileSrc = fileRoot + $@"\\{LicenseFile.Value.Name}";
-
-            }
             return _plan;
 
         }

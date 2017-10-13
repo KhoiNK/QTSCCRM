@@ -59,43 +59,35 @@ namespace APIProject.Controllers
         [Route("PostMarketingPlan")]
         public IHttpActionResult PostMarketingPlan([FromBody]PostMarketingPlanViewModel request)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
             }
 
 
             //test code here
-            string fileRoot = HttpContext.Current.Server.MapPath("~/MarketingPlanFiles");
-            string budgetFileSrc = null;
-            string scheduleFileSrc = null;
-            string taskAssignFileSrc = null;
-            string licenseFileSrc = null;
+            string budgetB64 = null;
+            string eventB64 = null;
+            string taskB64 = null;
+            string licenseB64 = null;
             if (request.BudgetFile.HasValue)
             {
-                budgetFileSrc = fileRoot + $@"\\{request.BudgetFile.Value.Name}";
-                File.WriteAllBytes(budgetFileSrc, Convert.FromBase64String(request.BudgetFile.Value.Base64Content));
-
+                budgetB64 = request.BudgetFile.Value.Base64Content;
             }
             if (request.EventScheduleFile.HasValue)
             {
-                scheduleFileSrc = fileRoot + $@"\\{request.EventScheduleFile.Value.Name}";
-                File.WriteAllBytes(budgetFileSrc, Convert.FromBase64String(request.EventScheduleFile.Value.Base64Content));
-
+                eventB64 = request.EventScheduleFile.Value.Base64Content;
             }
             if (request.TaskAssignFile.HasValue)
             {
-                taskAssignFileSrc = fileRoot + $@"\\{request.TaskAssignFile.Value.Name}";
-                File.WriteAllBytes(budgetFileSrc, Convert.FromBase64String(request.TaskAssignFile.Value.Base64Content));
-
+                taskB64 = request.TaskAssignFile.Value.Base64Content;
             }
             if (request.LicenseFile.HasValue)
             {
-                licenseFileSrc = fileRoot + $@"\\{request.LicenseFile.Value.Name}";
-                File.WriteAllBytes(budgetFileSrc, Convert.FromBase64String(request.LicenseFile.Value.Base64Content));
-
+                licenseB64 = request.LicenseFile.Value.Base64Content;
             }
-            int requestID = _marketingPlanService.CreateNewPlan(request.ToMarketingPlanModel(fileRoot), request.IsFinished);
+            int requestID = _marketingPlanService.CreateNewPlan(request.ToMarketingPlanModel(), request.IsFinished, 
+                budgetB64, taskB64, eventB64, licenseB64);
 
             return Ok(requestID);
         }
