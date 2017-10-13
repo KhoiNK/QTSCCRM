@@ -16,6 +16,9 @@ using Microsoft.Owin.Security.OAuth;
 using APIProject.Models;
 using APIProject.Providers;
 using APIProject.Results;
+using APIProject.Data;
+using APIProject.Model.Models;
+using System.Linq;
 
 namespace APIProject.Controllers
 {
@@ -25,9 +28,14 @@ namespace APIProject.Controllers
     {
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
+        private RoleManager<IdentityRole> _roleManager;
+        private APIProjectEntities context;
+
 
         public AccountController()
         {
+            _roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new ApplicationDbContext()));
+            context = new APIProjectEntities();
         }
 
         public AccountController(ApplicationUserManager userManager,
@@ -58,9 +66,12 @@ namespace APIProject.Controllers
         {
             ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
 
+            Staff user = context.Staffs.FirstOrDefault(u => u.Name.Equals(User.Identity.GetUserName()));
+
             return new UserInfoViewModel
             {
                 Email = User.Identity.GetUserName(),
+                Name = user.Name,
                 HasRegistered = externalLogin == null,
                 LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null
             };
@@ -125,7 +136,7 @@ namespace APIProject.Controllers
 
             IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword,
                 model.NewPassword);
-            
+
             if (!result.Succeeded)
             {
                 return GetErrorResult(result);
@@ -258,9 +269,9 @@ namespace APIProject.Controllers
             if (hasRegistered)
             {
                 Authentication.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-                
-                 ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
-                    OAuthDefaults.AuthenticationType);
+
+                ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
+                   OAuthDefaults.AuthenticationType);
                 ClaimsIdentity cookieIdentity = await user.GenerateUserIdentityAsync(UserManager,
                     CookieAuthenticationDefaults.AuthenticationType);
 
@@ -368,7 +379,7 @@ namespace APIProject.Controllers
             result = await UserManager.AddLoginAsync(user.Id, info.Login);
             if (!result.Succeeded)
             {
-                return GetErrorResult(result); 
+                return GetErrorResult(result);
             }
             return Ok();
         }
@@ -489,6 +500,30 @@ namespace APIProject.Controllers
             }
         }
 
+        #endregion
+
+        #region Custom Register
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("CreateUserWithRole")]
+        public async Task<IHttpActionResult> CreateUserWithRole(string Username, string Password, string RoleName)
+        {
+            var user = new ApplicationUser() { UserName = Username, Email = Username };
+            IdentityResult result = await UserManager.CreateAsync(user, Password);
+            if (!result.Succeeded)
+            {
+                return GetErrorResult(result);
+            }
+            else
+            {
+                if(_roleManager.FindByName(RoleName) == null)
+                {
+                    _roleManager.Create(new IdentityRole(RoleName));
+                }
+                UserManager.AddToRole(user.Id, RoleName);
+            }
+            return Ok();
+        }
         #endregion
     }
 }

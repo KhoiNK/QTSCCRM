@@ -29,6 +29,10 @@ namespace APIProject.ViewModels
         public string AcceptNotes { get; set; }
         public int ModifiedStaffID { get; set; }
         public string Status { get; set; }
+        public string BudgetFileSrc { get; set; }
+        public string EventScheduleFileSrc { get; set; }
+        public string TaskAssignFileSrc { get; set; }
+        public string LicenseFileSrc { get; set; }
 
         public MarketingPlanDetailViewModel(MarketingPlan plan)
         {
@@ -64,6 +68,10 @@ namespace APIProject.ViewModels
             Description = plan.Description;
             Stage = plan.Stage;
             Status = plan.Status;
+            TaskAssignFileSrc = plan.TaskAssignSrc;
+            BudgetFileSrc = plan.BudgetFileSrc;
+            EventScheduleFileSrc = plan.EventScheduleFileSrc;
+            LicenseFileSrc = plan.LicenseFileSrc;
 
         }
     }

@@ -3,6 +3,7 @@ using APIProject.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -13,6 +14,7 @@ using System.Web.Http.Description;
 
 namespace APIProject.Controllers
 {
+    //[Authorize]
     [RoutePrefix("api/marketingplan")]
     public class MarketingPlanController : ApiController
     {
@@ -23,6 +25,7 @@ namespace APIProject.Controllers
             this._marketingPlanService = _marketingPlanService;
         }
 
+        //[Authorize(Roles = "Admin,Employee")]
         [Route("GetMarketingPlanList")]
         [ResponseType(typeof(MarketingPlanViewModel))]
         public async Task<IHttpActionResult> GetMarketingPlanList()
@@ -61,12 +64,43 @@ namespace APIProject.Controllers
                 return BadRequest(ModelState);
             }
 
-            int requestID = _marketingPlanService.CreateNewPlan(request.ToMarketingPlanModel(), request.IsFinished);
+
+            //test code here
+            string fileRoot = HttpContext.Current.Server.MapPath("~/MarketingPlanFiles");
+            string budgetFileSrc = null;
+            string scheduleFileSrc = null;
+            string taskAssignFileSrc = null;
+            string licenseFileSrc = null;
+            if (request.BudgetFile.HasValue)
+            {
+                budgetFileSrc = fileRoot + $@"\\{request.BudgetFile.Value.Name}";
+                File.WriteAllBytes(budgetFileSrc, Convert.FromBase64String(request.BudgetFile.Value.Base64Content));
+
+            }
+            if (request.EventScheduleFile.HasValue)
+            {
+                scheduleFileSrc = fileRoot + $@"\\{request.EventScheduleFile.Value.Name}";
+                File.WriteAllBytes(budgetFileSrc, Convert.FromBase64String(request.EventScheduleFile.Value.Base64Content));
+
+            }
+            if (request.TaskAssignFile.HasValue)
+            {
+                taskAssignFileSrc = fileRoot + $@"\\{request.TaskAssignFile.Value.Name}";
+                File.WriteAllBytes(budgetFileSrc, Convert.FromBase64String(request.TaskAssignFile.Value.Base64Content));
+
+            }
+            if (request.LicenseFile.HasValue)
+            {
+                licenseFileSrc = fileRoot + $@"\\{request.LicenseFile.Value.Name}";
+                File.WriteAllBytes(budgetFileSrc, Convert.FromBase64String(request.LicenseFile.Value.Base64Content));
+
+            }
+            int requestID = _marketingPlanService.CreateNewPlan(request.ToMarketingPlanModel(fileRoot), request.IsFinished);
 
             return Ok(requestID);
         }
 
-        [Route("PutFiles")]
+        [Route("PutMarketingFiles")]
         public async Task<HttpResponseMessage> PutFormData()
         {
             // Check if the request contains multipart/form-data.
@@ -82,13 +116,16 @@ namespace APIProject.Controllers
             {
                 // Read the form data.
                 await Request.Content.ReadAsMultipartAsync(provider);
-
+                
                 // This illustrates how to get the file names.
                 foreach (MultipartFileData file in provider.FileData)
                 {
                     Trace.WriteLine(file.Headers.ContentDisposition.FileName);
                     Trace.WriteLine("Server file path: " + file.LocalFileName);
+                    
                 }
+
+
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
             catch (System.Exception e)

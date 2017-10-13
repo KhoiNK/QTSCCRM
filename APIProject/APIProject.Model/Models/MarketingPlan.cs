@@ -37,6 +37,10 @@ namespace APIProject.Model.Models
         public string Status { get; set; }
         public string ValidateNotes { get; set; }
         public string AcceptNotes { get; set; }
+        public string BudgetFileSrc { get; set; }
+        public string TaskAssignSrc { get; set; }
+        public string EventScheduleFileSrc { get; set; }
+        public string LicenseFileSrc { get; set; }
 
 
         public virtual Staff CreateStaff { get; set; }

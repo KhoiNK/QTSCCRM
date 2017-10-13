@@ -21,7 +21,7 @@ namespace APIProject.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+            : base("APIProjectEntities", throwIfV1Schema: false)
         {
         }
         
