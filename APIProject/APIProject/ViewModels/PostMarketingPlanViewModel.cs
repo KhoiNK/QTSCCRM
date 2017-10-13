@@ -21,10 +21,10 @@ namespace APIProject.ViewModels
         public DateTime StartDate { get; set; }
         [Required]
         public DateTime EndDate { get; set; }
-        public CustomBase64File? EventScheduleFile { get; set; }
-        public CustomBase64File? TaskAssignFile { get; set; }
-        public CustomBase64File? BudgetFile { get; set; }
-        public CustomBase64File? LicenseFile { get; set; }
+        public CustomBase64FileViewModel EventScheduleFile { get; set; }
+        public CustomBase64FileViewModel TaskAssignFile { get; set; }
+        public CustomBase64FileViewModel BudgetFile { get; set; }
+        public CustomBase64FileViewModel LicenseFile { get; set; }
         [Required]
         public bool IsFinished { get; set; }
 
@@ -42,12 +42,12 @@ namespace APIProject.ViewModels
         }
     }
 
-    public struct CustomBase64File
-    {
-        public string Name { get; set; }
-        [Required]
-        public string Base64Content { get; set; }
-    }
+    //public struct CustomBase64File
+    //{
+    //    public string Name { get; set; }
+    //    [Required]
+    //    public string Base64Content { get; set; }
+    //}
 
 
 }

@@ -30,7 +30,8 @@ namespace APIProject.Controllers
         [ResponseType(typeof(MarketingPlanViewModel))]
         public async Task<IHttpActionResult> GetMarketingPlanList()
         {
-            var task = Task.Factory.StartNew(() => {
+            var task = Task.Factory.StartNew(() =>
+            {
                 var list = _marketingPlanService.GetMarketingPlans().Select(c => new MarketingPlanViewModel(c));
                 return list;
             });
@@ -44,7 +45,8 @@ namespace APIProject.Controllers
             if (id.HasValue)
             {
                 var plan = _marketingPlanService.GetMarketingPlan(id.Value);
-                if (plan != null) {
+                if (plan != null)
+                {
                     MarketingPlanDetailViewModel item = new MarketingPlanDetailViewModel(plan);
                     return Ok(item);
                 }
@@ -65,66 +67,35 @@ namespace APIProject.Controllers
             }
 
 
-            //test code here
+            //check attach file here
             string budgetB64 = null;
             string eventB64 = null;
             string taskB64 = null;
             string licenseB64 = null;
-            if (request.BudgetFile.HasValue)
+            if (request.BudgetFile != null)
             {
-                budgetB64 = request.BudgetFile.Value.Base64Content;
+                budgetB64 = request.BudgetFile.Base64Content;
             }
-            if (request.EventScheduleFile.HasValue)
+            if (request.EventScheduleFile != null)
             {
-                eventB64 = request.EventScheduleFile.Value.Base64Content;
+                eventB64 = request.EventScheduleFile.Base64Content;
             }
-            if (request.TaskAssignFile.HasValue)
+            if (request.TaskAssignFile != null)
             {
-                taskB64 = request.TaskAssignFile.Value.Base64Content;
+                taskB64 = request.TaskAssignFile.Base64Content;
             }
-            if (request.LicenseFile.HasValue)
+            if (request.LicenseFile != null)
             {
-                licenseB64 = request.LicenseFile.Value.Base64Content;
+                licenseB64 = request.LicenseFile.Base64Content;
             }
-            int requestID = _marketingPlanService.CreateNewPlan(request.ToMarketingPlanModel(), request.IsFinished, 
+
+            //insert plan and get plan id
+            int requestID = _marketingPlanService.CreateNewPlan(request.ToMarketingPlanModel(), request.IsFinished,
                 budgetB64, taskB64, eventB64, licenseB64);
 
             return Ok(requestID);
         }
 
-        [Route("PutMarketingFiles")]
-        public async Task<HttpResponseMessage> PutFormData()
-        {
-            // Check if the request contains multipart/form-data.
-            if (!Request.Content.IsMimeMultipartContent())
-            {
-                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
-            }
-
-            string root = HttpContext.Current.Server.MapPath("~/MarketingPlanFiles");
-            var provider = new MultipartFormDataStreamProvider(root);
-
-            try
-            {
-                // Read the form data.
-                await Request.Content.ReadAsMultipartAsync(provider);
-                
-                // This illustrates how to get the file names.
-                foreach (MultipartFileData file in provider.FileData)
-                {
-                    Trace.WriteLine(file.Headers.ContentDisposition.FileName);
-                    Trace.WriteLine("Server file path: " + file.LocalFileName);
-                    
-                }
-
-
-                return Request.CreateResponse(HttpStatusCode.OK);
-            }
-            catch (System.Exception e)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
-            }
-        }
 
         [Route("PutDraftingMarketingPlan")]
         public IHttpActionResult PutDraftingMarketingPlan([FromBody]PutDraftingMarketingPlanViewModel request)
@@ -134,7 +105,29 @@ namespace APIProject.Controllers
                 return BadRequest(ModelState);
             }
 
-            return Ok(_marketingPlanService.UpdatePlan(request.ToMarketingPlanModel(), request.IsFinished));
+            string budgetB64 = null;
+            string eventB64 = null;
+            string taskB64 = null;
+            string licenseB64 = null;
+            if (request.BudgetFile != null)
+            {
+                budgetB64 = request.BudgetFile.Base64Content;
+            }
+            if (request.EventScheduleFile != null)
+            {
+                eventB64 = request.EventScheduleFile.Base64Content;
+            }
+            if (request.TaskAssignFile != null)
+            {
+                taskB64 = request.TaskAssignFile.Base64Content;
+            }
+            if (request.LicenseFile != null)
+            {
+                licenseB64 = request.LicenseFile.Base64Content;
+            }
+
+            return Ok(_marketingPlanService.UpdatePlan(request.ToMarketingPlanModel(), request.IsFinished,
+                budgetB64, taskB64, eventB64, licenseB64));
 
         }
 

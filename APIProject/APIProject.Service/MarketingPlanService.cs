@@ -17,7 +17,7 @@ namespace APIProject.Service
         IEnumerable<MarketingPlan> GetMarketingPlans();
         MarketingPlan GetMarketingPlan(int id);
         int CreateNewPlan(MarketingPlan marketingPlan, bool isFinished, string budgetB64, string taskAssignB64, string eventB64, string licenseB64);
-        bool UpdatePlan(MarketingPlan marketingPlan, bool isFinished);
+        bool UpdatePlan(MarketingPlan marketingPlan, bool isFinished, string budgetB64, string taskAssignB64, string eventB64, string licenseB64);
         bool ValidatePlan(MarketingPlan marketingPlan, bool validate);
         bool AcceptPlan(MarketingPlan marketingPlan, bool accept);
     }
@@ -73,7 +73,7 @@ namespace APIProject.Service
             if (budgetB64 != null)
             {
                 //todo here
-                fileName = GetFileName(marketingPlan.ID,true,false, false, false);
+                fileName = GetFileName(marketingPlan.ID, true, false, false, false);
                 marketingPlan.BudgetFileSrc = WriteMarketingFiles(fileName, budgetB64);
 
             }
@@ -121,7 +121,8 @@ namespace APIProject.Service
             else if (isEvent)
             {
                 fileName += "_event";
-            }else if (isTask)
+            }
+            else if (isTask)
             {
                 fileName += "_task";
             }
@@ -146,7 +147,7 @@ namespace APIProject.Service
             return _marketingPlanRepository.GetById(id);
         }
 
-        public bool UpdatePlan(MarketingPlan marketingPlan, bool isFinished)
+        public bool UpdatePlan(MarketingPlan marketingPlan, bool isFinished, string budgetB64, string taskAssignB64, string eventB64, string licenseB64)
         {
             MarketingPlan plan = _marketingPlanRepository.GetById(marketingPlan.ID);
             if (plan != null)
@@ -167,6 +168,35 @@ namespace APIProject.Service
                         if (isFinished)
                         {
                             MoveToNextStage(plan);
+                        }
+
+                        string fileName;
+
+                        if (budgetB64 != null)
+                        {
+                            //todo here
+                            fileName = GetFileName(marketingPlan.ID, true, false, false, false);
+                            plan.BudgetFileSrc = WriteMarketingFiles(fileName, budgetB64);
+
+                        }
+                        if (taskAssignB64 != null)
+                        {
+                            //todo
+                            fileName = GetFileName(marketingPlan.ID, false, false, true, false);
+                            plan.TaskAssignSrc = WriteMarketingFiles(fileName, taskAssignB64);
+                        }
+                        if (eventB64 != null)
+                        {
+                            //todo
+                            fileName = GetFileName(marketingPlan.ID, false, true, false, false);
+                            plan.EventScheduleFileSrc = WriteMarketingFiles(fileName, eventB64);
+
+                        }
+                        if (licenseB64 != null)
+                        {
+                            //todo
+                            fileName = GetFileName(marketingPlan.ID, false, false, false, true);
+                            plan.LicenseFileSrc = WriteMarketingFiles(fileName, licenseB64);
                         }
 
                         _unitOfWork.Commit();

@@ -16,6 +16,10 @@ namespace APIProject.ViewModels
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public bool IsFinished { get; set; }
+        public CustomBase64FileViewModel EventScheduleFile { get; set; }
+        public CustomBase64FileViewModel TaskAssignFile { get; set; }
+        public CustomBase64FileViewModel BudgetFile { get; set; }
+        public CustomBase64FileViewModel LicenseFile { get; set; }
 
         public MarketingPlan ToMarketingPlanModel()
         {
