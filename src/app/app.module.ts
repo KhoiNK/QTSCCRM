@@ -18,10 +18,12 @@ import { MapsComponent } from './maps/maps.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { UserLogin } from './user-profile/user-login.component';
 import { MarketingComponent } from './marketing/marketing.component';
-import { MarketingDetailComponent } from './marketingdetail/marketing-detail.component';
 import { OpportunityComponent } from './opportunity/opportunity.component';
 import { OpportunityDetailComponent } from './opportunity-detail/opportunity-detail.component';
 import { ExportComponent } from './export/export.component';
+import { MarketingDetailComponent } from './marketing-detail/marketing-detail.component';
+import { MarketingResultComponent } from './marketing-result/marketing-result.component';
+
 
 
 
@@ -37,10 +39,12 @@ import { ExportComponent } from './export/export.component';
     NotificationsComponent,
     UserLogin,
     MarketingComponent,
-    MarketingDetailComponent,
     OpportunityComponent,
     OpportunityDetailComponent,
     ExportComponent,
+    MarketingDetailComponent,
+    MarketingResultComponent,
+ 
   ],
   imports: [
     BrowserModule,
