@@ -1,0 +1,55 @@
+<div class="main-content">
+  <div class="container-fluid">
+      <div class="col-md-12">
+
+          <div class="col-md-12">
+              <div class="card">
+                  <div>
+                      <div class="col-md-12 header-row" data-background-color="red">
+                          <h2 class="title">Export List</h2>
+                          <a href="javascript:void(0)">
+                              <div class="plus-icon-area">
+                                  <i class="material-icons">add_circle_outline</i>
+                              </div>
+                          </a>
+
+
+                          <p class="category"></p>
+                      </div>
+                      <div class="card-content table-responsive">
+                          <div>
+                              <table class="table">
+                                  <thead class="text-danger">
+                                      <tr>
+                                          <th>     </th>
+                                          <th>Company Name</th>
+                                          <th>Contact</th>
+                                          <th>Sent Date</th>
+                                          <th>Sender</th>
+                                          <th>Status</th>
+                                      </tr>
+                                  </thead>
+                                  
+                                      <tbody *ngFor="let export of exportList">
+
+                                          <tr [routerLink]="['export-detail', export.id]">
+                                              <td>{{export.CompanyName}}</td>
+                                              <td>{{export.Contact}}</td>
+                                              <td>{{export.SentDate  | date}}</td>
+                                              <td>{{export.EventStartDate | date}}</td>
+                                              <td>{{export.Sender}}</td>
+                                              <td>{{export.Status}}</td>
+                                          </tr>
+
+                                      </tbody>
+                                  
+
+                              </table>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

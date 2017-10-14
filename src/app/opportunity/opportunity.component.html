@@ -1,0 +1,75 @@
+<div class="main-content">
+  <div class="container-fluid">
+      <div class="col-md-12">
+          <nav class="top_nav">
+              <ul>
+
+                  <li>
+                      <a href="javascript:void(0)"><i></i> ALL</a>
+                  </li>
+                  <li>
+                      <a href="/"><i ></i> OPEN</a>
+                  </li>
+                  <li>
+                      <a href="/"><i ></i> STAGE 1</a>
+                  </li>
+                  <li>
+                      <a href="/"><i ></i> STAGE 2</a>
+                  </li>
+                  <li>
+                      <a href="/"><i ></i> STAGE 3</a>
+                  </li>
+                  <li>
+                      <a href="/"><i ></i>WON</a>
+                  </li>
+                  <li>
+                    <a href="/"><i ></i>LOST</a>
+                </li>
+              </ul>
+          </nav>
+          <div class="col-md-12">
+              <div class="card">
+                  <div>
+                      <div class="col-md-12 header-row" data-background-color="red">
+                          <h2 class="title">Oppoturnities</h2>
+                          <a href="javascript:void(0)">
+                              <div class="plus-icon-area">
+                                  <i class="material-icons">add_circle_outline</i>
+                              </div>
+                          </a>
+
+
+                          <p class="category"></p>
+                      </div>
+                      <div class="card-content table-responsive">
+                          <div>
+                              <table class="table">
+                                  <thead class="text-danger">
+                                      <tr>
+                                          <th>Company Name</th>
+                                          <th>Title</th>
+                                          <th>Stage</th>
+                                          <th>Next Activity</th>
+                                          <th>Owner</th>
+                                      </tr>
+                                  </thead>
+                                  
+                                      <tbody *ngFor="let opportunity of opportunityList">
+
+                                          <tr [routerLink]="['opportunity-detail', opportunity.id]">
+                                              <td>{{opportunity.CompanyName}}</td>
+                                              <td>{{opportunity.Title}}</td>
+                                              <td>{{opportunity.Stage}}</td>
+                                              <td>{{opportunity.NextActivity}}</td>
+                                              <td>{{opportunity.Owner}}</td>
+                                          </tr>
+                                      </tbody>
+                              </table>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
