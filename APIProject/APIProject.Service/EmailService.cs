@@ -24,7 +24,7 @@ namespace APIProject.Service
         /// <param name="credential">
         /// new NetworkCredential(
         ///         "senderEmail@gmail.com",
-        ///         "senderPassword"
+        ///         "kenejnzwmzwboknd"
         ///     );
         /// </param>
         public void SendEmail(MailMessage message, NetworkCredential credential)
@@ -34,6 +34,8 @@ namespace APIProject.Service
                 EnableSsl = true,
                 Credentials = credential
             };
+
+            
             smtpobj.Send(message);
         }
     }

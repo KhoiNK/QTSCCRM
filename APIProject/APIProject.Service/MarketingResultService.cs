@@ -4,6 +4,8 @@ using APIProject.Model.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,7 +17,7 @@ namespace APIProject.Service
         bool CreateResults(List<MarketingResult> list, bool isFinished, int staffID);
     }
 
-    public class MarketingResultService: IMarketingResultService
+    public class MarketingResultService : IMarketingResultService
     {
         private readonly IMarketingResultRepository _marketingResultRepository;
         private readonly IMarketingPlanRepository _marketingPlanRepository;
@@ -46,21 +48,21 @@ namespace APIProject.Service
             int planID = list.First().MarketingPlanID;
             var foundPlan = _marketingPlanRepository.GetById(planID);
             var foundStaff = _staffRepository.GetById(staffID);
-            
+
             //verify staff exist
-            if(foundStaff == null)
+            if (foundStaff == null)
             {
                 return false;
             }
 
             //verify customer and contact
-            foreach(var item in list)
+            foreach (var item in list)
             {
                 //verify customer exist
                 if (item.CustomerID.HasValue)
                 {
                     var foundCustomer = _customerRepository.GetById(item.CustomerID.Value);
-                    if(foundCustomer == null)
+                    if (foundCustomer == null)
                     {
                         return false;
                     }
@@ -69,7 +71,7 @@ namespace APIProject.Service
                 if (item.ContactID.HasValue)
                 {
                     var foundContact = _contactRepository.GetById(item.ContactID.Value);
-                    if(foundContact == null)
+                    if (foundContact == null)
                     {
                         return false;
                     }
@@ -77,7 +79,7 @@ namespace APIProject.Service
                     {
                         if (item.CustomerID.HasValue)
                         {
-                            if(foundContact.CustomerID != item.CustomerID)
+                            if (foundContact.CustomerID != item.CustomerID)
                             {
                                 return false;
                             }
@@ -91,19 +93,19 @@ namespace APIProject.Service
             }
 
             //verify plan exist
-            if(foundPlan == null)
+            if (foundPlan == null)
             {
                 return false;
             }
             //verify stage
-            if(foundPlan.Stage != RunningName && foundPlan.Stage != ReportingName)
+            if (foundPlan.Stage != RunningName && foundPlan.Stage != ReportingName)
             {
                 return false;
             }
             //verify stage and is finished
             if (isFinished)
             {
-                if(foundPlan.Stage == RunningName)
+                if (foundPlan.Stage == RunningName)
                 {
                     return false;
                 }
@@ -112,7 +114,7 @@ namespace APIProject.Service
 
             //start adding result code here
             InsertResultsAndLeads(list);
-
+            SendMessageToResults(list);
             foundPlan.ModifiedStaffID = staffID;
             foundPlan.LastModifiedDate = DateTime.Today.Date;
             if (isFinished)
@@ -127,9 +129,9 @@ namespace APIProject.Service
         }
 
         //internal insert results and generate lead
-        private void InsertResultsAndLeads (List<MarketingResult> resultList)
+        private void InsertResultsAndLeads(List<MarketingResult> resultList)
         {
-            foreach(MarketingResult resultItem in resultList)
+            foreach (MarketingResult resultItem in resultList)
             {
                 if (resultItem.CustomerID.HasValue)
                 {
@@ -189,11 +191,33 @@ namespace APIProject.Service
             _unitOfWork.Commit();
         }
 
+        private void SendMessageToResults(List<MarketingResult> resultList)
+        {
+            string planTitle = resultList.First().MarketingPlan.Title;
+            string senderEmail = "qtsccrmemailsender@gmail.com";
+            string mailSubject = "QTSC sự kiện " + planTitle;
+
+
+            SmtpClient smtpobj = new SmtpClient("smtp.gmail.com", 25)
+            {
+                EnableSsl = true,
+                Credentials = new NetworkCredential("qtsccrmemailsender@gmail.com", "kenejnzwmzwboknd")
+            };
+
+            foreach (MarketingResult item in resultList)
+            {
+                string mailBody = $"Cám ơn anh/chị {item.ContactName} đã tham gia sự kiện {planTitle}";
+                MailMessage message = new MailMessage(senderEmail,item.Email,mailSubject,mailBody);
+                smtpobj.Send(message);
+                item.Status = "Đã gửi";
+            }
+        }
+
         public IEnumerable<MarketingResult> GetMarketingResults()
         {
             return _marketingResultRepository.GetAll();
         }
     }
 
-    
+
 }
