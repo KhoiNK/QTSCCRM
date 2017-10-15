@@ -9,7 +9,13 @@ namespace APIProject.Model.Models
     [Table("Issue")]
     public partial class Issue
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Issue()
+        {
+            SalesCategories = new HashSet<SalesCategory>();
+        }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
         public int? CustomerID { get; set; }
@@ -17,31 +23,44 @@ namespace APIProject.Model.Models
         public int? ContactID { get; set; }
 
         public int? CreateStaffID { get; set; }
-
+        public string Title { get; set; }
+        public string Description { get; set; }
         public int? OpenStaffID { get; set; }
+        public DateTime OpenedDate { get; set; }
 
         public int? SolveStaffID { get; set; }
+        public DateTime? SolveStartDate { get; set; }
+        public DateTime? EstimateSolveEndDate { get; set; }
+        public int ExtendCount { get; set; }
+        public string ExtendNote { get; set; }
 
         public int? AcceptStaffID { get; set; }
+        public DateTime? AcceptStartDate { get; set; }
+        public DateTime? AcceptedDate { get; set; }
 
         public int? ModifiedStaffID { get; set; }
+        public DateTime ModifiedDate { get; set; }
 
-        public int? SalesCategoryID { get; set; }
+        //public int? SalesCategoryID { get; set; }
 
         public virtual Contact Contact { get; set; }
 
         public virtual Customer Customer { get; set; }
 
-        public virtual SalesCategory SalesCategory { get; set; }
+        //public virtual SalesCategory SalesCategory { get; set; }
 
         public virtual Staff Staff { get; set; }
 
-        public virtual Staff Staff1 { get; set; }
+        public virtual Staff OpenStaff { get; set; }
 
-        public virtual Staff Staff2 { get; set; }
+        public virtual Staff SolveStaff { get; set; }
 
-        public virtual Staff Staff3 { get; set; }
+        public virtual Staff AcceptStaff { get; set; }
 
-        public virtual Staff Staff4 { get; set; }
+        public virtual Staff ModifiedStaff { get; set; }
+
+        
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<SalesCategory> SalesCategories { get; set; }
     }
 }
