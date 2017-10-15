@@ -137,7 +137,8 @@ namespace APIProject.Data
                 {
                     Name = "FPT Software",
                     Address = "39 Ông Địa",
-                    IsLead = true
+                    IsLead = true,
+                    EstablishedDate = DateTime.Today.Date
                 },
                 new Customer
                 {
@@ -145,7 +146,9 @@ namespace APIProject.Data
                     Address = "69 Ông Địa",
                     IsLead = false,
                     ConvertedDate = DateTime.Today.Date,
-                    CustomerType = "Thường"
+                    CustomerType = "Thường",
+                    EstablishedDate = DateTime.Today.Date
+
                 },
                 new Customer
                 {
@@ -153,7 +156,9 @@ namespace APIProject.Data
                     Address = "70 Ông Địa",
                     IsLead = false,
                     ConvertedDate = DateTime.Today.Date,
-                    CustomerType = "Thân Thiết"
+                    CustomerType = "Thân Thiết",
+                    EstablishedDate = DateTime.Today.Date
+
                 },
                 new Customer
                 {
@@ -161,7 +166,9 @@ namespace APIProject.Data
                     Address = "71 Ông Địa",
                     IsLead = false,
                     ConvertedDate = DateTime.Today.Date,
-                    CustomerType = "Mẹ Thiên Hạ"
+                    CustomerType = "Mẹ Thiên Hạ",
+                    EstablishedDate = DateTime.Today.Date
+
                 }
             };
         }

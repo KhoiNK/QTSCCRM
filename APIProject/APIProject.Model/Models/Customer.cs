@@ -22,8 +22,11 @@ namespace APIProject.Model.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
+        public string AvatarSrc { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
+        public DateTime EstablishedDate { get; set; }
+        public string TaxCode { get; set; }
         public bool IsLead { get; set; }
         public DateTime? ConvertedDate { get; set; }
         public string CustomerType { get; set; }

@@ -257,6 +257,8 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
+    <Compile Include="Controllers\ContactController.cs" />
+    <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MarketingPlanController.cs" />
     <Compile Include="Controllers\MarketingResultController.cs" />
@@ -272,13 +274,20 @@
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
     <Compile Include="ViewModels\CustomBase64FileViewModel.cs" />
+    <Compile Include="ViewModels\CustomerDetailViewModel.cs" />
+    <Compile Include="ViewModels\CustomerViewModel.cs" />
     <Compile Include="ViewModels\MarketingPlanDetailViewModel.cs" />
     <Compile Include="ViewModels\MarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\MarketingResultViewModel.cs" />
+    <Compile Include="ViewModels\PostContactViewModel.cs" />
+    <Compile Include="ViewModels\PostLeadCustomerViewModel.cs" />
     <Compile Include="ViewModels\PostMarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\PostMarketingResultsViewModel.cs" />
     <Compile Include="ViewModels\PutAcceptMarketingPlanViewModel.cs" />
+    <Compile Include="ViewModels\PutContactInformationViewModel.cs" />
+    <Compile Include="ViewModels\PutCustomerInformationViewModel.cs" />
     <Compile Include="ViewModels\PutDraftingMarketingPlanViewModel.cs" />
+    <Compile Include="ViewModels\PutLeadInformationViewModel.cs" />
     <Compile Include="ViewModels\PutValidateMarketingPlanViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -343,6 +352,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="ContactAvatarFiles\" />
+    <Folder Include="CustomerAvatarFiles\" />
     <Folder Include="MarketingPlanFiles\" />
   </ItemGroup>
   <ItemGroup>

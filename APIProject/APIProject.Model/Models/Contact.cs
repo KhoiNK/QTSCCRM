@@ -21,9 +21,11 @@ namespace APIProject.Model.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
-        public int? CustomerID { get; set; }
+        public int CustomerID { get; set; }
 
+        public string AvatarSrc { get; set; }
         public string Name { get; set; }
+        public string Position { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
 

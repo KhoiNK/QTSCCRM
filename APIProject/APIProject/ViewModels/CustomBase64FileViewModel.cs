@@ -8,6 +8,7 @@ namespace APIProject.ViewModels
 {
     public class CustomBase64FileViewModel
     {
+        [Required]
         public string Name { get; set; }
         [Required]
         public string Base64Content { get; set; }

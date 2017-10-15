@@ -105,7 +105,14 @@ namespace APIProject.Service
         {
             string rootPath = HttpContext.Current.Server.MapPath("~/MarketingPlanFiles");
             string filePath = Path.Combine(rootPath, fileName);
-            File.WriteAllBytes(filePath, Convert.FromBase64String(fileContentB64));
+            try
+            {
+                File.WriteAllBytes(filePath, Convert.FromBase64String(fileContentB64));
+            }
+            catch (FormatException)
+            {
+                return null;
+            }
             return filePath;
         }
 

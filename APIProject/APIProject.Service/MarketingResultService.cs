@@ -146,7 +146,7 @@ namespace APIProject.Service
                             Name = resultItem.ContactName,
                             Email = resultItem.Email,
                             Phone = resultItem.Phone,
-                            CustomerID = resultItem.CustomerID
+                            CustomerID = resultItem.CustomerID.Value
                         };
                         _contactRepository.Add(_item);
                         _unitOfWork.Commit();
@@ -178,7 +178,7 @@ namespace APIProject.Service
                             Name = resultItem.ContactName,
                             Email = resultItem.Email,
                             Phone = resultItem.Phone,
-                            CustomerID = resultItem.CustomerID
+                            CustomerID = resultItem.CustomerID.Value
                         };
                         _contactRepository.Add(_contact);
                         _unitOfWork.Commit();
