@@ -9,6 +9,11 @@ namespace APIProject.Model.Models
     [Table("Opportunity")]
     public partial class Opportunity
     {
+        public Opportunity()
+        {
+            Activities = new HashSet<Activity>();
+        }
+
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ID { get; set; }
 
@@ -19,6 +24,9 @@ namespace APIProject.Model.Models
         public int? CreateStaffID { get; set; }
 
         public int? ModifyStaffID { get; set; }
+        public string Title { get; set; }
+        public string Stage { get; set; }
+        public string Description { get; set; }
 
         public virtual Contact Contact { get; set; }
 
@@ -27,5 +35,8 @@ namespace APIProject.Model.Models
         public virtual Staff Staff { get; set; }
 
         public virtual Staff Staff1 { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Activity> Activities { get; set; }
     }
 }

@@ -15,6 +15,7 @@ namespace APIProject.Data
             GetCategories().ForEach(c => context.Categories.Add(c));
             GetStaffs().ForEach(c => context.Staffs.Add(c));
             GetCustomers().ForEach(c => context.Customers.Add(c));
+            GetSalesCategories().ForEach(c => context.SalesCategories.Add(c));
             context.Commit();
 
             GetMarketingPlans().ForEach(c => context.MarketingPlans.Add(c));
@@ -205,6 +206,41 @@ namespace APIProject.Data
                     Email = "abb4@abb4.abb4",
                     Phone = "444-444-444",
                 },
+            };
+        }
+
+        private static List<SalesCategory> GetSalesCategories()
+        {
+            return new List<SalesCategory>
+            {
+                new SalesCategory
+                {
+                    Name = "Hội trường, phòng họp"
+                },
+                new SalesCategory
+                {
+                    Name = "ATM"
+                },
+                new SalesCategory
+                {
+                    Name = "Bãi đậu xe"
+                },
+                new SalesCategory
+                {
+                    Name = "Ký túc xá"
+                },
+                new SalesCategory
+                {
+                    Name = "Pano quảng cáo"
+                },
+                new SalesCategory
+                {
+                    Name = "Quay phim - quảng cáo"
+                },
+                new SalesCategory
+                {
+                    Name = "Khác"
+                }
             };
         }
     }

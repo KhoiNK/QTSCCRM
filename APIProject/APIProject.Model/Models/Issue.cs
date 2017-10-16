@@ -12,7 +12,9 @@ namespace APIProject.Model.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Issue()
         {
-            SalesCategories = new HashSet<SalesCategory>();
+            //SalesCategories = new HashSet<SalesCategory>();
+            IssueCategoryMappings = new HashSet<IssueCategoryMapping>();
+
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -25,8 +27,9 @@ namespace APIProject.Model.Models
         public int? CreateStaffID { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        public string Stage { get; set; }
         public int? OpenStaffID { get; set; }
-        public DateTime OpenedDate { get; set; }
+        public DateTime? OpenedDate { get; set; }
 
         public int? SolveStaffID { get; set; }
         public DateTime? SolveStartDate { get; set; }
@@ -39,7 +42,7 @@ namespace APIProject.Model.Models
         public DateTime? AcceptedDate { get; set; }
 
         public int? ModifiedStaffID { get; set; }
-        public DateTime ModifiedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
 
         //public int? SalesCategoryID { get; set; }
 
@@ -60,7 +63,10 @@ namespace APIProject.Model.Models
         public virtual Staff ModifiedStaff { get; set; }
 
         
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        //public virtual ICollection<SalesCategory> SalesCategories { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<SalesCategory> SalesCategories { get; set; }
+        public virtual ICollection<IssueCategoryMapping> IssueCategoryMappings { get; set; }
     }
 }

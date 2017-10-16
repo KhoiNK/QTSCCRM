@@ -21,6 +21,14 @@ namespace APIProject.Model.Models
         public int? ContactID { get; set; }
 
         public int? ModifiedStaffID { get; set; }
+        public int? OpportunityID { get; set; }
+        public string Title { get; set; }
+        public string Type { get; set; }
+        public string Method { get; set; }
+        public DateTime? Deadline { get; set; }
+        public string Note { get; set; }
+
+        public virtual Opportunity Opportunity { get; set; }
 
         public virtual Contact Contact { get; set; }
 

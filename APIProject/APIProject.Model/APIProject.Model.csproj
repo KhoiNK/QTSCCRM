@@ -59,6 +59,7 @@
     <Compile Include="Models\Contact.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\Issue.cs" />
+    <Compile Include="Models\IssueCategoryMapping.cs" />
     <Compile Include="Models\MarketingPlan.cs" />
     <Compile Include="Models\MarketingResult.cs" />
     <Compile Include="Models\Opportunity.cs" />

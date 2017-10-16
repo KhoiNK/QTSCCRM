@@ -260,6 +260,7 @@
     <Compile Include="Controllers\ContactController.cs" />
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\IssueController.cs" />
     <Compile Include="Controllers\MarketingPlanController.cs" />
     <Compile Include="Controllers\MarketingResultController.cs" />
     <Compile Include="Global.asax.cs">
@@ -283,6 +284,7 @@
     <Compile Include="ViewModels\PostLeadCustomerViewModel.cs" />
     <Compile Include="ViewModels\PostMarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\PostMarketingResultsViewModel.cs" />
+    <Compile Include="ViewModels\PostOpenIssueViewModel.cs" />
     <Compile Include="ViewModels\PutAcceptMarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\PutContactInformationViewModel.cs" />
     <Compile Include="ViewModels\PutCustomerInformationViewModel.cs" />

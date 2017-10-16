@@ -26,6 +26,8 @@ namespace APIProject.Data
         public virtual DbSet<SalesCategory> SalesCategories { get; set; }
         public virtual DbSet<SalesItem> SalesItems { get; set; }
         public virtual DbSet<Staff> Staffs { get; set; }
+        public virtual DbSet<IssueCategoryMapping> IssueCategoryMappings { get; set; }
+
         public virtual void Commit()
         {
             base.SaveChanges();
@@ -112,10 +114,10 @@ namespace APIProject.Data
             //    .HasMany(e => e.Issues)
             //    .WithMany(e => e.SalesCategories)
             //    .Map(m => m.ToTable("IssueSalesCategoryMapping").MapLeftKey("SalesCategoryID").MapRightKey("IssueID"));
-            modelBuilder.Entity<Issue>()
-                .HasMany(e => e.SalesCategories)
-                .WithMany(e => e.Issues)
-                .Map(m => m.ToTable("IssueCategoryMapping").MapLeftKey("IssueID").MapRightKey("SalesCategoryID"));
+            //modelBuilder.Entity<Issue>()
+            //    .HasMany(e => e.SalesCategories)
+            //    .WithMany(e => e.Issues)
+            //    .Map(m => m.ToTable("IssueCategoryMapping").MapLeftKey("IssueID").MapRightKey("SalesCategoryID"));
         }
     }
 }

@@ -12,18 +12,21 @@ namespace APIProject.Model.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public SalesCategory()
         {
-            Issues = new HashSet<Issue>();
+            //Issues = new HashSet<Issue>();
+            IssueCategoryMappings = new HashSet<IssueCategoryMapping>();
+
             SalesCategory1 = new HashSet<SalesCategory>();
             SalesItems = new HashSet<SalesItem>();
         }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+        public string Name { get; set; }
 
         public int? OfCategoryID { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Issue> Issues { get; set; }
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        //public virtual ICollection<Issue> Issues { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SalesCategory> SalesCategory1 { get; set; }
@@ -32,5 +35,8 @@ namespace APIProject.Model.Models
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SalesItem> SalesItems { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<IssueCategoryMapping> IssueCategoryMappings { get; set; }
     }
 }

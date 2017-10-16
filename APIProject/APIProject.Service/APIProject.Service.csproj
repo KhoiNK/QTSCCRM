@@ -49,6 +49,7 @@
     <Compile Include="ContactService.cs" />
     <Compile Include="CustomerService.cs" />
     <Compile Include="EmailService.cs" />
+    <Compile Include="IssueService.cs" />
     <Compile Include="MarketingPlanService.cs" />
     <Compile Include="MarketingResultService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
