@@ -63,6 +63,9 @@
     <Compile Include="Models\MarketingPlan.cs" />
     <Compile Include="Models\MarketingResult.cs" />
     <Compile Include="Models\Opportunity.cs" />
+    <Compile Include="Models\OpportunityCategoryMapping.cs" />
+    <Compile Include="Models\Quote.cs" />
+    <Compile Include="Models\QuoteItemMapping.cs" />
     <Compile Include="Models\Role.cs" />
     <Compile Include="Models\SalesCategory.cs" />
     <Compile Include="Models\SalesItem.cs" />

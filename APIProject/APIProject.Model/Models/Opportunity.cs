@@ -12,12 +12,17 @@ namespace APIProject.Model.Models
         public Opportunity()
         {
             Activities = new HashSet<Activity>();
+            OpportunityCategoryMappings = new HashSet<OpportunityCategoryMapping>();
+            Quotes = new HashSet<Quote>();
+
         }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
         public int? CustomerID { get; set; }
+        //public int? StageID { get; set; }
+
 
         public int? ContactID { get; set; }
 
@@ -25,18 +30,30 @@ namespace APIProject.Model.Models
 
         public int? ModifyStaffID { get; set; }
         public string Title { get; set; }
-        public string Stage { get; set; }
         public string Description { get; set; }
+
+        public string StageName { get; set; }
+        //public string StageDescription { get; set; }
 
         public virtual Contact Contact { get; set; }
 
         public virtual Customer Customer { get; set; }
+        [ForeignKey("CreateStaffID")]
+        public virtual Staff CreatedStaff { get; set; }
 
-        public virtual Staff Staff { get; set; }
+        public virtual Staff ModifyStaff { get; set; }
+        //[ForeignKey("StageID")]
+        //public virtual Stage Stage { get; set; }
 
-        public virtual Staff Staff1 { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Activity> Activities { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OpportunityCategoryMapping> OpportunityCategoryMappings { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Quote> Quotes { get; set; }
+
     }
 }

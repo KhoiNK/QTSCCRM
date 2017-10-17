@@ -1,4 +1,4 @@
-namespace APIProject.Model.Models
+﻿namespace APIProject.Model.Models
 {
     using System;
     using System.Collections.Generic;
@@ -6,28 +6,27 @@ namespace APIProject.Model.Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("SalesItem")]
-    public partial class SalesItem
+    [Table("Quote")]
+    public partial class Quote
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public SalesItem()
+        public Quote()
         {
             QuoteItemMappings = new HashSet<QuoteItemMapping>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        public string Name { get; set; }
-        public int Price { get; set; }
-        public string Unit { get; set; }
-        public int? SalesCategoryID { get; set; }
 
-        [ForeignKey("SalesCategoryID")]
-        public virtual SalesCategory SalesCategory { get; set; }
+        public int? OpportunityID { get; set; }
 
+        public DateTime? CreatedDate { get; set; }
+
+        public bool? IsDeleted { get; set; }
+
+        public virtual Opportunity Opportunity { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<QuoteItemMapping> QuoteItemMappings { get; set; }
-
     }
 }

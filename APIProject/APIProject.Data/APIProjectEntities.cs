@@ -27,6 +27,13 @@ namespace APIProject.Data
         public virtual DbSet<SalesItem> SalesItems { get; set; }
         public virtual DbSet<Staff> Staffs { get; set; }
         public virtual DbSet<IssueCategoryMapping> IssueCategoryMappings { get; set; }
+        public virtual DbSet<OpportunityCategoryMapping> OpportunityCategoryMappings { get; set; }
+        public virtual DbSet<QuoteItemMapping> QuoteItemMappings { get; set; }
+        public virtual DbSet<Quote> Quotes { get; set; }
+        //public virtual DbSet<Stage> Stages { get; set; }
+
+
+
 
         public virtual void Commit()
         {
@@ -100,14 +107,11 @@ namespace APIProject.Data
                 .WithOptional(e => e.AcceptStaff)
                 .HasForeignKey(e => e.AcceptStaffID);
 
-            modelBuilder.Entity<Staff>()
-                .HasMany(e => e.Opportunities)
-                .WithOptional(e => e.Staff)
-                .HasForeignKey(e => e.CreateStaffID);
+
 
             modelBuilder.Entity<Staff>()
                 .HasMany(e => e.Opportunities1)
-                .WithOptional(e => e.Staff1)
+                .WithOptional(e => e.ModifyStaff)
                 .HasForeignKey(e => e.ModifyStaffID);
 
             //modelBuilder.Entity<Issue>()

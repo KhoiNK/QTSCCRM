@@ -30,5 +30,11 @@ namespace APIProject.Controllers
             int insertedIssue = _issueService.CreateOpenIssue(request.ToIssueModel(), request.SalesCategoryIDs);
             return Ok(insertedIssue);
         }
+
+        [Route("GetIssues")]
+        public IHttpActionResult GetIssues()
+        {
+            return Ok(_issueService.GetAllIssues().Select(c=> new IssueViewModel(c)));
+        }
     }
 }

@@ -256,6 +256,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\ContactController.cs" />
     <Compile Include="Controllers\CustomerController.cs" />
@@ -263,6 +264,8 @@
     <Compile Include="Controllers\IssueController.cs" />
     <Compile Include="Controllers\MarketingPlanController.cs" />
     <Compile Include="Controllers\MarketingResultController.cs" />
+    <Compile Include="Controllers\OpportunityController.cs" />
+    <Compile Include="Controllers\SalesCategoryController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -273,24 +276,31 @@
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\ActivityDetailViewModel.cs" />
+    <Compile Include="ViewModels\ActivityViewModel.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
     <Compile Include="ViewModels\CustomBase64FileViewModel.cs" />
     <Compile Include="ViewModels\CustomerDetailViewModel.cs" />
     <Compile Include="ViewModels\CustomerViewModel.cs" />
+    <Compile Include="ViewModels\IssueViewModel.cs" />
     <Compile Include="ViewModels\MarketingPlanDetailViewModel.cs" />
     <Compile Include="ViewModels\MarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\MarketingResultViewModel.cs" />
+    <Compile Include="ViewModels\OpportunityViewModel.cs" />
     <Compile Include="ViewModels\PostContactViewModel.cs" />
     <Compile Include="ViewModels\PostLeadCustomerViewModel.cs" />
     <Compile Include="ViewModels\PostMarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\PostMarketingResultsViewModel.cs" />
+    <Compile Include="ViewModels\PostNewActivityViewModel.cs" />
     <Compile Include="ViewModels\PostOpenIssueViewModel.cs" />
     <Compile Include="ViewModels\PutAcceptMarketingPlanViewModel.cs" />
+    <Compile Include="ViewModels\PutFinishActivityViewModel.cs" />
     <Compile Include="ViewModels\PutContactInformationViewModel.cs" />
     <Compile Include="ViewModels\PutCustomerInformationViewModel.cs" />
     <Compile Include="ViewModels\PutDraftingMarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\PutLeadInformationViewModel.cs" />
     <Compile Include="ViewModels\PutValidateMarketingPlanViewModel.cs" />
+    <Compile Include="ViewModels\SalesCategoryViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
@@ -323,6 +333,8 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Properties\PublishProfiles\CRMCP - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\CRMCP - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -377,6 +389,10 @@
     <ProjectReference Include="..\APIProject.Data\APIProject.Data.csproj">
       <Project>{3bf86d61-3e18-4548-89cf-bebb5785fa06}</Project>
       <Name>APIProject.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\APIProject.GlobalVariables\APIProject.GlobalVariables.csproj">
+      <Project>{b9908fbc-7769-437f-8536-3540da37c679}</Project>
+      <Name>APIProject.GlobalVariables</Name>
     </ProjectReference>
     <ProjectReference Include="..\APIProject.Model\APIProject.Model.csproj">
       <Project>{a3643c65-e8bd-4e62-a190-8fb298f1ccc1}</Project>

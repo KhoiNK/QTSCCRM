@@ -14,6 +14,7 @@ namespace APIProject.Model.Models
         {
             //Issues = new HashSet<Issue>();
             IssueCategoryMappings = new HashSet<IssueCategoryMapping>();
+            OpportunityCategoryMappings = new HashSet<OpportunityCategoryMapping>();
 
             SalesCategory1 = new HashSet<SalesCategory>();
             SalesItems = new HashSet<SalesItem>();
@@ -38,5 +39,10 @@ namespace APIProject.Model.Models
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<IssueCategoryMapping> IssueCategoryMappings { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<OpportunityCategoryMapping> OpportunityCategoryMappings { get; set; }
+
+
     }
 }

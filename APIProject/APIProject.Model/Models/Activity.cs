@@ -9,10 +9,11 @@ namespace APIProject.Model.Models
     [Table("Activity")]
     public partial class Activity
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
         public int? CreateStaffID { get; set; }
+        public DateTime? CreatedDate { get; set; }
 
         public int? OfStaffID { get; set; }
 
@@ -24,14 +25,17 @@ namespace APIProject.Model.Models
         public int? OpportunityID { get; set; }
         public string Title { get; set; }
         public string Type { get; set; }
+        //public bool IsFromCustomerType { get; set; }
         public string Method { get; set; }
-        public DateTime? Deadline { get; set; }
+        public DateTime? TodoTime { get; set; }
+        public DateTime? CompletedDate { get; set; }
         public string Note { get; set; }
-
+        public string Status { get; set; }
+        [ForeignKey("OpportunityID")]
         public virtual Opportunity Opportunity { get; set; }
-
+        [ForeignKey("ContactID")]
         public virtual Contact Contact { get; set; }
-
+        [ForeignKey("CustomerID")]
         public virtual Customer Customer { get; set; }
 
         public virtual Staff Staff { get; set; }

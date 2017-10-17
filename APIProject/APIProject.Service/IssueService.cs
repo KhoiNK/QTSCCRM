@@ -12,6 +12,7 @@ namespace APIProject.Service
     public interface IIssueService
     {
         int CreateOpenIssue(Issue issue, List<int> salesCategoryIDs);
+        IEnumerable<Issue> GetAllIssues();
     }
     public class IssueService : IIssueService
     {
@@ -86,6 +87,11 @@ namespace APIProject.Service
             _issueRepository.Add(issue);
             _unitOfWork.Commit();
             return issue.ID;
+        }
+
+        public IEnumerable<Issue> GetAllIssues()
+        {
+            return _issueRepository.GetAll();
         }
     }
 }
