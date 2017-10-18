@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace APIProject.Controllers
 {
@@ -23,6 +24,26 @@ namespace APIProject.Controllers
         public IHttpActionResult GetSalesCategories()
         {
             return Ok(_salesCategoryService.GetAllCategories().Select(c => new SalesCategoryViewModel(c)));
+        }
+
+        [Route("GetOpportunitySalesCategories")]
+        [ResponseType(typeof(SalesCategoryViewModel))]
+        public IHttpActionResult GetOpportunitySalesCategories(int opportunityID = 0)
+        {
+            if(opportunityID == 0)
+            {
+                return BadRequest();
+            }
+            var foundCategories = _salesCategoryService.GetByOpportunity(opportunityID);
+            if(foundCategories != null)
+            {
+                return Ok(foundCategories.Select(c => new SalesCategoryViewModel(c)));
+            }
+            else
+            {
+                return NotFound();
+            }
+
         }
     }
 }

@@ -44,8 +44,11 @@
     <Compile Include="ActivityMethod.cs" />
     <Compile Include="ActivityStatus.cs" />
     <Compile Include="ActivityType.cs" />
+    <Compile Include="CustomerType.cs" />
     <Compile Include="OpportunityStage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QuoteStatus.cs" />
+    <Compile Include="RoleName.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

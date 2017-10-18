@@ -55,7 +55,9 @@
     <Compile Include="MarketingResultService.cs" />
     <Compile Include="OpportunityService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QuoteService.cs" />
     <Compile Include="SalesCategoryService.cs" />
+    <Compile Include="StaffService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\APIProject.Data\APIProject.Data.csproj">

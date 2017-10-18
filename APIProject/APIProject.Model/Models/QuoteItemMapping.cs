@@ -9,22 +9,17 @@
     [Table("QuoteItemMapping")]
     public partial class QuoteItemMapping
     {
-        [Key]
-        [Column(Order = 0)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ID { get; set; }
         public int QuoteID { get; set; }
-
-        [Key]
-        [Column(Order = 1)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int SalesItemID { get; set; }
-
+        public string SalesItemName { get; set; }
         public int? Price { get; set; }
-
         public string Unit { get; set; }
-
+        public bool IsDeleted { get; set; }
+        [ForeignKey("QuoteID")]
         public virtual Quote Quote { get; set; }
-
+        [ForeignKey("SalesItemID")]
         public virtual SalesItem SalesItem { get; set; }
     }
 }

@@ -12,10 +12,12 @@ namespace APIProject.Data.Repositories
     {
         public ContactRepository(IDbFactory dbFactory) : base(dbFactory)
         {
-        }
-    }
-    public interface IContactRepository: IRepository<Contact>
-    {
 
+        }
+
+        
+    }
+    public interface IContactRepository : IRepository<Contact>
+    {
     }
 }

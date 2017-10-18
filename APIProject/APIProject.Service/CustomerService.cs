@@ -15,11 +15,14 @@ namespace APIProject.Service
     {
 
         private readonly ICustomerRepository _customerRepository;
+        private readonly IOpportunityRepository _opportunityRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CustomerService(ICustomerRepository _customerRepository, IUnitOfWork _unitOfWork)
+        public CustomerService(ICustomerRepository _customerRepository, IUnitOfWork _unitOfWork,
+            IOpportunityRepository _opportunityRepository)
         {
             this._customerRepository = _customerRepository;
+            this._opportunityRepository = _opportunityRepository;
             this._unitOfWork = _unitOfWork;
         }
         private string InsertCustomerAvatar(int customerID, string avatarName, string b64Content)
@@ -103,6 +106,16 @@ namespace APIProject.Service
         {
             return _customerRepository.GetAll();
         }
+
+        public Customer GetByOpportunity(int opportunityID)
+        {
+            var foundOpportunity = _opportunityRepository.GetById(opportunityID);
+            if(foundOpportunity != null)
+            {
+                return foundOpportunity.Customer;
+            }
+            return null;
+        }
     }
 
     public interface ICustomerService
@@ -110,6 +123,7 @@ namespace APIProject.Service
         int CreateNewLead(Customer customer, string avatarName, string avatarB64);
         bool EditCustomer(Customer customer);
         bool EditLead(Customer customer, string avatarName, string avatarB64);
+        Customer GetByOpportunity(int opportunityID);
         IEnumerable<Customer> GetCustomerList();
     }
 }

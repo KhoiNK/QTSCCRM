@@ -265,7 +265,9 @@
     <Compile Include="Controllers\MarketingPlanController.cs" />
     <Compile Include="Controllers\MarketingResultController.cs" />
     <Compile Include="Controllers\OpportunityController.cs" />
+    <Compile Include="Controllers\QuoteController.cs" />
     <Compile Include="Controllers\SalesCategoryController.cs" />
+    <Compile Include="Controllers\StaffController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -279,6 +281,7 @@
     <Compile Include="ViewModels\ActivityDetailViewModel.cs" />
     <Compile Include="ViewModels\ActivityViewModel.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
+    <Compile Include="ViewModels\ContactViewModel.cs" />
     <Compile Include="ViewModels\CustomBase64FileViewModel.cs" />
     <Compile Include="ViewModels\CustomerDetailViewModel.cs" />
     <Compile Include="ViewModels\CustomerViewModel.cs" />
@@ -286,6 +289,7 @@
     <Compile Include="ViewModels\MarketingPlanDetailViewModel.cs" />
     <Compile Include="ViewModels\MarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\MarketingResultViewModel.cs" />
+    <Compile Include="ViewModels\OpportunityDetailViewModel.cs" />
     <Compile Include="ViewModels\OpportunityViewModel.cs" />
     <Compile Include="ViewModels\PostContactViewModel.cs" />
     <Compile Include="ViewModels\PostLeadCustomerViewModel.cs" />
@@ -300,7 +304,10 @@
     <Compile Include="ViewModels\PutDraftingMarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\PutLeadInformationViewModel.cs" />
     <Compile Include="ViewModels\PutValidateMarketingPlanViewModel.cs" />
+    <Compile Include="ViewModels\QuoteViewModel.cs" />
     <Compile Include="ViewModels\SalesCategoryViewModel.cs" />
+    <Compile Include="ViewModels\SalesItemViewModel.cs" />
+    <Compile Include="ViewModels\StaffDetailViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />

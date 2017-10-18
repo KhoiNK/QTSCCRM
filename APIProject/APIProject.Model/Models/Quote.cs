@@ -20,7 +20,9 @@
 
         public int? OpportunityID { get; set; }
 
-        public DateTime? CreatedDate { get; set; }
+        public double Tax { get; set; }
+        public double Discount { get; set; }
+        public string Status { get; set; }
 
         public bool? IsDeleted { get; set; }
 

@@ -15,6 +15,7 @@ namespace APIProject.ViewModels
         public string Owner { get; set; }
         public DateTime TodoTime { get; set; }
         public string Status { get; set; }
+        public string OfOpportunityStage { get; set; }
 
         public ActivityViewModel(Activity dto)
         {
@@ -25,6 +26,7 @@ namespace APIProject.ViewModels
             this.Owner = dto.Staff.Name;
             this.TodoTime = dto.TodoTime.Value;
             this.Status = dto.Status;
+            this.OfOpportunityStage = dto.OfOpportunityStage;
         }
     }
 }

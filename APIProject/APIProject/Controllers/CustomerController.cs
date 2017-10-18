@@ -23,26 +23,26 @@ namespace APIProject.Controllers
         [Route("PostLeadCustomer")]
         public IHttpActionResult PostLeadCustomer(PostLeadCustomerViewModel request)
         {
-            if(!ModelState.IsValid || request == null)
+            if (!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
             }
 
             string avatarB64 = null;
             string avatarName = null;
-            if(request.Avatar != null)
+            if (request.Avatar != null)
             {
                 avatarName = request.Avatar.Name;
                 avatarB64 = request.Avatar.Base64Content;
             }
 
-            return Ok(_customerService.CreateNewLead(request.ToCustomerModel(), avatarName ,avatarB64));
+            return Ok(_customerService.CreateNewLead(request.ToCustomerModel(), avatarName, avatarB64));
         }
 
         [Route("PutLeadInformation")]
         public IHttpActionResult PutLeadInformation(PutLeadInformationViewModel request)
         {
-            if(!ModelState.IsValid || request == null)
+            if (!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
             }
@@ -61,7 +61,7 @@ namespace APIProject.Controllers
         [Route("PutCustomerInformation")]
         public IHttpActionResult PutCustomerInformation(PutCustomerInformationViewModel request)
         {
-            if(!ModelState.IsValid || request == null)
+            if (!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
             }
@@ -79,6 +79,25 @@ namespace APIProject.Controllers
         public IHttpActionResult GetCustomerDetail(int ID)
         {
             return Ok(_customerService.GetCustomerList().Where(x => x.ID == ID).Select(x => new CustomerDetailViewModel(x)));
+        }
+
+        [Route("GetOpportunityCustomer")]
+        [ResponseType(typeof(CustomerDetailViewModel))]
+        public IHttpActionResult GetOpportunityCustomer(int opportunityID = 0)
+        {
+            if (opportunityID == 0)
+            {
+                return BadRequest();
+            }
+            var foundCustomer = _customerService.GetByOpportunity(opportunityID);
+            if (foundCustomer != null)
+            {
+                return Ok(new CustomerDetailViewModel(foundCustomer));
+            }
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }

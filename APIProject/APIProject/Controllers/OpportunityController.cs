@@ -24,5 +24,18 @@ namespace APIProject.Controllers
         {
             return Ok(_opportunityService.GetAllOpportunities().Select(c => new OpportunityViewModel(c)));
         }
+
+        [Route("GetOpportunity")]
+        public IHttpActionResult GetOpportunity(int id)
+        {
+            if(id == 0)
+            {
+                return BadRequest();
+            }
+            return Ok(_opportunityService.GetAllOpportunities().Where(c => c.ID == id)
+                .Select(c => new OpportunityDetailViewModel(c)));
+        }
+
+        
     }
 }

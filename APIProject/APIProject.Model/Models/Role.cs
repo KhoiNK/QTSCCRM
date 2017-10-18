@@ -15,7 +15,7 @@ namespace APIProject.Model.Models
             Staffs = new HashSet<Staff>();
         }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         public string Name { get; set; }
 

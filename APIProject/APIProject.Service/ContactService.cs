@@ -15,13 +15,16 @@ namespace APIProject.Service
     {
         private readonly IContactRepository _contactRepository;
         private readonly ICustomerRepository _customerRepository;
+        private readonly IOpportunityRepository _opportunityRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public ContactService(IContactRepository _contactRepository,
-            ICustomerRepository _customerRepository, IUnitOfWork _unitOfWork)
+            ICustomerRepository _customerRepository, IUnitOfWork _unitOfWork,
+            IOpportunityRepository _opportunityRepository)
         {
             this._contactRepository = _contactRepository;
             this._customerRepository = _customerRepository;
+            this._opportunityRepository = _opportunityRepository;
             this._unitOfWork = _unitOfWork;
         }
 
@@ -89,12 +92,21 @@ namespace APIProject.Service
             return true;
         }
 
-
+        public Contact GetContactByOpportunity(int opportunityID)
+        {
+            var foundOpportunity = _opportunityRepository.GetById(opportunityID);
+            if(foundOpportunity != null)
+            {
+                return foundOpportunity.Contact;
+            }
+            return null;
+        }
     }
 
     public interface IContactService
     {
         int CreateContact(Contact contact, string avatarName, string avatarB64);
         bool EditContact(Contact contact, string avatarName, string avatarB64);
+        Contact GetContactByOpportunity(int opportunityID);
     }
 }

@@ -23,6 +23,7 @@ namespace APIProject.Model.Models
 
         public int? ModifiedStaffID { get; set; }
         public int? OpportunityID { get; set; }
+        public string OfOpportunityStage { get; set; }
         public string Title { get; set; }
         public string Type { get; set; }
         //public bool IsFromCustomerType { get; set; }

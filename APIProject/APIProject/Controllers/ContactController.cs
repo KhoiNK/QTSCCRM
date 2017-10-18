@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace APIProject.Controllers
 {
@@ -56,6 +57,25 @@ namespace APIProject.Controllers
             bool isEdited = _contactService.EditContact(request.ToContactModel(), avatarName, avatarB64);
 
             return Ok(isEdited);
+        }
+
+        [Route("GetOpportunityContact")]
+        [ResponseType(typeof(ContactViewModel))]
+        public IHttpActionResult GetOpportunityContact(int opportunityID = 0)
+        {
+            if(opportunityID == 0)
+            {
+                return BadRequest();
+            }
+            var foundContact = _contactService.GetContactByOpportunity(opportunityID);
+            if(foundContact != null)
+            {
+                return Ok(new ContactViewModel(foundContact));
+            }
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }
