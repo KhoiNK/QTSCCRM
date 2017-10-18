@@ -1,7 +1,10 @@
-﻿using APIProject.Service;
+﻿using APIProject.GlobalVariables;
+using APIProject.Helper;
+using APIProject.Service;
 using APIProject.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -14,10 +17,12 @@ namespace APIProject.Controllers
     public class CustomerController : ApiController
     {
         private readonly ICustomerService _customerService;
+        private readonly IUploadNamingService _uploadNamingService;
 
-        public CustomerController(ICustomerService _customerService)
+        public CustomerController(ICustomerService _customerService, IUploadNamingService _uploadNamingService)
         {
             this._customerService = _customerService;
+            this._uploadNamingService = _uploadNamingService;
         }
 
         [Route("PostLeadCustomer")]
@@ -28,15 +33,16 @@ namespace APIProject.Controllers
                 return BadRequest(ModelState);
             }
 
-            string avatarB64 = null;
-            string avatarName = null;
             if (request.Avatar != null)
             {
-                avatarName = request.Avatar.Name;
-                avatarB64 = request.Avatar.Base64Content;
+                string avatarExtension = Path.GetExtension(request.Avatar.Name).ToLower();
+                request.Avatar.Name = _uploadNamingService.GetCustomerAvatarNaming() + avatarExtension;
+                SaveFileHelper saveFileHelper = new SaveFileHelper();
+                saveFileHelper.SaveCustomerImage(request.Avatar.Name, request.Avatar.Base64Content);
+
             }
 
-            return Ok(_customerService.CreateNewLead(request.ToCustomerModel(), avatarName, avatarB64));
+            return Ok(_customerService.CreateNewLead(request.ToCustomerModel()));
         }
 
         [Route("PutLeadInformation")]
@@ -47,15 +53,15 @@ namespace APIProject.Controllers
                 return BadRequest(ModelState);
             }
 
-            string avatarB64 = null;
-            string avatarName = null;
             if (request.Avatar != null)
             {
-                avatarName = request.Avatar.Name;
-                avatarB64 = request.Avatar.Base64Content;
+                string avatarExtension = Path.GetExtension(request.Avatar.Name).ToLower();
+                request.Avatar.Name = _uploadNamingService.GetCustomerAvatarNaming() + avatarExtension;
+                SaveFileHelper saveFileHelper = new SaveFileHelper();
+                saveFileHelper.SaveCustomerImage(request.Avatar.Name, request.Avatar.Base64Content);
             }
 
-            return Ok(_customerService.EditLead(request.ToCustomerModel(), avatarName, avatarB64));
+            return Ok(_customerService.EditLead(request.ToCustomerModel()));
         }
 
         [Route("PutCustomerInformation")]
@@ -76,6 +82,7 @@ namespace APIProject.Controllers
             return Ok(_customerService.GetCustomerList().Select(x => new CustomerViewModel(x)));
         }
         [Route("GetCustomerDetail")]
+        [ResponseType(typeof(CustomerDetailViewModel))]
         public IHttpActionResult GetCustomerDetail(int ID)
         {
             return Ok(_customerService.GetCustomerList().Where(x => x.ID == ID).Select(x => new CustomerDetailViewModel(x)));
@@ -90,6 +97,52 @@ namespace APIProject.Controllers
                 return BadRequest();
             }
             var foundCustomer = _customerService.GetByOpportunity(opportunityID);
+            if (foundCustomer != null)
+            {
+                return Ok(new CustomerDetailViewModel(foundCustomer));
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [Route("GetActivityCustomer")]
+        [ResponseType(typeof(CustomerDetailViewModel))]
+        public IHttpActionResult GetActivityCustomer(int activityID = 0)
+        {
+            if (activityID == 0)
+            {
+                return BadRequest();
+            }
+
+            var foundCustomer = _customerService.GetByActivity(activityID);
+            if (foundCustomer != null)
+            {
+                return Ok(new CustomerDetailViewModel(foundCustomer));
+            }
+            else
+            {
+                return NotFound();
+            }
+
+        }
+
+        [Route("GetCustomerTypes")]
+        public IHttpActionResult GetCustomerTypes()
+        {
+            return Ok(_customerService.GetCustomerTypes());
+        }
+        [Route("GetIssueCustomer")]
+        [ResponseType(typeof(CustomerDetailViewModel))]
+        public IHttpActionResult GetIssueCustomer(int issueID = 0)
+        {
+            if (issueID == 0)
+            {
+                return BadRequest();
+            }
+
+            var foundCustomer = _customerService.GetByIssue(issueID);
             if (foundCustomer != null)
             {
                 return Ok(new CustomerDetailViewModel(foundCustomer));

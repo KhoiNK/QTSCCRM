@@ -19,7 +19,7 @@ namespace APIProject.ViewModels
         [Required]
         public string Title { get; set; }
         [Required]
-        public string Note { get; set; }
+        public string Description { get; set; }
         [Required]
         public string Type { get; set; }
         [Required]
@@ -36,7 +36,7 @@ namespace APIProject.ViewModels
             activity.ContactID = this.ContactID;
             activity.Title = this.Title;
             activity.OpportunityID = this.OpportunityID;
-            activity.Note = this.Note;
+            activity.Description = this.Description;
             activity.Type = this.Type;
             activity.Method = this.Method;
             activity.TodoTime = this.TodoTime;

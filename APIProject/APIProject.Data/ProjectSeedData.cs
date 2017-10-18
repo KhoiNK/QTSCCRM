@@ -6,6 +6,8 @@ using APIProject.GlobalVariables;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
+using System.IO;
 
 namespace APIProject.Data
 {
@@ -13,27 +15,34 @@ namespace APIProject.Data
     {
         protected override void Seed(APIProjectEntities context)
         {
-             //GetCategories().ForEach(c => context.Categories.Add(c));
-            GetCustomers().ForEach(c => context.Customers.Add(c));
+            //GetCategories().ForEach(c => context.Categories.Add(c));
+            List<Customer> customerList = GetCustomers();
+            customerList.ForEach(c => context.Customers.Add(c));
             List<SalesCategory> categoryList = GetSalesCategories();
             categoryList.ForEach(c => context.SalesCategories.Add(c));
             List<Role> roleList = GetRoles();
             roleList.ForEach(c => context.Roles.Add(c));
+            context.AppConfigs.Add(GetHostName());
             context.Commit();
 
-            GetStaffs(roleList).ForEach(c => context.Staffs.Add(c));
+            List<Contact> contactList = GetContacts(customerList);
+            contactList.ForEach(c => context.Contacts.Add(c));
+            List<Staff> staffList = GetStaffs(roleList);
+            staffList.ForEach(c => context.Staffs.Add(c));
             context.Commit();
 
             GetMarketingPlans().ForEach(c => context.MarketingPlans.Add(c));
-            GetContacts().ForEach(c => context.Contacts.Add(c));
             List<SalesItem> salesItemList = GetSalesItem();
             salesItemList.ForEach(c => context.SalesItems.Add(c));
-            GetIssues().ForEach(c => context.Issues.Add(c));
+            List<Issue> issueList = GetIssues(contactList, staffList);
+            issueList.ForEach(c => context.Issues.Add(c));
             context.Commit();
-            GetActivities().ForEach(c => context.Activities.Add(c));
+
+            GetIssueCategories(issueList).ForEach(c => context.IssueCategoryMappings.Add(c));
             List<Opportunity> opportunityList = GetOpportunities();
             opportunityList.ForEach(c => context.Opportunities.Add(c));
             context.Commit();
+            GetOppActivities(opportunityList).ForEach(c => context.Activities.Add(c));
             List<Quote> quoteList = GetQuotes();
             quoteList.ForEach(c => context.Quotes.Add(c));
             context.Commit();
@@ -43,18 +52,45 @@ namespace APIProject.Data
 
         }
 
+        private List<IssueCategoryMapping> GetIssueCategories(List<Issue> issueList)
+        {
+            int i = 1;
+            List<IssueCategoryMapping> _list = new List<IssueCategoryMapping>();
+            foreach(var item in issueList)
+            {
+                for (int count = 1; count <= i; count++)
+                {
+                    _list.Add(new IssueCategoryMapping
+                    {
+                        IssueID = item.ID,
+                        SalesCategoryID = count,
+                        IsDeleted=false
+                    });
+                }
+                if (i < 7)
+                {
+                    i++;
+                }
+                else
+                {
+                    i = 1;
+                }
+            }
+            return _list;
+        }
+
         private List<OpportunityCategoryMapping> GetOppCategories(List<Opportunity> oppList, List<SalesCategory> categoryList)
         {
             List<OpportunityCategoryMapping> _list = new List<OpportunityCategoryMapping>();
-            foreach(Opportunity oppItem in oppList)
+            foreach (Opportunity oppItem in oppList)
             {
-                foreach(SalesCategory category in categoryList)
+                foreach (SalesCategory category in categoryList)
                 {
                     _list.Add(new OpportunityCategoryMapping
                     {
                         IsDeleted = false,
-                        OpportunityID=oppItem.ID,
-                        SalesCategoryID=category.ID
+                        OpportunityID = oppItem.ID,
+                        SalesCategoryID = category.ID
                     });
                 }
             }
@@ -177,6 +213,15 @@ namespace APIProject.Data
             return _list;
         }
 
+        private static AppConfig GetHostName()
+        {
+            return new AppConfig
+            {
+                Name = "Host",
+                Value = "http://localhost:50198"
+            };
+        }
+
         private static List<MarketingPlan> GetMarketingPlans()
         {
             return new List<MarketingPlan>
@@ -241,128 +286,165 @@ namespace APIProject.Data
 
         private static List<Customer> GetCustomers()
         {
-            return new List<Customer>
+            string imgName = "dummy.jpg";
+            List<Customer> _list = new List<Customer>();
+            for (int i = 1; i <= 10; i++)
             {
-                new Customer
+                _list.Add(new Customer
                 {
-                    Name = "FPT Software",
-                    Address = "39 Ông Địa",
+                    Name = "FPT Software " + i,
+                    Address = i + " Ông Địa",
                     CustomerType = CustomerType.Lead,
-                    EstablishedDate = DateTime.Today.Date
-                },
-                new Customer
+                    EstablishedDate = DateTime.Today.Date,
+                    AvatarSrc = imgName,
+                    TaxCode = i.ToString()+i+i+i+i+i+i+i+i+i
+                });
+            }
+            for (int i = 11; i <= 20; i++)
+            {
+                _list.Add(new Customer
                 {
-                    Name = "FPT Software Cơ Sở 2",
-                    Address = "69 Ông Địa",
-                    ConvertedDate = DateTime.Today.Date,
-                    CustomerType = CustomerType.Inside,
-                    EstablishedDate = DateTime.Today.Date
-
-                },
-                new Customer
-                {
-                    Name = "FPT Software Cơ Sở 3",
-                    Address = "70 Ông Địa",
-                    ConvertedDate = DateTime.Today.Date,
-                    CustomerType = CustomerType.Outside,
-                    EstablishedDate = DateTime.Today.Date
-
-                },
-                new Customer
-                {
-                    Name = "FPT Software Cơ Sở 4",
-                    Address = "71 Ông Địa",
-                    ConvertedDate = DateTime.Today.Date,
-                    CustomerType = CustomerType.Inside,
-                    EstablishedDate = DateTime.Today.Date
-                },
-                new Customer
-                {
-                    Name = "FPT Software Cơ Sở 5",
-                    Address = "72 Ông Địa",
-                    ConvertedDate = DateTime.Today.Date,
+                    Name = "FPT Software " + i,
+                    Address = i + " Ông Địa",
                     CustomerType = CustomerType.Official,
-                    EstablishedDate = DateTime.Today.Date
+                    EstablishedDate = DateTime.Today.Date,
+                    TaxCode = i.ToString()+i+i+i+i+i+i+i+i+i,
+                    AvatarSrc = imgName
+                });
+            }
+            for (int i = 21; i <= 30; i++)
+            {
+                _list.Add(new Customer
+                {
+                    Name = "FPT Software " + i,
+                    Address = i + " Ông Địa",
+                    CustomerType = CustomerType.Inside,
+                    EstablishedDate = DateTime.Today.Date,
+                    TaxCode = i.ToString()+i+i+i+i+i+i+i+i+i,
+                    AvatarSrc = imgName
+                });
+            }
+            for (int i = 31; i <= 40; i++)
+            {
+                _list.Add(new Customer
+                {
+                    Name = "FPT Software " + i,
+                    Address = i + " Ông Địa",
+                    CustomerType = CustomerType.Outside,
+                    EstablishedDate = DateTime.Today.Date,
+                    TaxCode = i.ToString()+i+i+i+i+i+i+i+i+i,
+                    AvatarSrc = imgName
+                });
+            }
+
+            return _list;
+        }
+
+        private List<Contact> GetContacts(List<Customer> customerList)
+        {
+            string imgSrc = "dummy.jpg";
+            List<Contact> _list = new List<Contact>();
+            int count = 1;
+            foreach (Customer customer in customerList)
+            {
+
+                _list.Add(new Contact
+                {
+                    CustomerID = customer.ID,
+                    Name = "Nguyễn Văn " + count,
+                    Email = count.ToString() + count + count + "@gmail.com",
+                    Phone = count.ToString() + count + count + "-" +
+                    count + count + count + "-" +
+                    count + count + count,
+                    AvatarSrc = imgSrc,
+                    Position = "Nhân viên thứ " + count
+                });
+                count++;
+            }
+            return _list;
+        }
+
+        private static List<Issue> GetIssues(List<Contact> contactList, List<Staff> staffList)
+        {
+            List<Issue> _list = new List<Issue>();
+            int count = 1;
+            foreach (var staff in staffList)
+            {
+                if (staff.Role.Name == RoleName.Support)
+                {
+                    foreach (var contact in contactList)
+                    {
+                        if (contact.Customer.CustomerType != CustomerType.Lead)
+                        {
+                            _list.Add(new Issue
+                            {
+                                CreateStaffID = staff.ID,
+                                CustomerID = contact.Customer.ID,
+                                ContactID = contact.ID,
+                                Title = "Hư chỗ " + count,
+                                Description = "Chi tiết việc hư chỗ " + count,
+                                Stage = IssueStage.Open,
+                                Status = IssueStatus.Open,
+                                EstimateSolveEndDate = null
+                            });
+                            count++;
+                            _list.Add(new Issue
+                            {
+                                CreateStaffID = staff.ID,
+                                CustomerID = contact.Customer.ID,
+                                ContactID = contact.ID,
+                                Title = "Hư chỗ " + count,
+                                Description = "Chi tiết việc hư chỗ " + count,
+                                Stage = IssueStage.Solving,
+                                Status = IssueStatus.Doing,
+                                EstimateSolveEndDate = DateTime.Now
+                            });
+                            count++;
+                            _list.Add(new Issue
+                            {
+                                CreateStaffID = staff.ID,
+                                CustomerID = contact.Customer.ID,
+                                ContactID = contact.ID,
+                                Title = "Hư chỗ " + count,
+                                Description = "Chi tiết việc hư chỗ " + count,
+                                Stage = IssueStage.Solving,
+                                Status = IssueStatus.Overdue,
+                                EstimateSolveEndDate = DateTime.Now
+                            });
+                            count++;
+                            _list.Add(new Issue
+                            {
+                                CreateStaffID = staff.ID,
+                                CustomerID = contact.Customer.ID,
+                                ContactID = contact.ID,
+                                Title = "Hư chỗ " + count,
+                                Description = "Chi tiết việc hư chỗ " + count,
+                                Stage = IssueStage.Closed,
+                                Status = IssueStatus.Done,
+                                EstimateSolveEndDate = DateTime.Now,
+                                ClosedDate = DateTime.Today.Date
+                            });
+                            count++;
+                            _list.Add(new Issue
+                            {
+                                CreateStaffID = staff.ID,
+                                CustomerID = contact.Customer.ID,
+                                ContactID = contact.ID,
+                                Title = "Hư chỗ " + count,
+                                Description = "Chi tiết việc hư chỗ " + count,
+                                Stage = IssueStage.Closed,
+                                Status = IssueStatus.Failed,
+                                EstimateSolveEndDate = DateTime.Now,
+                                ClosedDate = DateTime.Today.Date
+                            });
+
+                        }
+                    }
                 }
-            };
-        }
+            }
 
-        private static List<Contact> GetContacts()
-        {
-            return new List<Contact>
-            {
-                new Contact
-                {
-                    CustomerID = 1,
-                    Name = "Anh Ba Một",
-                    Email = "abm@abm.abm",
-                    Phone = "111-111-111",
-                },
-                new Contact
-                {
-                    CustomerID = 2,
-                    Name = "Anh Ba Hai",
-                    Email = "abh@abh.abh",
-                    Phone = "222-222-222",
-                },
-                new Contact
-                {
-                    CustomerID = 3,
-                    Name = "Anh Ba Ba",
-                    Email = "abb@abb.abb",
-                    Phone = "333-333-333",
-                },
-                new Contact
-                {
-                    CustomerID = 4,
-                    Name = "Anh Ba Bốn",
-                    Email = "abb4@abb4.abb4",
-                    Phone = "444-444-444",
-                },
-            };
-        }
-
-        private static List<Issue> GetIssues()
-        {
-            return new List<Issue>
-            {
-                new Issue
-                {
-                    CreateStaffID=1,
-                    CustomerID=1,
-                    ContactID=1,
-                    Title="Hư phần A",
-                    OpenedDate=DateTime.Today.Date,
-                    Stage= "Chưa xử lý"
-                },
-                new Issue
-                {
-                    CreateStaffID=2,
-                    CustomerID=2,
-                    ContactID=2,
-                    Title="Hư phần B",
-                    OpenedDate=DateTime.Today.Date,
-                    Stage= "Đang xử lý"
-                },
-                new Issue
-                {
-                    CreateStaffID=3,
-                    CustomerID=3,
-                    ContactID=3,
-                    Title="Hư phần C",
-                    OpenedDate=DateTime.Today.Date,
-                    Stage= "Hoàn thành"
-                },
-                new Issue
-                {
-                    CreateStaffID=4,
-                    CustomerID=4,
-                    ContactID=4,
-                    Title="Hư phần D",
-                    OpenedDate=DateTime.Today.Date,
-                    Stage= "Hoàn thành"
-                },
-            };
+            return _list;
+            
         }
 
         private static List<SalesCategory> GetSalesCategories()
@@ -838,6 +920,144 @@ namespace APIProject.Data
                     Status=ActivityStatus.Completed
                 },
             };
+        }
+
+        private List<Activity> GetOppActivities(List<Opportunity> oppList)
+        {
+            int i = 1;
+            List<Activity> _list = new List<Activity>();
+            foreach (Opportunity item in oppList)
+            {
+                _list.Add(new Activity
+                {
+                    OpportunityID = item.ID,
+                    CustomerID = item.CustomerID,
+                    ContactID = item.ContactID,
+                    CreateStaffID = item.CreateStaffID,
+                    Type = ActivityType.ToCustomer,
+                    Method = ActivityMethod.Direct,
+                    Title = "Bàn về vấn đề: " + i,
+                    Description = "Chi tiết về vấn đề " + i,
+                    OpporunityGenerated = false,
+                    TodoTime = DateTime.Now,
+                    Status = ActivityStatus.Completed,
+                    OfOpportunityStage = OpportunityStage.Consider
+                });
+                i++;
+                _list.Add(new Activity
+                {
+                    OpportunityID = item.ID,
+                    CustomerID = item.CustomerID,
+                    ContactID = item.ContactID,
+                    CreateStaffID = item.CreateStaffID,
+                    Type = ActivityType.ToCustomer,
+                    Method = ActivityMethod.Direct,
+                    Title = "Bàn về vấn đề: " + i,
+                    Description = "Chi tiết về vấn đề " + i,
+                    OpporunityGenerated = false,
+                    TodoTime = DateTime.Now,
+                    Status = ActivityStatus.Completed,
+                    OfOpportunityStage = OpportunityStage.MakeQuote
+                });
+                i++;
+                _list.Add(new Activity
+                {
+                    OpportunityID = item.ID,
+                    CustomerID = item.CustomerID,
+                    ContactID = item.ContactID,
+                    CreateStaffID = item.CreateStaffID,
+                    Type = ActivityType.ToCustomer,
+                    Method = ActivityMethod.Direct,
+                    Title = "Bàn về vấn đề: " + i,
+                    Description = "Chi tiết về vấn đề " + i,
+                    OpporunityGenerated = false,
+                    TodoTime = DateTime.Now,
+                    Status = ActivityStatus.Completed,
+                    OfOpportunityStage = OpportunityStage.Negotiation
+                });
+                i++;
+                _list.Add(new Activity
+                {
+                    OpportunityID = item.ID,
+                    CustomerID = item.CustomerID,
+                    ContactID = item.ContactID,
+                    CreateStaffID = item.CreateStaffID,
+                    Type = ActivityType.ToCustomer,
+                    Method = ActivityMethod.Direct,
+                    Title = "Bàn về vấn đề: " + i,
+                    Description = "Chi tiết về vấn đề " + i,
+                    OpporunityGenerated = false,
+                    TodoTime = DateTime.Now,
+                    Status = ActivityStatus.Completed,
+                    OfOpportunityStage = OpportunityStage.Open
+                });
+                i++;
+                _list.Add(new Activity
+                {
+                    OpportunityID = item.ID,
+                    CustomerID = item.CustomerID,
+                    ContactID = item.ContactID,
+                    CreateStaffID = item.CreateStaffID,
+                    Type = ActivityType.ToCustomer,
+                    Method = ActivityMethod.Direct,
+                    Title = "Bàn về vấn đề: " + i,
+                    Description = "Chi tiết về vấn đề " + i,
+                    OpporunityGenerated = false,
+                    TodoTime = DateTime.Now,
+                    Status = ActivityStatus.Completed,
+                    OfOpportunityStage = OpportunityStage.SendQuote
+                });
+                i++;
+                _list.Add(new Activity
+                {
+                    OpportunityID = item.ID,
+                    CustomerID = item.CustomerID,
+                    ContactID = item.ContactID,
+                    CreateStaffID = item.CreateStaffID,
+                    Type = ActivityType.ToCustomer,
+                    Method = ActivityMethod.Direct,
+                    Title = "Bàn về vấn đề: " + i,
+                    Description = "Chi tiết về vấn đề " + i,
+                    OpporunityGenerated = false,
+                    TodoTime = DateTime.Now,
+                    Status = ActivityStatus.Completed,
+                    OfOpportunityStage = OpportunityStage.ValidateQuote
+                });
+                i++;
+                _list.Add(new Activity
+                {
+                    OpportunityID = item.ID,
+                    CustomerID = item.CustomerID,
+                    ContactID = item.ContactID,
+                    CreateStaffID = item.CreateStaffID,
+                    Type = ActivityType.ToCustomer,
+                    Method = ActivityMethod.Direct,
+                    Title = "Bàn về vấn đề: " + i,
+                    Description = "Chi tiết về vấn đề " + i,
+                    OpporunityGenerated = false,
+                    TodoTime = DateTime.Now,
+                    Status = ActivityStatus.Completed,
+                    OfOpportunityStage = OpportunityStage.Won
+                });
+                i++;
+                _list.Add(new Activity
+                {
+                    OpportunityID = item.ID,
+                    CustomerID = item.CustomerID,
+                    ContactID = item.ContactID,
+                    CreateStaffID = item.CreateStaffID,
+                    Type = ActivityType.ToCustomer,
+                    Method = ActivityMethod.Direct,
+                    Title = "Bàn về vấn đề: " + i,
+                    Description = "Chi tiết về vấn đề " + i,
+                    OpporunityGenerated = false,
+                    TodoTime = DateTime.Now,
+                    Status = ActivityStatus.Completed,
+                    OfOpportunityStage = OpportunityStage.Lost
+                });
+                i++;
+            }
+            return _list;
         }
     }
 }

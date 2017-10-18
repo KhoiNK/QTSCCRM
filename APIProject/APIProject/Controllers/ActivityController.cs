@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace APIProject.Controllers
 {
@@ -61,6 +62,7 @@ namespace APIProject.Controllers
         }
 
         [Route("GetActivityDetail")]
+        [ResponseType(typeof(ActivityDetailViewModel))]
         public IHttpActionResult GetActivityDetail(int? id)
         {
             if (id.HasValue)
@@ -70,5 +72,38 @@ namespace APIProject.Controllers
             }
             return BadRequest();
         }
+
+        [Route("GetOpportunityActivities")]
+        [ResponseType(typeof(ActivityDetailViewModel))]
+        public IHttpActionResult GetOpportunityActivities(int opportunityID = 0)
+        {
+            if(opportunityID == 0)
+            {
+                return BadRequest();
+            }
+            var foundActivities = _activityService.GetByOpprtunity(opportunityID);
+            if (foundActivities != null)
+            {
+                return Ok(foundActivities.Select(c => new ActivityDetailViewModel(c)));
+            }
+            return NotFound();
+        }
+
+        [Route("GetCustomerActivities")]
+        [ResponseType(typeof(ActivityDetailViewModel))]
+        public IHttpActionResult GetCustomerActivities(int customerID = 0)
+        {
+            if (customerID == 0)
+            {
+                return BadRequest();
+            }
+            var foundActivities = _activityService.GetByCustomer(customerID);
+            if (foundActivities != null)
+            {
+                return Ok(foundActivities.Select(c => new ActivityDetailViewModel(c)));
+            }
+            return NotFound();
+        }
+
     }
 }

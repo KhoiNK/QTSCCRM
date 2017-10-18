@@ -17,6 +17,5 @@ namespace APIProject.Data.Repositories
 
     public interface IIssueCategoryMappingRepository : IRepository<IssueCategoryMapping>
     {
-
     }
 }

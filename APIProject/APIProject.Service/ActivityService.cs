@@ -18,6 +18,8 @@ namespace APIProject.Service
         List<string> GetActivityTypeNames();
         List<string> GetActivityMethodNames();
         bool FinishActivity(Activity activity);
+        IEnumerable<Activity> GetByOpprtunity(int opportunityID);
+        IEnumerable<Activity> GetByCustomer(int customerID);
     }
     public class ActivityService : IActivityService
     {
@@ -149,5 +151,34 @@ namespace APIProject.Service
         {
             return _activityRepository.GetAll();
         }
+
+        public IEnumerable<Activity> GetByOpprtunity(int opportunityID)
+        {
+            var foundOpportunity = _opportunityRepository.GetById(opportunityID);
+            if(foundOpportunity != null)
+            {
+                var activities = foundOpportunity.Activities;
+                if (activities.Any())
+                {
+                    return foundOpportunity.Activities;
+                }
+            }
+            return null;
+        }
+
+        public IEnumerable<Activity> GetByCustomer(int customerID)
+        {
+            var foundCustomer = _customerRepository.GetById(customerID);
+            if(foundCustomer != null)
+            {
+                var activities = foundCustomer.Activities;
+                if (activities.Any())
+                {
+                    return activities;
+                }
+            }
+            return null;
+        }
+
     }
 }

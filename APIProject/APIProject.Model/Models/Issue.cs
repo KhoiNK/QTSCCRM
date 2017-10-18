@@ -28,18 +28,18 @@ namespace APIProject.Model.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public string Stage { get; set; }
+        public string Status { get; set; }
         public int? OpenStaffID { get; set; }
         public DateTime? OpenedDate { get; set; }
 
         public int? SolveStaffID { get; set; }
         public DateTime? SolveStartDate { get; set; }
         public DateTime? EstimateSolveEndDate { get; set; }
+        public DateTime? ClosedDate { get; set; }
         public int ExtendCount { get; set; }
         public string ExtendNote { get; set; }
 
         public int? AcceptStaffID { get; set; }
-        public DateTime? AcceptStartDate { get; set; }
-        public DateTime? AcceptedDate { get; set; }
 
         public int? ModifiedStaffID { get; set; }
         public DateTime? ModifiedDate { get; set; }

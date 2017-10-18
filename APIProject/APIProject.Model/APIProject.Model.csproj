@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\Activity.cs" />
+    <Compile Include="Models\AppConfig.cs" />
     <Compile Include="Models\BaseEntity.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Contact.cs" />

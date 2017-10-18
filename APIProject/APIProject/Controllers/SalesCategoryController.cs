@@ -43,7 +43,25 @@ namespace APIProject.Controllers
             {
                 return NotFound();
             }
+        }
 
+        [Route("GetIssueCategories")]
+        [ResponseType(typeof(SalesCategoryViewModel))]
+        public IHttpActionResult GetIssueCategories(int issueID = 0)
+        {
+            if (issueID == 0)
+            {
+                return BadRequest();
+            }
+            var foundCategories = _salesCategoryService.GetByIssue(issueID);
+            if (foundCategories != null)
+            {
+                return Ok(foundCategories.Select(c => new SalesCategoryViewModel(c)));
+            }
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }

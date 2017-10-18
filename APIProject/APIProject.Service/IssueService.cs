@@ -1,5 +1,6 @@
 ﻿using APIProject.Data.Infrastructure;
 using APIProject.Data.Repositories;
+using APIProject.GlobalVariables;
 using APIProject.Model.Models;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,10 @@ namespace APIProject.Service
     {
         int CreateOpenIssue(Issue issue, List<int> salesCategoryIDs);
         IEnumerable<Issue> GetAllIssues();
+        IEnumerable<Issue> GetByCustomer(int customerID);
+        List<string> GetStages();
+        List<string> GetStatus();
+
     }
     public class IssueService : IIssueService
     {
@@ -53,24 +58,24 @@ namespace APIProject.Service
                     return 0;
                 }
             }
-            if(_contactRepository.GetById(issue.ContactID.Value) == null)
+            if (_contactRepository.GetById(issue.ContactID.Value) == null)
             {
                 return 0;
             }
-            if(_staffRepository.GetById(issue.ModifiedStaffID.Value) == null)
+            if (_staffRepository.GetById(issue.ModifiedStaffID.Value) == null)
             {
                 return 0;
             }
             var distinctedCategories = salesCategoryIDs.Distinct();
             List<IssueCategoryMapping> categories = new List<IssueCategoryMapping>();
-            foreach(int eachId in distinctedCategories)
+            foreach (int eachId in distinctedCategories)
             {
                 SalesCategory foundCategory = _salesCategoryRepository.GetById(eachId);
-                if(foundCategory == null)
+                if (foundCategory == null)
                 {
                     return 0;
                 }
-                categories.Add(new IssueCategoryMapping { SalesCategoryID = eachId, IsDeleted = false  });
+                categories.Add(new IssueCategoryMapping { SalesCategoryID = eachId, IsDeleted = false });
             }
 
             issue.CreateStaffID = issue.ModifiedStaffID;
@@ -78,7 +83,7 @@ namespace APIProject.Service
             issue.OpenedDate = DateTime.Today.Date;
             issue.ModifiedDate = DateTime.Today.Date;
             issue.Stage = OpenStageName;
-            if(categories.Count > 0)
+            if (categories.Count > 0)
             {
                 //issue.SalesCategories = categories;
                 issue.IssueCategoryMappings = categories;
@@ -92,6 +97,42 @@ namespace APIProject.Service
         public IEnumerable<Issue> GetAllIssues()
         {
             return _issueRepository.GetAll();
+        }
+
+        public IEnumerable<Issue> GetByCustomer(int customerID)
+        {
+            var foundCustomer = _customerRepository.GetById(customerID);
+            if (foundCustomer != null)
+            {
+                var issues = foundCustomer.Issues;
+                if (issues.Any())
+                {
+                    return issues;
+                }
+            }
+
+            return null;
+        }
+
+        public List<string> GetStages()
+        {
+            return new List<string>
+            {
+                IssueStage.Open,
+                IssueStage.Solving,
+                IssueStage.Closed
+            };
+        }
+        public List<string> GetStatus()
+        {
+            return new List<string>
+            {
+                IssueStatus.Open,
+                IssueStatus.Doing,
+                IssueStatus.Overdue,
+                IssueStatus.Done,
+                IssueStatus.Failed
+            };
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace APIProject.Controllers
 {
@@ -20,13 +21,15 @@ namespace APIProject.Controllers
         }
 
         [Route("GetOpportunities")]
+        [ResponseType(typeof(OpportunityViewModel))]
         public IHttpActionResult GetOpportunities()
         {
             return Ok(_opportunityService.GetAllOpportunities().Select(c => new OpportunityViewModel(c)));
         }
 
         [Route("GetOpportunity")]
-        public IHttpActionResult GetOpportunity(int id)
+        [ResponseType(typeof(OpportunityDetailViewModel))]
+        public IHttpActionResult GetOpportunity(int id = 0)
         {
             if(id == 0)
             {
@@ -36,6 +39,27 @@ namespace APIProject.Controllers
                 .Select(c => new OpportunityDetailViewModel(c)));
         }
 
-        
+        [Route("GetCustomerOpportunities")]
+        [ResponseType(typeof(OpportunityDetailViewModel))]
+        public IHttpActionResult GetCustomerOpportunities(int customerID = 0)
+        {
+            if(customerID == 0)
+            {
+                return BadRequest();
+            }
+            var foundOpportunities = _opportunityService.GetByCustomer(customerID);
+            if(foundOpportunities != null)
+            {
+                return Ok(foundOpportunities.Select(c => new OpportunityDetailViewModel(c)));
+            }
+
+            return NotFound();
+        }
+
+        [Route("GetOpportunityStages")]
+        public IHttpActionResult GetOpportunityStages()
+        {
+            return Ok(_opportunityService.GetStages());
+        }
     }
 }

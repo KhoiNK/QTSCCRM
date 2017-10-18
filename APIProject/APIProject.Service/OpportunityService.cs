@@ -1,5 +1,6 @@
 ﻿using APIProject.Data.Infrastructure;
 using APIProject.Data.Repositories;
+using APIProject.GlobalVariables;
 using APIProject.Model.Models;
 using System;
 using System.Collections.Generic;
@@ -12,15 +13,20 @@ namespace APIProject.Service
     public interface IOpportunityService
     {
         IEnumerable<Opportunity> GetAllOpportunities();
+        IEnumerable<Opportunity> GetByCustomer(int customerID);
+        List<string> GetStages();
     }
     public class OpportunityService:IOpportunityService
     {
         private readonly IOpportunityRepository _opportunityRepository;
+        private readonly ICustomerRepository _customerRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public OpportunityService(IOpportunityRepository _opportunityRepository, IUnitOfWork _unitOfWork)
+        public OpportunityService(IOpportunityRepository _opportunityRepository,
+            ICustomerRepository _customerRepository, IUnitOfWork _unitOfWork)
         {
             this._opportunityRepository = _opportunityRepository;
+            this._customerRepository = _customerRepository;
             this._unitOfWork = _unitOfWork;
         }
 
@@ -28,5 +34,36 @@ namespace APIProject.Service
         {
             return _opportunityRepository.GetAll();
         }
+
+        public IEnumerable<Opportunity> GetByCustomer(int customerID)
+        {
+            var foundCustomer = _customerRepository.GetById(customerID);
+            if(foundCustomer != null)
+            {
+                var opportunities = foundCustomer.Opportunities;
+                if (opportunities.Any())
+                {
+                    return opportunities;
+                }
+            }
+
+            return null;
+        }
+
+        public List<string> GetStages()
+        {
+            return new List<string>
+            {
+                OpportunityStage.Open,
+                OpportunityStage.Consider,
+                OpportunityStage.MakeQuote,
+                OpportunityStage.ValidateQuote,
+                OpportunityStage.SendQuote,
+                OpportunityStage.Negotiation,
+                OpportunityStage.Won,
+                OpportunityStage.Lost
+            };
+        }
+
     }
 }

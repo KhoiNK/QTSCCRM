@@ -38,5 +38,24 @@ namespace APIProject.Controllers
                 return NotFound();
             }
         }
+
+        [Route("GetActivityStaff")]
+        [ResponseType(typeof(StaffDetailViewModel))]
+        public IHttpActionResult GetActivityStaff(int activityID = 0)
+        {
+            if (activityID == 0)
+            {
+                return BadRequest();
+            }
+            var foundStaff = _staffService.GetByActivity(activityID);
+            if (foundStaff != null)
+            {
+                return Ok(new StaffDetailViewModel(foundStaff));
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
     }
 }

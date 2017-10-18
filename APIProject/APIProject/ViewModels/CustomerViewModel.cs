@@ -1,6 +1,7 @@
 ﻿using APIProject.Model.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -22,14 +23,7 @@ namespace APIProject.ViewModels
             Name = customer.Name;
             Address = customer.Address;
             EstablishedDate = customer.EstablishedDate;
-            if (customer.IsLead)
-            {
-                CustomerType = "Tiềm năng";
-            }
-            else
-            {
-                CustomerType = customer.CustomerType;
-            }
+            CustomerType = customer.CustomerType;
         }
     }
 }

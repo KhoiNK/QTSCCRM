@@ -21,7 +21,7 @@ namespace APIProject.ViewModels
         public string Email { get; set; }
         [Required]
         public string Phone { get; set; }
-        public CustomBase64FileViewModel Avatar { get; set; }
+        public CustomB64ImageFileViewModel Avatar { get; set; }
 
         public Contact ToContactModel()
         {
@@ -34,6 +34,10 @@ namespace APIProject.ViewModels
                 Email = this.Email,
                 Phone = this.Phone
             };
+            if(Avatar != null)
+            {
+                _contact.AvatarSrc = this.Avatar.Name;
+            }
 
             return _contact;
         }

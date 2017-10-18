@@ -1,7 +1,9 @@
-﻿using APIProject.Service;
+﻿using APIProject.Helper;
+using APIProject.Service;
 using APIProject.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -14,10 +16,13 @@ namespace APIProject.Controllers
     public class ContactController : ApiController
     {
         private readonly IContactService _contactService;
+        private readonly IUploadNamingService _uploadNamingService;
 
-        public ContactController(IContactService _contactService)
+        public ContactController(IContactService _contactService,
+            IUploadNamingService _uploadNamingService)
         {
             this._contactService = _contactService;
+            this._uploadNamingService = _uploadNamingService;
         }
 
         [Route("PostNewContact")]
@@ -27,14 +32,14 @@ namespace APIProject.Controllers
             {
                 return BadRequest(ModelState);
             }
-            string avatarName = null;
-            string avatarB64 = null;
             if(request.Avatar != null)
             {
-                avatarName = request.Avatar.Name;
-                avatarB64 = request.Avatar.Base64Content;
+                string avatarExtension = Path.GetExtension(request.Avatar.Name).ToLower();
+                request.Avatar.Name = _uploadNamingService.GetContactAvatarNaming() + avatarExtension;
+                SaveFileHelper saveFileHelper = new SaveFileHelper();
+                saveFileHelper.SaveContactImage(request.Avatar.Name, request.Avatar.Base64Content);
             }
-            int insertedContactID =  _contactService.CreateContact(request.ToContactModel(), avatarName, avatarB64);
+            int insertedContactID =  _contactService.CreateContact(request.ToContactModel());
             return Ok(insertedContactID);
         }
 
@@ -46,15 +51,16 @@ namespace APIProject.Controllers
                 return BadRequest(ModelState);
             }
 
-            string avatarName = null;
-            string avatarB64 = null;
             if(request.Avatar != null)
             {
-                avatarName = request.Avatar.Name;
-                avatarB64 = request.Avatar.Base64Content;
+                string avatarExtension = Path.GetExtension(request.Avatar.Name).ToLower();
+                request.Avatar.Name = _uploadNamingService.GetContactAvatarNaming() + avatarExtension;
+                SaveFileHelper saveFileHelper = new SaveFileHelper();
+                saveFileHelper.SaveContactImage(request.Avatar.Name, request.Avatar.Base64Content);
+
             }
 
-            bool isEdited = _contactService.EditContact(request.ToContactModel(), avatarName, avatarB64);
+            bool isEdited = _contactService.EditContact(request.ToContactModel());
 
             return Ok(isEdited);
         }
@@ -69,6 +75,60 @@ namespace APIProject.Controllers
             }
             var foundContact = _contactService.GetContactByOpportunity(opportunityID);
             if(foundContact != null)
+            {
+                return Ok(new ContactViewModel(foundContact));
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [Route("GetActivityContact")]
+        [ResponseType(typeof(ContactViewModel))]
+        public IHttpActionResult GetActivityContact(int activityID = 0)
+        {
+            if (activityID == 0)
+            {
+                return BadRequest();
+            }
+            var foundContact = _contactService.GetContactByActivity(activityID);
+            if (foundContact != null)
+            {
+                return Ok(new ContactViewModel(foundContact));
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [Route("GetCustomerContacts")]
+        [ResponseType(typeof(ContactViewModel))]
+        public IHttpActionResult GetCustomerContacts(int customerID = 0)
+        {
+            if(customerID == 0)
+            {
+                return BadRequest();
+            }
+            var foundContacts = _contactService.GetByCustomer(customerID);
+            if (foundContacts != null)
+            {
+                return Ok(foundContacts.Select(c => new ContactViewModel(c)));
+            }
+            return NotFound();
+        }
+
+        [Route("GetIssueContact")]
+        [ResponseType(typeof(ContactViewModel))]
+        public IHttpActionResult GetIssueContact(int issueID = 0)
+        {
+            if (issueID == 0)
+            {
+                return BadRequest();
+            }
+            var foundContact = _contactService.GetByIssue(issueID);
+            if (foundContact != null)
             {
                 return Ok(new ContactViewModel(foundContact));
             }

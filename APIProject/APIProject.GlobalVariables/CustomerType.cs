@@ -9,6 +9,8 @@ namespace APIProject.GlobalVariables
     public static class CustomerType
     {
         public static string Lead = "Tiềm năng";
+
+        //radio buttons
         public static string Official = "Chính thức";
         public static string Inside = "Nội";
         public static string Outside = "Ngoại";

@@ -19,7 +19,7 @@ namespace APIProject.ViewModels
         public DateTime EstablishedDate { get; set; }
         [Required]
         public string TaxCode { get; set; }
-        public CustomBase64FileViewModel Avatar { get; set; }
+        public CustomB64ImageFileViewModel Avatar { get; set; }
 
         public Customer ToCustomerModel()
         {
@@ -29,7 +29,7 @@ namespace APIProject.ViewModels
             _customer.Address = this.Address;
             _customer.EstablishedDate = this.EstablishedDate;
             _customer.TaxCode = this.TaxCode;
-
+            _customer.AvatarSrc = this.Avatar.Name;
             return _customer;
         }
     }

@@ -30,7 +30,8 @@ namespace APIProject.Model.Models
         public string Method { get; set; }
         public DateTime? TodoTime { get; set; }
         public DateTime? CompletedDate { get; set; }
-        public string Note { get; set; }
+        public bool OpporunityGenerated { get; set; }
+        public string Description { get; set; }
         public string Status { get; set; }
         [ForeignKey("OpportunityID")]
         public virtual Opportunity Opportunity { get; set; }

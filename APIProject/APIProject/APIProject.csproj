@@ -36,6 +36,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <FilesToIncludeForPublish>AllFilesInTheProject</FilesToIncludeForPublish>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -271,6 +272,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helper\SaveFileHelper.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -282,9 +284,11 @@
     <Compile Include="ViewModels\ActivityViewModel.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
     <Compile Include="ViewModels\ContactViewModel.cs" />
+    <Compile Include="ViewModels\CustomB64ImageFileViewModel.cs" />
     <Compile Include="ViewModels\CustomBase64FileViewModel.cs" />
     <Compile Include="ViewModels\CustomerDetailViewModel.cs" />
     <Compile Include="ViewModels\CustomerViewModel.cs" />
+    <Compile Include="ViewModels\IssueDetailViewModel.cs" />
     <Compile Include="ViewModels\IssueViewModel.cs" />
     <Compile Include="ViewModels\MarketingPlanDetailViewModel.cs" />
     <Compile Include="ViewModels\MarketingPlanViewModel.cs" />
@@ -373,9 +377,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="ContactAvatarFiles\" />
-    <Folder Include="CustomerAvatarFiles\" />
     <Folder Include="MarketingPlanFiles\" />
+    <Folder Include="Resources\ContactAvatarFiles\" />
+    <Folder Include="Resources\CustomerAvatarFiles\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
