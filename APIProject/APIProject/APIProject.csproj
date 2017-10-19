@@ -296,6 +296,7 @@
     <Compile Include="ViewModels\OpportunityDetailViewModel.cs" />
     <Compile Include="ViewModels\OpportunityViewModel.cs" />
     <Compile Include="ViewModels\PostContactViewModel.cs" />
+    <Compile Include="ViewModels\PostCreateStaffViewModel.cs" />
     <Compile Include="ViewModels\PostLeadCustomerViewModel.cs" />
     <Compile Include="ViewModels\PostMarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\PostMarketingResultsViewModel.cs" />

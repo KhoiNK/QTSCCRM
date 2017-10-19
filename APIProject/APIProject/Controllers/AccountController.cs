@@ -19,6 +19,8 @@ using APIProject.Results;
 using APIProject.Data;
 using APIProject.Model.Models;
 using System.Linq;
+using APIProject.ViewModels;
+using APIProject.Service;
 
 namespace APIProject.Controllers
 {
@@ -31,11 +33,16 @@ namespace APIProject.Controllers
         private RoleManager<IdentityRole> _roleManager;
         private APIProjectEntities context;
 
+        private readonly IRoleService _roleService;
+        private readonly IStaffService _staffService;
 
-        public AccountController()
+
+        public AccountController(IRoleService _roleService, IStaffService _staffService)
         {
             _roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new ApplicationDbContext()));
             context = new APIProjectEntities();
+            this._roleService = _roleService;
+            this._staffService = _staffService;
         }
 
         public AccountController(ApplicationUserManager userManager,
@@ -506,21 +513,31 @@ namespace APIProject.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("CreateUserWithRole")]
-        public async Task<IHttpActionResult> CreateUserWithRole(string Username, string Password, string RoleName)
+        public async Task<IHttpActionResult> CreateUserWithRole(PostCreateStaffViewModel request)
         {
-            var user = new ApplicationUser() { UserName = Username, Email = Username };
-            IdentityResult result = await UserManager.CreateAsync(user, Password);
+            //if (!APIProject.GlobalVariables.RoleName.GetList().Contains(RoleName))
+            //{
+            //    return BadRequest("Wrong role name");
+            //}
+            var foundRole = _roleService.GetByID(request.RoleID);
+            if (foundRole == null)
+            {
+                return BadRequest("Wrong role name");
+            }
+            var user = new ApplicationUser() { UserName = request.Username, Email = request.Email };
+            IdentityResult result = await UserManager.CreateAsync(user, request.Password);
             if (!result.Succeeded)
             {
                 return GetErrorResult(result);
             }
             else
             {
-                if(_roleManager.FindByName(RoleName) == null)
+                _staffService.CreateStaff(request.ToStaffModel());
+                if (_roleManager.FindByName(foundRole.Name) == null)
                 {
-                    _roleManager.Create(new IdentityRole(RoleName));
+                    _roleManager.Create(new IdentityRole(foundRole.Name));
                 }
-                UserManager.AddToRole(user.Id, RoleName);
+                UserManager.AddToRole(user.Id, foundRole.Name);
             }
             return Ok();
         }

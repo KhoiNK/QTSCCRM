@@ -14,5 +14,18 @@ namespace APIProject.GlobalVariables
         public static string Director = "Giám đốc";
         public static string Officer = "Trưởng phòng";
         public static string Admin = "Admin";
+
+        public static List<string> GetList()
+        {
+            return new List<string>
+            {
+                Sales,
+                Marketing,
+                Support,
+                Director,
+                Officer,
+                Admin
+            };
+        }
     }
 }

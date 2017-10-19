@@ -13,6 +13,7 @@ namespace APIProject.Service
     {
         Staff GetByOpportunity(int opportunityID);
         Staff GetByActivity(int activityID);
+        void CreateStaff(Staff staff);
     }
     public class StaffService:IStaffService
     {
@@ -27,6 +28,12 @@ namespace APIProject.Service
             this._staffRepository = _staffRepository;
             this._opportunityRepository = _opportunityRepository;
             this._activityRepository = _activityRepository;
+        }
+
+        public void CreateStaff(Staff staff)
+        {
+            _staffRepository.Add(staff);
+            _unitOfWork.Commit();
         }
 
         public Staff GetByActivity(int activityID)

@@ -1,4 +1,5 @@
-﻿using APIProject.Service;
+﻿using APIProject.GlobalVariables;
+using APIProject.Service;
 using APIProject.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -10,21 +11,32 @@ using System.Web.Http.Description;
 
 namespace APIProject.Controllers
 {
+    [Authorize(Roles = "Kinh doanh")]
     [RoutePrefix("api/opportunity")]
     public class OpportunityController : ApiController
     {
         private readonly IOpportunityService _opportunityService;
+        private readonly IUploadNamingService _uploadNamingService;
 
-        public OpportunityController(IOpportunityService _opportunityService)
+        public OpportunityController(IOpportunityService _opportunityService,
+            IUploadNamingService _uploadNamingService)
         {
             this._opportunityService = _opportunityService;
+            this._uploadNamingService = _uploadNamingService;
         }
 
         [Route("GetOpportunities")]
         [ResponseType(typeof(OpportunityViewModel))]
         public IHttpActionResult GetOpportunities()
         {
-            return Ok(_opportunityService.GetAllOpportunities().Select(c => new OpportunityViewModel(c)));
+            //return Ok(_opportunityService.GetAllOpportunities().Select(c => new OpportunityViewModel(c)));
+            var opportunities = _opportunityService.GetAllOpportunities();
+            var customers = opportunities.GroupBy(o => o.Customer).Select(c => c.Key);
+            foreach(var customer in customers)
+            {
+                _uploadNamingService.ConcatCustomerAvatar(customer);
+            }
+            return Ok(opportunities.Select(c => new OpportunityViewModel(c)));
         }
 
         [Route("GetOpportunity")]

@@ -56,6 +56,7 @@
     <Compile Include="OpportunityService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuoteService.cs" />
+    <Compile Include="RoleService.cs" />
     <Compile Include="SalesCategoryService.cs" />
     <Compile Include="StaffService.cs" />
     <Compile Include="UploadNamingService.cs" />

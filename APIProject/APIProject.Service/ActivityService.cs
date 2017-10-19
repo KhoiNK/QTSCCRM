@@ -1,5 +1,6 @@
 ﻿using APIProject.Data.Infrastructure;
 using APIProject.Data.Repositories;
+using APIProject.GlobalVariables;
 using APIProject.Model.Models;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace APIProject.Service
         IEnumerable<Activity> GetAllActivities();
         List<string> GetActivityTypeNames();
         List<string> GetActivityMethodNames();
+        List<string> GetActivityStatusNames();
         bool FinishActivity(Activity activity);
         IEnumerable<Activity> GetByOpprtunity(int opportunityID);
         IEnumerable<Activity> GetByCustomer(int customerID);
@@ -139,12 +141,21 @@ namespace APIProject.Service
 
         public List<string> GetActivityMethodNames()
         {
-            return MethodNames;
+            return new List<string>
+            {
+                ActivityMethod.Email,
+                ActivityMethod.Direct,
+                ActivityMethod.Phone
+            };
         }
 
         public List<string> GetActivityTypeNames()
         {
-            return TypeNames;
+            return new List<string>
+            {
+                ActivityType.FromCustomer,
+                ActivityType.ToCustomer
+            };
         }
 
         public IEnumerable<Activity> GetAllActivities()
@@ -180,5 +191,16 @@ namespace APIProject.Service
             return null;
         }
 
+        public List<string> GetActivityStatusNames()
+        {
+            return new List<string>
+            {
+                ActivityStatus.Open,
+                ActivityStatus.Overdue,
+                ActivityStatus.Completed,
+                ActivityStatus.Canceled,
+                ActivityStatus.Recorded
+            };
+        }
     }
 }

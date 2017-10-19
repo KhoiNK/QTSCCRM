@@ -26,6 +26,12 @@ namespace APIProject.Controllers
             return Ok(_activityService.GetActivityTypeNames());
         }
 
+        [Route("GetActivityStatus")]
+        public IHttpActionResult GetActivityStatus()
+        {
+            return Ok(_activityService.GetActivityStatusNames());
+        }
+
         [Route("GetActivityMethods")]
         public IHttpActionResult GetActivityMethods()
         {
