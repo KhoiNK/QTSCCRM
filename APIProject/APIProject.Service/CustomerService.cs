@@ -93,12 +93,6 @@ namespace APIProject.Service
 
         public IEnumerable<Customer> GetCustomerList()
         {
-            var customers = _customerRepository.GetAll();
-            foreach (var customer in customers)
-            {
-                ConcatImgUri(customer);
-
-            }
             return _customerRepository.GetAll();
 
         }
@@ -120,7 +114,6 @@ namespace APIProject.Service
             var foundOpportunity = _opportunityRepository.GetById(opportunityID);
             if (foundOpportunity != null)
             {
-                ConcatImgUri(foundOpportunity.Customer);
                 return foundOpportunity.Customer;
             }
             return null;
@@ -131,7 +124,6 @@ namespace APIProject.Service
             var foundActivity = _activityRepository.GetById(activityID);
             if (foundActivity != null)
             {
-                ConcatImgUri(foundActivity.Customer);
                 return foundActivity.Customer;
             }
             return null;
@@ -153,7 +145,6 @@ namespace APIProject.Service
             var foundIssue = _issueRepository.GetById(issueID);
             if (foundIssue != null)
             {
-                ConcatImgUri(foundIssue.Customer);
                 return foundIssue.Customer;
             }
             return null;

@@ -79,13 +79,28 @@ namespace APIProject.Controllers
         [ResponseType(typeof(CustomerViewModel))]
         public IHttpActionResult GetCustomerList()
         {
-            return Ok(_customerService.GetCustomerList().Select(x => new CustomerViewModel(x)));
+            var customers = _customerService.GetCustomerList();
+            if (customers.Any())
+            {
+                foreach(var customer in customers)
+                {
+                    _uploadNamingService.ConcatCustomerAvatar(customer);
+                }
+                return Ok(customers.Select(c=> new CustomerViewModel(c)));
+            }
+            return NotFound();
         }
         [Route("GetCustomerDetail")]
         [ResponseType(typeof(CustomerDetailViewModel))]
         public IHttpActionResult GetCustomerDetail(int ID)
         {
-            return Ok(_customerService.GetCustomerList().Where(x => x.ID == ID).Select(x => new CustomerDetailViewModel(x)));
+            var foundCustomer = _customerService.GetCustomerList().Where(c => c.ID == ID).SingleOrDefault();
+            if(foundCustomer != null)
+            {
+                _uploadNamingService.ConcatCustomerAvatar(foundCustomer);
+                return Ok(foundCustomer);
+            }
+            return NotFound();
         }
 
         [Route("GetOpportunityCustomer")]
@@ -99,6 +114,7 @@ namespace APIProject.Controllers
             var foundCustomer = _customerService.GetByOpportunity(opportunityID);
             if (foundCustomer != null)
             {
+                _uploadNamingService.ConcatCustomerAvatar(foundCustomer);
                 return Ok(new CustomerDetailViewModel(foundCustomer));
             }
             else
@@ -119,6 +135,7 @@ namespace APIProject.Controllers
             var foundCustomer = _customerService.GetByActivity(activityID);
             if (foundCustomer != null)
             {
+                _uploadNamingService.ConcatCustomerAvatar(foundCustomer);
                 return Ok(new CustomerDetailViewModel(foundCustomer));
             }
             else
@@ -145,6 +162,7 @@ namespace APIProject.Controllers
             var foundCustomer = _customerService.GetByIssue(issueID);
             if (foundCustomer != null)
             {
+                _uploadNamingService.ConcatCustomerAvatar(foundCustomer);
                 return Ok(new CustomerDetailViewModel(foundCustomer));
             }
             else
