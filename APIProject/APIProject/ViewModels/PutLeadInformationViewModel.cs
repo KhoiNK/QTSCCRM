@@ -23,13 +23,18 @@ namespace APIProject.ViewModels
 
         public Customer ToCustomerModel()
         {
-            Customer _customer = new Customer();
-            _customer.ID = this.CustomerID;
-            _customer.Name = this.Name;
-            _customer.Address = this.Address;
-            _customer.EstablishedDate = this.EstablishedDate;
-            _customer.TaxCode = this.TaxCode;
-            _customer.AvatarSrc = this.Avatar.Name;
+            Customer _customer = new Customer
+            {
+                ID = this.CustomerID,
+                Name = this.Name,
+                Address = this.Address,
+                EstablishedDate = this.EstablishedDate,
+                TaxCode = this.TaxCode,
+            };
+            if (Avatar != null)
+            {
+                _customer.AvatarSrc = this.Avatar.Name;
+            }
             return _customer;
         }
     }

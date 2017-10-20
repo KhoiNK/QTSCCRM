@@ -55,6 +55,10 @@ namespace APIProject.Service
             {
                 return false;
             }
+            if (CustomerType.GetList().Contains(customer.CustomerType))
+            {
+                return false;
+            }
 
             foundCustomer.CustomerType = customer.CustomerType;
 

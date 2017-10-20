@@ -1,4 +1,6 @@
-﻿using APIProject.Service;
+﻿using APIProject.GlobalVariables;
+using APIProject.Model.Models;
+using APIProject.Service;
 using APIProject.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -14,10 +16,16 @@ namespace APIProject.Controllers
     public class ActivityController : ApiController
     {
         private readonly IActivityService _activityService;
+        private readonly IOpportunityService _opportunityService;
+        private readonly IOpportunityCategoryMappingService _opportunityCategoryMappingService;
 
-        public ActivityController(IActivityService _activityService)
+        public ActivityController(IActivityService _activityService,
+            IOpportunityService _opportunityService,
+            IOpportunityCategoryMappingService _opportunityCategoryMappingService)
         {
             this._activityService = _activityService;
+            this._opportunityService = _opportunityService;
+            this._opportunityCategoryMappingService = _opportunityCategoryMappingService;
         }
 
         [Route("GetActivityTypes")]
@@ -44,8 +52,36 @@ namespace APIProject.Controllers
             if(!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
+            }else
+            {
+                if(request.CategoryIDs != null)
+                {
+                    if(request.Type != ActivityType.FromCustomer)
+                    {
+                        return BadRequest("To customer type can't generate opportunity at create");
+                    }
+                }
             }
-            int insertedActivity = _activityService.CreateNewActivity(request.ToActivityModel());
+            Activity newActivity = request.ToActivityModel();
+            if (request.CategoryIDs != null)
+            {
+
+                Opportunity newOpportunity = new Opportunity
+                {
+                    CustomerID=request.CustomerID,
+                    ContactID=request.ContactID,
+                    CreateStaffID=request.StaffID,
+                    Title=request.Title,
+                    Description=request.Description
+                };
+                
+                Opportunity insertedOpportunity = _opportunityService.CreateOpportunity(newOpportunity);
+                bool insertedMapping = _opportunityCategoryMappingService.MapOpportunityCategories(insertedOpportunity.ID, 
+                    request.CategoryIDs);
+                newActivity.OpportunityID = insertedOpportunity.ID;
+            }
+            int insertedActivity = _activityService.CreateNewActivity(newActivity);
+
             return Ok(insertedActivity);
         }
 

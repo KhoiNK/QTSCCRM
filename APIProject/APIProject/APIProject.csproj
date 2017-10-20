@@ -268,6 +268,7 @@
     <Compile Include="Controllers\OpportunityController.cs" />
     <Compile Include="Controllers\QuoteController.cs" />
     <Compile Include="Controllers\SalesCategoryController.cs" />
+    <Compile Include="Controllers\SalesItemController.cs" />
     <Compile Include="Controllers\StaffController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -302,6 +303,8 @@
     <Compile Include="ViewModels\PostMarketingResultsViewModel.cs" />
     <Compile Include="ViewModels\PostNewActivityViewModel.cs" />
     <Compile Include="ViewModels\PostOpenIssueViewModel.cs" />
+    <Compile Include="ViewModels\PostOpportunityViewModel.cs" />
+    <Compile Include="ViewModels\PostSalesItemViewModel.cs" />
     <Compile Include="ViewModels\PutAcceptMarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\PutFinishActivityViewModel.cs" />
     <Compile Include="ViewModels\PutContactInformationViewModel.cs" />

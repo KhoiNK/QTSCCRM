@@ -72,10 +72,12 @@
     <Compile Include="Repositories\IssueRepository.cs" />
     <Compile Include="Repositories\MarketingPlanRepository.cs" />
     <Compile Include="Repositories\MarketingResultRepository.cs" />
+    <Compile Include="Repositories\OpportunityCategoryMappingRepository.cs" />
     <Compile Include="Repositories\OpportunityRepository.cs" />
     <Compile Include="Repositories\QuoteRepository.cs" />
     <Compile Include="Repositories\RoleRepository.cs" />
     <Compile Include="Repositories\SalesCategoryRepository.cs" />
+    <Compile Include="Repositories\SalesItemRepository.cs" />
     <Compile Include="Repositories\StaffRepository.cs" />
   </ItemGroup>
   <ItemGroup>

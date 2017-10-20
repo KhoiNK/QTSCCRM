@@ -53,11 +53,13 @@
     <Compile Include="IssueService.cs" />
     <Compile Include="MarketingPlanService.cs" />
     <Compile Include="MarketingResultService.cs" />
+    <Compile Include="OpportunityCategoryMappingService.cs" />
     <Compile Include="OpportunityService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuoteService.cs" />
     <Compile Include="RoleService.cs" />
     <Compile Include="SalesCategoryService.cs" />
+    <Compile Include="SalesItemService.cs" />
     <Compile Include="StaffService.cs" />
     <Compile Include="UploadNamingService.cs" />
   </ItemGroup>

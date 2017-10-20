@@ -23,12 +23,14 @@ namespace APIProject.ViewModels
 
         public Contact ToContactModel()
         {
-            Contact _contact = new Contact();
-            _contact.CustomerID = this.CustomerID;
-            _contact.Name = this.Name;
-            _contact.Position = this.Position;
-            _contact.Email = this.Email;
-            _contact.Phone = this.Phone;
+            Contact _contact = new Contact
+            {
+                CustomerID = this.CustomerID,
+                Name = this.Name,
+                Position = this.Position,
+                Email = this.Email,
+                Phone = this.Phone
+            };
             if (Avatar != null)
             {
                 _contact.AvatarSrc = this.Avatar.Name;

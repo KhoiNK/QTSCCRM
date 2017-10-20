@@ -11,5 +11,15 @@ namespace APIProject.GlobalVariables
         public static string Email = "Email";
         public static string Direct = "Trực tiếp";
         public static string Phone = "Gọi điện";
+
+        public static List<string> GetList()
+        {
+            return new List<string>
+            {
+                Email,
+                Direct,
+                Phone
+            };
+        }
     }
 }

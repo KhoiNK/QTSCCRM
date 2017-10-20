@@ -50,23 +50,12 @@ namespace APIProject.Service
             this._opportunityRepository = _opportunityRepository;
             this._unitOfWork = _unitOfWork;
 
-            TypeNames = new List<string>
-            {
-                FromCustomerName,
-                ToCustomerName,
-            };
-
-            MethodNames = new List<string>
-            {
-                "Email",
-                "Gọi điện",
-                "Gặp trực tiếp",
-            };
+            
         }
 
         public int CreateNewActivity(Activity activity)
         {
-            var foundStaff = _staffRepository.GetById(activity.ModifiedStaffID.Value);
+            var foundStaff = _staffRepository.GetById(activity.CreateStaffID.Value);
             if (foundStaff == null)
             {
                 return 0;
@@ -82,32 +71,37 @@ namespace APIProject.Service
             }
             if (activity.OpportunityID.HasValue)
             {
-                if(_opportunityRepository.GetById(activity.OpportunityID.Value) == null)
+                var foundOpportunity = _opportunityRepository.GetById(activity.OpportunityID.Value);
+                if (foundOpportunity == null)
                 {
                     return 0;
                 }
+                else
+                {
+                    activity.OfOpportunityStage = foundOpportunity.StageName;
+                }
             }
-            if (!TypeNames.Contains(activity.Type))
+            if (ActivityType.GetList().Contains(activity.Type))
             {
-                return 0;
-            }
-            if (!MethodNames.Contains(activity.Method))
-            {
-                return 0;
-            }
-            var dateTimeNow = DateTime.Today.Date;
-            if(activity.Type == ToCustomerName)
-            {
-                activity.Status = OpenStatusName;
+                if(activity.Type == ActivityType.FromCustomer)
+                {
+                    activity.Status = ActivityStatus.Recorded;
+                }
+                else
+                {
+                    activity.Status = ActivityStatus.Open;
+                }
             }
             else
             {
-                activity.Status = FinishedStatusName;
-                activity.CompletedDate = dateTimeNow;
-
+                return 0;
             }
-            activity.CreateStaffID = activity.ModifiedStaffID;
-            activity.CreatedDate = dateTimeNow;
+            if (!ActivityMethod.GetList().Contains(activity.Method))
+            {
+                return 0;
+            }
+            
+            activity.CreatedDate = DateTime.Today.Date;
 
             _activityRepository.Add(activity);
             _unitOfWork.Commit();

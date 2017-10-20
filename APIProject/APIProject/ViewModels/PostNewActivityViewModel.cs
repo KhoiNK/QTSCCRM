@@ -26,24 +26,27 @@ namespace APIProject.ViewModels
         public string Method { get; set; }
         [Required]
         public DateTime TodoTime { get; set; }
+        public List<int> CategoryIDs { get; set; }
 
         public Activity ToActivityModel()
         {
-            Activity activity = new Activity();
-
-            activity.ModifiedStaffID = this.StaffID;
-            activity.CustomerID = this.CustomerID;
-            activity.ContactID = this.ContactID;
-            activity.Title = this.Title;
-            activity.OpportunityID = this.OpportunityID;
-            activity.Description = this.Description;
-            activity.Type = this.Type;
-            activity.Method = this.Method;
-            activity.TodoTime = this.TodoTime;
+            Activity activity = new Activity
+            {
+                CreateStaffID = this.StaffID,
+                CustomerID = this.CustomerID,
+                ContactID = this.ContactID,
+                Title = this.Title,
+                OpportunityID = this.OpportunityID,
+                Description = this.Description,
+                Type = this.Type,
+                Method = this.Method,
+                TodoTime = this.TodoTime
+            };
 
             return activity;
-                //todo
            
         }
     }
+
+    
 }

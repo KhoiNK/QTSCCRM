@@ -31,8 +31,10 @@ namespace APIProject.Model.Models
         public int? ModifyStaffID { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        public DateTime? ConsiderStart { get; set; }
 
         public string StageName { get; set; }
+        public int Priority { get; set; }
         //public string StageDescription { get; set; }
 
         public virtual Contact Contact { get; set; }

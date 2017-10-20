@@ -47,35 +47,14 @@ namespace APIProject.Service
             }
 
             _contactRepository.Add(contact);
-            //_unitOfWork.Commit();
-
-            //if (avatarB64 != null)
-            //{
-            //    contact.AvatarSrc = InsertContactAvatar(contact.ID, avatarName, avatarB64);
-            //}
+            
 
             _unitOfWork.Commit();
 
             return contact.ID;
         }
 
-        private string InsertContactAvatar(int contactID, string avatarName, string avatarB64)
-        {
-            string fileExtension = Path.GetExtension(avatarName);
-            string fileRoot = HttpContext.Current.Server.MapPath("~/ContactAvatarFiles");
-            string fileName = contactID + "_" + DateTime.Now.Year + DateTime.Now.Month + DateTime.Now.Day
-                + DateTime.Now.Hour + DateTime.Now.Minute + DateTime.Now.Second + fileExtension;
-            string filePath = Path.Combine(fileRoot, fileName);
-            try
-            {
-                File.WriteAllBytes(filePath, Convert.FromBase64String(avatarB64));
-            }
-            catch (FormatException e)
-            {
-                return null;
-            }
-            return filePath;
-        }
+        
         public bool EditContact(Contact contact)
         {
             Contact foundContact = _contactRepository.GetById(contact.ID);

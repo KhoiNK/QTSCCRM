@@ -26,7 +26,10 @@ namespace APIProject.ViewModels
             _customer.Address = this.Address;
             _customer.EstablishedDate = this.EstablishedDate;
             _customer.TaxCode = this.TaxCode;
-            _customer.AvatarSrc = this.Avatar.Name;
+            if (Avatar != null)
+            {
+                _customer.AvatarSrc = this.Avatar.Name;
+            }
             return _customer;
         }
     }

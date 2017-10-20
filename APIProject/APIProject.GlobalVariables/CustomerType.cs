@@ -14,5 +14,16 @@ namespace APIProject.GlobalVariables
         public static string Official = "Chính thức";
         public static string Inside = "Nội";
         public static string Outside = "Ngoại";
+
+        public static List<string> GetList()
+        {
+            return new List<string>
+            {
+                Lead,
+                Official,
+                Inside,
+                Outside
+            };
+        }
     }
 }

@@ -17,9 +17,11 @@ namespace APIProject.ViewModels
 
         public Customer ToCustomerModel()
         {
-            Customer customer = new Customer();
-            customer.ID = this.CustomerID;
-            customer.CustomerType = this.CutomerType;
+            Customer customer = new Customer
+            {
+                ID = this.CustomerID,
+                CustomerType = this.CutomerType
+            };
 
             return customer;
         }

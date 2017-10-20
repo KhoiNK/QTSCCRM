@@ -15,19 +15,44 @@ namespace APIProject.Service
         IEnumerable<Opportunity> GetAllOpportunities();
         IEnumerable<Opportunity> GetByCustomer(int customerID);
         List<string> GetStages();
+        Opportunity CreateOpportunity(Opportunity newOpportunity);
     }
-    public class OpportunityService:IOpportunityService
+    public class OpportunityService : IOpportunityService
     {
         private readonly IOpportunityRepository _opportunityRepository;
         private readonly ICustomerRepository _customerRepository;
+        private readonly IOpportunityCategoryMappingRepository _opportunityCategoryMappingRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public OpportunityService(IOpportunityRepository _opportunityRepository,
-            ICustomerRepository _customerRepository, IUnitOfWork _unitOfWork)
+            ICustomerRepository _customerRepository, IUnitOfWork _unitOfWork,
+            IOpportunityCategoryMappingRepository _opportunityCategoryMappingRepository)
         {
             this._opportunityRepository = _opportunityRepository;
             this._customerRepository = _customerRepository;
+            this._opportunityCategoryMappingRepository = _opportunityCategoryMappingRepository;
             this._unitOfWork = _unitOfWork;
+        }
+
+        public Opportunity CreateOpportunity(Opportunity newOpportunity)
+        {
+            _opportunityRepository.Add(newOpportunity);
+            newOpportunity.StageName = OpportunityStage.Consider;
+            newOpportunity.ConsiderStart = DateTime.Today.Date;
+            newOpportunity.Priority = Priority.Low;
+            _unitOfWork.Commit();
+            //if (categoryIDs != null)
+            //{
+            //    categoryIDs.ForEach(c =>
+            //    _opportunityCategoryMappingRepository.Add(new OpportunityCategoryMapping
+            //    {
+            //        SalesCategoryID = c,
+            //        OpportunityID = newOpportunity.ID,
+            //        IsDeleted = false,
+            //    }));
+            //    _unitOfWork.Commit();
+            //}
+            return newOpportunity;
         }
 
         public IEnumerable<Opportunity> GetAllOpportunities()
@@ -38,7 +63,7 @@ namespace APIProject.Service
         public IEnumerable<Opportunity> GetByCustomer(int customerID)
         {
             var foundCustomer = _customerRepository.GetById(customerID);
-            if(foundCustomer != null)
+            if (foundCustomer != null)
             {
                 var opportunities = foundCustomer.Opportunities;
                 if (opportunities.Any())
