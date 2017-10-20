@@ -18,14 +18,17 @@ namespace APIProject.Controllers
         private readonly IActivityService _activityService;
         private readonly IOpportunityService _opportunityService;
         private readonly IOpportunityCategoryMappingService _opportunityCategoryMappingService;
+        private readonly IUploadNamingService _uploadNamingService;
 
         public ActivityController(IActivityService _activityService,
             IOpportunityService _opportunityService,
-            IOpportunityCategoryMappingService _opportunityCategoryMappingService)
+            IOpportunityCategoryMappingService _opportunityCategoryMappingService,
+            IUploadNamingService _uploadNamingService)
         {
             this._activityService = _activityService;
             this._opportunityService = _opportunityService;
             this._opportunityCategoryMappingService = _opportunityCategoryMappingService;
+            this._uploadNamingService = _uploadNamingService;
         }
 
         [Route("GetActivityTypes")]
@@ -119,6 +122,26 @@ namespace APIProject.Controllers
             }
             return BadRequest();
         }
+
+        [Route("GetActivityDetails")]
+        [ResponseType(typeof(ActivityDetailsViewModel))]
+        public IHttpActionResult GetActivityDetail(int id = 0)
+        {
+            if(id == 0)
+            {
+                return BadRequest();
+            }
+
+            var foundActivity = _activityService.GetAllActivities().Where(c => c.ID == id).SingleOrDefault();
+            if(foundActivity != null)
+            {
+                _uploadNamingService.ConcatContactAvatar(foundActivity.Contact);
+                _uploadNamingService.ConcatCustomerAvatar(foundActivity.Customer);
+                return Ok(new ActivityDetailsViewModel(foundActivity));
+            }
+            return NotFound();
+        }
+
 
         [Route("GetOpportunityActivities")]
         [ResponseType(typeof(ActivityDetailViewModel))]

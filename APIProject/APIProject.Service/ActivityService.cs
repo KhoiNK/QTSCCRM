@@ -32,12 +32,7 @@ namespace APIProject.Service
         private readonly IOpportunityRepository _opportunityRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        private readonly string OpenStatusName = "Chưa thực hiện";
-        private readonly string FinishedStatusName = "Hoàn thành";
-        private readonly string FromCustomerName = "Từ khách hàng";
-        private readonly string ToCustomerName = "Đến khách hàng";
-        private List<string> TypeNames;
-        private List<string> MethodNames;
+        
 
         public ActivityService(IActivityRepository _activityRepository, IUnitOfWork _unitOfWork,
             IStaffRepository _staffRepository, ICustomerRepository _customerRepository,
@@ -52,7 +47,17 @@ namespace APIProject.Service
 
             
         }
-
+        private void CheckAndChangeOverdue(Activity activity)
+        {
+            if(activity.Status == ActivityStatus.Open)
+            {
+                if(DateTime.Compare(DateTime.Now, activity.TodoTime.Value) >= 0)
+                {
+                    activity.Status = ActivityStatus.Overdue;
+                    _unitOfWork.Commit();
+                }
+            }
+        }
         public int CreateNewActivity(Activity activity)
         {
             var foundStaff = _staffRepository.GetById(activity.CreateStaffID.Value);
@@ -104,31 +109,34 @@ namespace APIProject.Service
 
             _activityRepository.Add(activity);
             _unitOfWork.Commit();
+
+            CheckAndChangeOverdue(activity);
+
             return activity.ID;
         }
 
         public bool EditActivity(Activity activity)
         {
-
+            
             return true;
         }
 
         public bool FinishActivity(Activity activity)
         {
-            var foundActivity = _activityRepository.GetById(activity.ID);
-            if(foundActivity != null)
-            {
-                if (foundActivity.CreateStaffID == activity.ModifiedStaffID)
-                {
-                    if (foundActivity.Status != FinishedStatusName)
-                    {
-                        foundActivity.CompletedDate = DateTime.Today.Date;
-                        foundActivity.Status = FinishedStatusName;
-                        _unitOfWork.Commit();
-                        return true;
-                    }
-                }
-            }
+            //var foundActivity = _activityRepository.GetById(activity.ID);
+            //if(foundActivity != null)
+            //{
+            //    if (foundActivity.CreateStaffID == activity.ModifiedStaffID)
+            //    {
+            //        if (foundActivity.Status != FinishedStatusName)
+            //        {
+            //            foundActivity.CompletedDate = DateTime.Today.Date;
+            //            foundActivity.Status = FinishedStatusName;
+            //            _unitOfWork.Commit();
+            //            return true;
+            //        }
+            //    }
+            //}
             return false;
         }
 
