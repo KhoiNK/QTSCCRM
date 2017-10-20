@@ -11,7 +11,7 @@ using System.Web.Http.Description;
 
 namespace APIProject.Controllers
 {
-    [Authorize(Roles = "Kinh doanh")]
+    //[Authorize(Roles = "Kinh doanh")]
     [RoutePrefix("api/opportunity")]
     public class OpportunityController : ApiController
     {

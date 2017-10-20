@@ -63,26 +63,31 @@ namespace APIProject.Controllers
                 }
             }
             Activity newActivity = request.ToActivityModel();
-            if (request.CategoryIDs != null)
+            
+            int insertedActivityID = _activityService.CreateNewActivity(newActivity);
+            if(insertedActivityID != 0)
             {
-
-                Opportunity newOpportunity = new Opportunity
+                //generate opp condition
+                if (request.CategoryIDs != null)
                 {
-                    CustomerID=request.CustomerID,
-                    ContactID=request.ContactID,
-                    CreateStaffID=request.StaffID,
-                    Title=request.Title,
-                    Description=request.Description
-                };
-                
-                Opportunity insertedOpportunity = _opportunityService.CreateOpportunity(newOpportunity);
-                bool insertedMapping = _opportunityCategoryMappingService.MapOpportunityCategories(insertedOpportunity.ID, 
-                    request.CategoryIDs);
-                newActivity.OpportunityID = insertedOpportunity.ID;
-            }
-            int insertedActivity = _activityService.CreateNewActivity(newActivity);
 
-            return Ok(insertedActivity);
+                    Opportunity newOpportunity = new Opportunity
+                    {
+                        ContactID = request.ContactID,
+                        CreateStaffID = request.StaffID,
+                        Title = request.Title,
+                        Description = request.Description
+                    };
+
+                    int insertedOpportunityID = _opportunityService.CreateOpportunity(newOpportunity);
+                    bool insertedMapping = _opportunityCategoryMappingService.MapOpportunityCategories(insertedOpportunityID,
+                        request.CategoryIDs);
+                    bool mapOpportunityActivity = _opportunityService.MapOpportunityActivity(insertedOpportunityID, insertedActivityID);
+                    //newActivity.OpportunityID = insertedOpportunity.ID;
+                }
+            }
+            Dictionary<string, int> result = new Dictionary<string, int>();
+            return Ok(insertedActivityID);
         }
 
         [Route("PutFinishActivity")]

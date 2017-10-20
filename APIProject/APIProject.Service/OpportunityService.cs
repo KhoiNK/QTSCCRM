@@ -15,44 +15,38 @@ namespace APIProject.Service
         IEnumerable<Opportunity> GetAllOpportunities();
         IEnumerable<Opportunity> GetByCustomer(int customerID);
         List<string> GetStages();
-        Opportunity CreateOpportunity(Opportunity newOpportunity);
+        int CreateOpportunity(Opportunity newOpportunity);
+        bool MapOpportunityActivity(int insertedOpportunityID, int insertedActivityID);
     }
     public class OpportunityService : IOpportunityService
     {
         private readonly IOpportunityRepository _opportunityRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly IOpportunityCategoryMappingRepository _opportunityCategoryMappingRepository;
+        private readonly IActivityRepository _activityRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public OpportunityService(IOpportunityRepository _opportunityRepository,
             ICustomerRepository _customerRepository, IUnitOfWork _unitOfWork,
-            IOpportunityCategoryMappingRepository _opportunityCategoryMappingRepository)
+            IOpportunityCategoryMappingRepository _opportunityCategoryMappingRepository,
+            IActivityRepository _activityRepository)
         {
             this._opportunityRepository = _opportunityRepository;
             this._customerRepository = _customerRepository;
             this._opportunityCategoryMappingRepository = _opportunityCategoryMappingRepository;
+            this._activityRepository = _activityRepository;
             this._unitOfWork = _unitOfWork;
         }
 
-        public Opportunity CreateOpportunity(Opportunity newOpportunity)
+        public int CreateOpportunity(Opportunity newOpportunity)
         {
             _opportunityRepository.Add(newOpportunity);
+            newOpportunity.CustomerID = newOpportunity.Contact.CustomerID;
             newOpportunity.StageName = OpportunityStage.Consider;
             newOpportunity.ConsiderStart = DateTime.Today.Date;
             newOpportunity.Priority = Priority.Low;
             _unitOfWork.Commit();
-            //if (categoryIDs != null)
-            //{
-            //    categoryIDs.ForEach(c =>
-            //    _opportunityCategoryMappingRepository.Add(new OpportunityCategoryMapping
-            //    {
-            //        SalesCategoryID = c,
-            //        OpportunityID = newOpportunity.ID,
-            //        IsDeleted = false,
-            //    }));
-            //    _unitOfWork.Commit();
-            //}
-            return newOpportunity;
+            return newOpportunity.ID;
         }
 
         public IEnumerable<Opportunity> GetAllOpportunities()
@@ -90,5 +84,17 @@ namespace APIProject.Service
             };
         }
 
+        public bool MapOpportunityActivity(int insertedOpportunityID, int insertedActivityID)
+        {
+            var foundOpportunity = _opportunityRepository.GetById(insertedOpportunityID);
+            var foundActivity = _activityRepository.GetById(insertedActivityID);
+
+            foundActivity.OpportunityID = foundOpportunity.ID;
+            foundActivity.OfOpportunityStage = foundOpportunity.StageName;
+
+            _unitOfWork.Commit();
+
+            return true;
+        }
     }
 }

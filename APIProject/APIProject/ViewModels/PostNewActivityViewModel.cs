@@ -12,8 +12,6 @@ namespace APIProject.ViewModels
         [Required]
         public int StaffID { get; set; }
         [Required]
-        public int CustomerID { get; set; }
-        [Required]
         public int ContactID { get; set; }
         public int? OpportunityID { get; set; }
         [Required]
@@ -33,7 +31,6 @@ namespace APIProject.ViewModels
             Activity activity = new Activity
             {
                 CreateStaffID = this.StaffID,
-                CustomerID = this.CustomerID,
                 ContactID = this.ContactID,
                 Title = this.Title,
                 OpportunityID = this.OpportunityID,

@@ -60,27 +60,26 @@ namespace APIProject.Service
             {
                 return 0;
             }
-            var foundCustomer = _customerRepository.GetById(activity.CustomerID.Value);
-            if (foundCustomer == null)
+
+            var foundContact = _contactRepository.GetById(activity.ContactID.Value);
+            if(foundContact == null)
             {
                 return 0;
             }
-            if (foundCustomer.Contacts.Where(c => c.ID == activity.ContactID.Value).SingleOrDefault() == null)
-            {
-                return 0;
-            }
-            if (activity.OpportunityID.HasValue)
-            {
-                var foundOpportunity = _opportunityRepository.GetById(activity.OpportunityID.Value);
-                if (foundOpportunity == null)
-                {
-                    return 0;
-                }
-                else
-                {
-                    activity.OfOpportunityStage = foundOpportunity.StageName;
-                }
-            }
+            activity.CustomerID = foundContact.Customer.ID;
+            
+            //if (activity.OpportunityID.HasValue)
+            //{
+            //    var foundOpportunity = _opportunityRepository.GetById(activity.OpportunityID.Value);
+            //    if (foundOpportunity == null)
+            //    {
+            //        return 0;
+            //    }
+            //    else
+            //    {
+            //        activity.OfOpportunityStage = foundOpportunity.StageName;
+            //    }
+            //}
             if (ActivityType.GetList().Contains(activity.Type))
             {
                 if(activity.Type == ActivityType.FromCustomer)
