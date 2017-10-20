@@ -78,7 +78,6 @@ namespace APIProject.Service
             var foundOpportunity = _opportunityRepository.GetById(opportunityID);
             if (foundOpportunity != null)
             {
-                ConcatImgUri(foundOpportunity.Contact);
                 return foundOpportunity.Contact;
             }
             return null;
@@ -89,7 +88,6 @@ namespace APIProject.Service
             var foundActivity = _activityRepository.GetById(activityID); 
             if (foundActivity != null)
             {
-                ConcatImgUri(foundActivity.Contact);
                 return foundActivity.Contact;
             }
             return null;
@@ -102,11 +100,6 @@ namespace APIProject.Service
                 var contacts = foundCustomer.Contacts;
                 if (contacts.Any())
                 {
-                    foreach (var contact in contacts)
-                    {
-                        ConcatImgUri(contact);
-                    }
-
                     return contacts;
                 }
             }
@@ -114,22 +107,13 @@ namespace APIProject.Service
             return null;
         }
 
-        private void ConcatImgUri(Contact contact)
-        {
-            if (contact.AvatarSrc != null)
-            {
-                contact.AvatarSrc = _appConfigRepository.GetHost() + "/"
-                    + FileDirectory.ContactAvatarFolder + "/"
-                    + contact.AvatarSrc;
-            }
-        }
+        
 
         public Contact GetByIssue(int issueID)
         {
             var foundIssue = _issueRepository.GetById(issueID);//todo
             if (foundIssue != null)
             {
-                ConcatImgUri(foundIssue.Contact);
                 return foundIssue.Contact;
             }
             return null;

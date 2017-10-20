@@ -76,6 +76,7 @@ namespace APIProject.Controllers
             var foundContact = _contactService.GetContactByOpportunity(opportunityID);
             if(foundContact != null)
             {
+                _uploadNamingService.ConcatContactAvatar(foundContact);
                 return Ok(new ContactViewModel(foundContact));
             }
             else
@@ -95,6 +96,7 @@ namespace APIProject.Controllers
             var foundContact = _contactService.GetContactByActivity(activityID);
             if (foundContact != null)
             {
+                _uploadNamingService.ConcatContactAvatar(foundContact);
                 return Ok(new ContactViewModel(foundContact));
             }
             else
@@ -114,6 +116,10 @@ namespace APIProject.Controllers
             var foundContacts = _contactService.GetByCustomer(customerID);
             if (foundContacts != null)
             {
+                foreach (var contact in foundContacts)
+                {
+                    _uploadNamingService.ConcatContactAvatar(contact);
+                }
                 return Ok(foundContacts.Select(c => new ContactViewModel(c)));
             }
             return NotFound();
@@ -130,6 +136,7 @@ namespace APIProject.Controllers
             var foundContact = _contactService.GetByIssue(issueID);
             if (foundContact != null)
             {
+                _uploadNamingService.ConcatContactAvatar(foundContact);
                 return Ok(new ContactViewModel(foundContact));
             }
             else

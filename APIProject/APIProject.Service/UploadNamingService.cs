@@ -14,6 +14,8 @@ namespace APIProject.Service
         string GetCustomerAvatarNaming();
         void ConcatCustomerAvatar(Customer customer);
         string GetContactAvatarNaming();
+        void ConcatContactAvatar(Contact contact);
+
     }
 
     public class UploadNamingService : IUploadNamingService
