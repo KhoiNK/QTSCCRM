@@ -307,11 +307,14 @@
     <Compile Include="ViewModels\PostOpportunityViewModel.cs" />
     <Compile Include="ViewModels\PostSalesItemViewModel.cs" />
     <Compile Include="ViewModels\PutAcceptMarketingPlanViewModel.cs" />
+    <Compile Include="ViewModels\PutCancelActivityViewModel.cs" />
+    <Compile Include="ViewModels\PutCompleteActivityViewModel.cs" />
     <Compile Include="ViewModels\PutFinishActivityViewModel.cs" />
     <Compile Include="ViewModels\PutContactInformationViewModel.cs" />
     <Compile Include="ViewModels\PutCustomerInformationViewModel.cs" />
     <Compile Include="ViewModels\PutDraftingMarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\PutLeadInformationViewModel.cs" />
+    <Compile Include="ViewModels\PutSaveChangeActivityViewModel.cs" />
     <Compile Include="ViewModels\PutValidateMarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\QuoteViewModel.cs" />
     <Compile Include="ViewModels\SalesCategoryViewModel.cs" />

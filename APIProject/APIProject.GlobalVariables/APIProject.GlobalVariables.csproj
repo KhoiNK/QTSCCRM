@@ -45,6 +45,7 @@
     <Compile Include="ActivityStatus.cs" />
     <Compile Include="ActivityType.cs" />
     <Compile Include="CustomerType.cs" />
+    <Compile Include="CustomStatusCode.cs" />
     <Compile Include="FileDirectory.cs" />
     <Compile Include="FileExtension.cs" />
     <Compile Include="IssueStage.cs" />

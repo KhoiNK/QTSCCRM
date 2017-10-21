@@ -18,17 +18,20 @@ namespace APIProject.Controllers
         private readonly IActivityService _activityService;
         private readonly IOpportunityService _opportunityService;
         private readonly IOpportunityCategoryMappingService _opportunityCategoryMappingService;
+        private readonly ISalesCategoryService _salesCategoryService;
         private readonly IUploadNamingService _uploadNamingService;
 
         public ActivityController(IActivityService _activityService,
             IOpportunityService _opportunityService,
             IOpportunityCategoryMappingService _opportunityCategoryMappingService,
-            IUploadNamingService _uploadNamingService)
+            IUploadNamingService _uploadNamingService,
+            ISalesCategoryService _salesCategoryService)
         {
             this._activityService = _activityService;
             this._opportunityService = _opportunityService;
             this._opportunityCategoryMappingService = _opportunityCategoryMappingService;
             this._uploadNamingService = _uploadNamingService;
+            this._salesCategoryService = _salesCategoryService;
         }
 
         [Route("GetActivityTypes")]
@@ -73,13 +76,13 @@ namespace APIProject.Controllers
                 //generate opp condition
                 if (request.CategoryIDs != null)
                 {
-
+                    var _insertedActivity = _activityService.GetAllActivities().Where(c => c.ID == insertedActivityID).SingleOrDefault();
                     Opportunity newOpportunity = new Opportunity
                     {
-                        ContactID = request.ContactID,
-                        CreateStaffID = request.StaffID,
-                        Title = request.Title,
-                        Description = request.Description
+                        ContactID = _insertedActivity.ContactID,
+                        CreateStaffID = _insertedActivity.CreateStaffID,
+                        Title = _insertedActivity.Title,
+                        Description = _insertedActivity.Description
                     };
 
                     int insertedOpportunityID = _opportunityService.CreateOpportunity(newOpportunity);
@@ -87,23 +90,98 @@ namespace APIProject.Controllers
                         request.CategoryIDs);
                     bool mapOpportunityActivity = _opportunityService.MapOpportunityActivity(insertedOpportunityID, insertedActivityID);
                     //newActivity.OpportunityID = insertedOpportunity.ID;
+                    return Ok(insertedOpportunityID);
                 }
             }
-            Dictionary<string, int> result = new Dictionary<string, int>();
             return Ok(insertedActivityID);
         }
 
-        [Route("PutFinishActivity")]
-        public IHttpActionResult PutFinishActivity(PutFinishActivityViewModel request)
+        [Route("PutSaveChangeActivity")]
+        [ResponseType(typeof(Boolean))]
+        public IHttpActionResult PutSaveChangeActivity(PutSaveChangeActivityViewModel request)
         {
             if(!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
             }
+            if (!ActivityMethod.GetList().Contains(request.Method))
+            {
+                return BadRequest();
+            }
 
-            
-            return Ok(_activityService.FinishActivity(request.ToActivityModel()));
+            bool saveOk = _activityService.SaveChangeActivity(request.ToActivityModel());
+            return Ok(saveOk);
         }
+
+        [Route("PutCompleteActivity")]
+        [ResponseType(typeof(int))]
+        public IHttpActionResult PutCompleteActivity(PutCompleteActivityViewModel request)
+        {
+            if (!ModelState.IsValid || request == null)
+            {
+                return BadRequest(ModelState);
+            }
+            if (request.CategoryIDs != null)
+            {
+                List<int> categoryIDList = _salesCategoryService.GetAllCategories().Select(c => c.ID).ToList();
+                bool checkCateIDValid = categoryIDList.Intersect(request.CategoryIDs).Count() == request.CategoryIDs.Count();
+                if (!checkCateIDValid)
+                {
+                    return BadRequest("Category IDs invalid");
+                }
+            }
+
+            bool updated = _activityService.CompleteActivity(request.ToActivityModel());
+            if (updated)
+            {
+                if (request.CategoryIDs != null)
+                {
+                    Activity _updatedActivity = _activityService.GetAllActivities().Where(c => c.ID == request.ID).SingleOrDefault();
+                    Opportunity newOpportunity = new Opportunity
+                    {
+                        ContactID = _updatedActivity.ContactID,
+                        CreateStaffID = _updatedActivity.CreateStaffID,
+                        Title = _updatedActivity.Title,
+                        Description = _updatedActivity.Description
+                    };
+
+                    int insertedOpportunityID = _opportunityService.CreateOpportunity(newOpportunity);
+                    bool insertedMapping = _opportunityCategoryMappingService.MapOpportunityCategories(insertedOpportunityID,
+                        request.CategoryIDs);
+                    bool mapOpportunityActivity = _opportunityService.MapOpportunityActivity(insertedOpportunityID, _updatedActivity.ID);
+                    //newActivity.OpportunityID = insertedOpportunity.ID;
+                    return Ok(insertedOpportunityID);
+                }
+                return Ok(CustomStatusCode.PutSuccess);
+            }
+
+            return base.Ok(CustomStatusCode.PutFailed);
+        }
+
+        [Route("PutCancelActivity")]
+        [ResponseType(typeof(bool))]
+        public IHttpActionResult PutCancelActivity(PutCancelActivityViewModel request)
+        {
+            if(!ModelState.IsValid || request== null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            bool cancelOk = _activityService.CancelActivity(request.ID);
+            return Ok(cancelOk);
+        }
+
+        //[Route("PutFinishActivity")]
+        //public IHttpActionResult PutFinishActivity(PutFinishActivityViewModel request)
+        //{
+        //    if(!ModelState.IsValid || request == null)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+
+        //    return Ok(_activityService.FinishActivity(request.ToActivityModel()));
+        //}
 
         [Route("GetActivityList")]
         public IHttpActionResult GetActivityList()

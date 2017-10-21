@@ -19,9 +19,11 @@ namespace APIProject.Service
         List<string> GetActivityTypeNames();
         List<string> GetActivityMethodNames();
         List<string> GetActivityStatusNames();
-        bool FinishActivity(Activity activity);
         IEnumerable<Activity> GetByOpprtunity(int opportunityID);
         IEnumerable<Activity> GetByCustomer(int customerID);
+        bool SaveChangeActivity(Activity activity);
+        bool CompleteActivity(Activity activity);
+        bool CancelActivity(int ID);
     }
     public class ActivityService : IActivityService
     {
@@ -121,24 +123,6 @@ namespace APIProject.Service
             return true;
         }
 
-        public bool FinishActivity(Activity activity)
-        {
-            //var foundActivity = _activityRepository.GetById(activity.ID);
-            //if(foundActivity != null)
-            //{
-            //    if (foundActivity.CreateStaffID == activity.ModifiedStaffID)
-            //    {
-            //        if (foundActivity.Status != FinishedStatusName)
-            //        {
-            //            foundActivity.CompletedDate = DateTime.Today.Date;
-            //            foundActivity.Status = FinishedStatusName;
-            //            _unitOfWork.Commit();
-            //            return true;
-            //        }
-            //    }
-            //}
-            return false;
-        }
 
         public List<string> GetActivityMethodNames()
         {
@@ -202,6 +186,58 @@ namespace APIProject.Service
                 ActivityStatus.Canceled,
                 ActivityStatus.Recorded
             };
+        }
+
+        public bool SaveChangeActivity(Activity activity)
+        {
+            var foundActivity = _activityRepository.GetById(activity.ID);
+            if(foundActivity != null)
+            {
+                if(foundActivity.Status == ActivityStatus.Open ||
+                    foundActivity.Status == ActivityStatus.Overdue)
+                {
+                    if(DateTime.Compare(DateTime.Now, activity.TodoTime.Value) <= 0)
+                    {
+                        foundActivity.Title = activity.Title;
+                        foundActivity.Description = activity.Description;
+                        foundActivity.Method = activity.Method;
+                        foundActivity.TodoTime = activity.TodoTime;
+                        foundActivity.Status = ActivityStatus.Open;
+                        _unitOfWork.Commit();
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool CompleteActivity(Activity activity)
+        {
+            var foundActivity = _activityRepository.GetById(activity.ID);
+            if(foundActivity != null)
+            {
+                foundActivity.Title = activity.Title;
+                foundActivity.Description = activity.Description;
+                foundActivity.Status = ActivityStatus.Completed;
+                foundActivity.CompletedDate = DateTime.Today.Date;
+                _unitOfWork.Commit();
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool CancelActivity(int ID)
+        {
+            var foundActivity = _activityRepository.GetById(ID);
+            if (foundActivity != null)
+            {
+                if(foundActivity.Status == ActivityStatus.Open || foundActivity.Status!=ActivityStatus.Overdue)
+                foundActivity.Status = ActivityStatus.Canceled;
+                _unitOfWork.Commit();
+                return true;
+            }
+            return false;
         }
     }
 }
