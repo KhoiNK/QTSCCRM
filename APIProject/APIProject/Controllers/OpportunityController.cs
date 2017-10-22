@@ -51,6 +51,27 @@ namespace APIProject.Controllers
                 .Select(c => new OpportunityDetailViewModel(c)));
         }
 
+        [Route("GetOpportunityDetails")]
+        [ResponseType(typeof(OpportunityDetailsViewModel))]
+        public IHttpActionResult GetOpportunityDetails(int id = 0)
+        {
+            if (id == 0)
+            {
+                return BadRequest();
+            }
+            var foundOpp = _opportunityService.GetByID(id);
+            if(foundOpp != null)
+            {
+                _uploadNamingService.ConcatContactAvatar(foundOpp.Contact);
+                _uploadNamingService.ConcatCustomerAvatar(foundOpp.Customer);
+                return Ok(new OpportunityDetailsViewModel(foundOpp));
+                //return Ok(_opportunityService.GetAllOpportunities().Where(c => c.ID == id)
+                //.Select(c => new OpportunityDetailsViewModel(c)));
+            }
+            return NotFound();
+            
+        }
+
         [Route("GetCustomerOpportunities")]
         [ResponseType(typeof(OpportunityDetailViewModel))]
         public IHttpActionResult GetCustomerOpportunities(int customerID = 0)

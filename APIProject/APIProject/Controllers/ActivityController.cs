@@ -167,7 +167,7 @@ namespace APIProject.Controllers
                 return BadRequest(ModelState);
             }
 
-            bool cancelOk = _activityService.CancelActivity(request.ID);
+            bool cancelOk = _activityService.CancelActivity(request.ToActivityModel());
             return Ok(cancelOk);
         }
 

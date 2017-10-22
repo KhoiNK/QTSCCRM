@@ -711,7 +711,6 @@ namespace APIProject.Data
             List<Opportunity> list = new List<Opportunity>();
             List<string> stages = new List<string>
             {
-                OpportunityStage.Open,
                 OpportunityStage.Consider,
                 OpportunityStage.MakeQuote,
                 OpportunityStage.ValidateQuote,
@@ -974,22 +973,6 @@ namespace APIProject.Data
                     TodoTime = DateTime.Now,
                     Status = ActivityStatus.Completed,
                     OfOpportunityStage = OpportunityStage.Negotiation
-                });
-                i++;
-                _list.Add(new Activity
-                {
-                    OpportunityID = item.ID,
-                    CustomerID = item.CustomerID,
-                    ContactID = item.ContactID,
-                    CreateStaffID = item.CreateStaffID,
-                    Type = ActivityType.ToCustomer,
-                    Method = ActivityMethod.Direct,
-                    Title = "Bàn về vấn đề: " + i,
-                    Description = "Chi tiết về vấn đề " + i,
-                    OpporunityGenerated = false,
-                    TodoTime = DateTime.Now,
-                    Status = ActivityStatus.Completed,
-                    OfOpportunityStage = OpportunityStage.Open
                 });
                 i++;
                 _list.Add(new Activity

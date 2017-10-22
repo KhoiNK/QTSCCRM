@@ -12,7 +12,6 @@ namespace APIProject.ViewModels
         public string StageName { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        List<int> SalesCategoryIDs { get; set; }
         //QuoteViewModel Quote { get; set; }
         //List<ActivityViewModel> HistoryActivities { get; set; }
         //CustomerDetailViewModel Customer { get; set; }

@@ -13,10 +13,20 @@ namespace APIProject.Data.Repositories
         public CustomerRepository(IDbFactory dbFactory) : base(dbFactory)
         {
         }
+
+        public Customer GetByContact(int contactID)
+        {
+            var foundContact = this.DbContext.Contacts.Where(c => c.ID == contactID).SingleOrDefault();
+            if(foundContact != null)
+            {
+                return foundContact.Customer;
+            }
+            return null;
+        }
     }
 
     public interface ICustomerRepository : IRepository<Customer>
     {
-
+        Customer GetByContact(int contactID);
     }
 }

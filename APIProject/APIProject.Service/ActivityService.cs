@@ -23,7 +23,7 @@ namespace APIProject.Service
         IEnumerable<Activity> GetByCustomer(int customerID);
         bool SaveChangeActivity(Activity activity);
         bool CompleteActivity(Activity activity);
-        bool CancelActivity(int ID);
+        bool CancelActivity(Activity activity);
     }
     public class ActivityService : IActivityService
     {
@@ -193,18 +193,21 @@ namespace APIProject.Service
             var foundActivity = _activityRepository.GetById(activity.ID);
             if(foundActivity != null)
             {
-                if(foundActivity.Status == ActivityStatus.Open ||
-                    foundActivity.Status == ActivityStatus.Overdue)
+                if (foundActivity.CreateStaffID == activity.CreateStaffID)
                 {
-                    if(DateTime.Compare(DateTime.Now, activity.TodoTime.Value) <= 0)
+                    if (foundActivity.Status == ActivityStatus.Open ||
+                        foundActivity.Status == ActivityStatus.Overdue)
                     {
-                        foundActivity.Title = activity.Title;
-                        foundActivity.Description = activity.Description;
-                        foundActivity.Method = activity.Method;
-                        foundActivity.TodoTime = activity.TodoTime;
-                        foundActivity.Status = ActivityStatus.Open;
-                        _unitOfWork.Commit();
-                        return true;
+                        if (DateTime.Compare(DateTime.Now, activity.TodoTime.Value) <= 0)
+                        {
+                            foundActivity.Title = activity.Title;
+                            foundActivity.Description = activity.Description;
+                            foundActivity.Method = activity.Method;
+                            foundActivity.TodoTime = activity.TodoTime;
+                            foundActivity.Status = ActivityStatus.Open;
+                            _unitOfWork.Commit();
+                            return true;
+                        }
                     }
                 }
             }
@@ -214,28 +217,39 @@ namespace APIProject.Service
         public bool CompleteActivity(Activity activity)
         {
             var foundActivity = _activityRepository.GetById(activity.ID);
-            if(foundActivity != null)
+            if (foundActivity != null)
             {
-                foundActivity.Title = activity.Title;
-                foundActivity.Description = activity.Description;
-                foundActivity.Status = ActivityStatus.Completed;
-                foundActivity.CompletedDate = DateTime.Today.Date;
-                _unitOfWork.Commit();
-                return true;
+                if (foundActivity.CreateStaffID == activity.CreateStaffID)
+                {
+                    if (foundActivity.Status == ActivityStatus.Open || foundActivity.Status == ActivityStatus.Overdue)
+                    {
+                        foundActivity.Title = activity.Title;
+                        foundActivity.Description = activity.Description;
+                        foundActivity.Status = ActivityStatus.Completed;
+                        foundActivity.CompletedDate = DateTime.Today.Date;
+                        _unitOfWork.Commit();
+                        return true;
+                    }
+                }
             }
 
             return false;
         }
 
-        public bool CancelActivity(int ID)
+        public bool CancelActivity(Activity activity)
         {
-            var foundActivity = _activityRepository.GetById(ID);
+            var foundActivity = _activityRepository.GetById(activity.ID);
             if (foundActivity != null)
             {
-                if(foundActivity.Status == ActivityStatus.Open || foundActivity.Status!=ActivityStatus.Overdue)
-                foundActivity.Status = ActivityStatus.Canceled;
-                _unitOfWork.Commit();
-                return true;
+                if (foundActivity.CreateStaffID == activity.CreateStaffID)
+                {
+                    if (foundActivity.Status == ActivityStatus.Open || foundActivity.Status == ActivityStatus.Overdue)
+                    {
+                        foundActivity.Status = ActivityStatus.Canceled;
+                        _unitOfWork.Commit();
+                        return true;
+                    }
+                }
             }
             return false;
         }

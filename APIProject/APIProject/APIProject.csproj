@@ -288,6 +288,7 @@
     <Compile Include="ViewModels\ContactViewModel.cs" />
     <Compile Include="ViewModels\CustomB64ImageFileViewModel.cs" />
     <Compile Include="ViewModels\CustomBase64FileViewModel.cs" />
+    <Compile Include="ViewModels\CustomerDetailsViewModel.cs" />
     <Compile Include="ViewModels\CustomerDetailViewModel.cs" />
     <Compile Include="ViewModels\CustomerViewModel.cs" />
     <Compile Include="ViewModels\IssueDetailViewModel.cs" />
@@ -295,6 +296,7 @@
     <Compile Include="ViewModels\MarketingPlanDetailViewModel.cs" />
     <Compile Include="ViewModels\MarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\MarketingResultViewModel.cs" />
+    <Compile Include="ViewModels\OpportunityDetailsViewModel.cs" />
     <Compile Include="ViewModels\OpportunityDetailViewModel.cs" />
     <Compile Include="ViewModels\OpportunityViewModel.cs" />
     <Compile Include="ViewModels\PostContactViewModel.cs" />

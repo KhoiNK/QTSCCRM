@@ -29,7 +29,6 @@ namespace APIProject.Service
         private readonly IIssueCategoryMappingRepository _issueCategoryMappingRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        private readonly string OpenStageName = "Chưa xử lý";
         public IssueService(IIssueRepository _issueRepository, IUnitOfWork _unitOfWork,
             ICustomerRepository _customerRepository, IContactRepository _contactRepository,
             IStaffRepository _staffRepository, ISalesCategoryRepository _salesCategoryRepository,
@@ -46,50 +45,46 @@ namespace APIProject.Service
 
         public int CreateOpenIssue(Issue issue, List<int> salesCategoryIDs)
         {
-            Customer foundCustomer = _customerRepository.GetById(issue.CustomerID.Value);
+            Customer foundCustomer = _customerRepository.GetByContact(issue.ContactID.Value);
             if (foundCustomer == null)
             {
                 return 0;
             }
             else
             {
-                if (foundCustomer.IsLead)
+                if (foundCustomer.CustomerType == CustomerType.Lead)
                 {
                     return 0;
                 }
-            }
-            if (_contactRepository.GetById(issue.ContactID.Value) == null)
-            {
-                return 0;
             }
             if (_staffRepository.GetById(issue.ModifiedStaffID.Value) == null)
             {
                 return 0;
             }
-            var distinctedCategories = salesCategoryIDs.Distinct();
-            List<IssueCategoryMapping> categories = new List<IssueCategoryMapping>();
-            foreach (int eachId in distinctedCategories)
-            {
-                SalesCategory foundCategory = _salesCategoryRepository.GetById(eachId);
-                if (foundCategory == null)
-                {
-                    return 0;
-                }
-                categories.Add(new IssueCategoryMapping { SalesCategoryID = eachId, IsDeleted = false });
-            }
-
+            
+            issue.Status = IssueStatus.Open;
             issue.CreateStaffID = issue.ModifiedStaffID;
             issue.OpenStaffID = issue.ModifiedStaffID;
             issue.OpenedDate = DateTime.Today.Date;
             issue.ModifiedDate = DateTime.Today.Date;
-            issue.Stage = OpenStageName;
-            if (categories.Count > 0)
+            issue.Stage = IssueStage.Open;
+            _issueRepository.Add(issue);
+
+            if (salesCategoryIDs.Count > 0)
             {
-                //issue.SalesCategories = categories;
+                List<IssueCategoryMapping> categories = new List<IssueCategoryMapping>();
+                foreach (int eachId in salesCategoryIDs)
+                {
+                    SalesCategory foundCategory = _salesCategoryRepository.GetById(eachId);
+                    if (foundCategory == null)
+                    {
+                        return 0;
+                    }
+                    categories.Add(new IssueCategoryMapping { SalesCategoryID = eachId, IsDeleted = false });
+                }
                 issue.IssueCategoryMappings = categories;
             }
 
-            _issueRepository.Add(issue);
             _unitOfWork.Commit();
             return issue.ID;
         }

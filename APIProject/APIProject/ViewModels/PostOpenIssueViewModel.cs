@@ -12,8 +12,6 @@ namespace APIProject.ViewModels
         [Required]
         public int StaffID { get; set; }
         [Required]
-        public int CustomerID { get; set; }
-        [Required]
         public int ContactID { get; set; }
         [Required]
         public string Title { get; set; }
@@ -26,7 +24,6 @@ namespace APIProject.ViewModels
             return new Issue
             {
                 ModifiedStaffID = this.StaffID,
-                CustomerID = this.CustomerID,
                 ContactID=this.ContactID,
                 Title=this.Title,
                 Description=this.Description

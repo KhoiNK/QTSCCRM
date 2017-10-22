@@ -98,7 +98,24 @@ namespace APIProject.Controllers
             if(foundCustomer != null)
             {
                 _uploadNamingService.ConcatCustomerAvatar(foundCustomer);
-                return Ok(foundCustomer);
+                return Ok(new CustomerDetailViewModel(foundCustomer));
+            }
+            return NotFound();
+        }
+
+        [Route("GetCustomerDetails")]
+        [ResponseType(typeof(CustomerDetailViewModel))]
+        public IHttpActionResult GetCustomerDetails(int ID)
+        {
+            var foundCustomer = _customerService.GetCustomerList().Where(c => c.ID == ID).SingleOrDefault();
+            if (foundCustomer != null)
+            {
+                _uploadNamingService.ConcatCustomerAvatar(foundCustomer);
+                foreach(var contact in foundCustomer.Contacts)
+                {
+                    _uploadNamingService.ConcatContactAvatar(contact);
+                }
+                return Ok(new CustomerDetailsViewModel(foundCustomer));
             }
             return NotFound();
         }

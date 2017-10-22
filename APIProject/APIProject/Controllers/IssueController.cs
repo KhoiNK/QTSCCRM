@@ -14,10 +14,12 @@ namespace APIProject.Controllers
     public class IssueController : ApiController
     {
         private readonly IIssueService _issueService;
+        private readonly ISalesCategoryService _salesCategoryService;
 
-        public IssueController(IIssueService _issueService)
+        public IssueController(IIssueService _issueService, ISalesCategoryService _salesCategoryService)
         {
             this._issueService = _issueService;
+            this._salesCategoryService = _salesCategoryService;
         }
 
         [Route("PostOpenIssue")]
@@ -26,6 +28,18 @@ namespace APIProject.Controllers
             if(!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
+            }
+            else
+            {
+                if (request.SalesCategoryIDs != null)
+                {
+                    List<int> categoryIDList = _salesCategoryService.GetAllCategories().Select(c => c.ID).ToList();
+                    bool checkCateIDValid = categoryIDList.Intersect(request.SalesCategoryIDs).Count() == request.SalesCategoryIDs.Count();
+                    if (!checkCateIDValid)
+                    {
+                        return BadRequest("Category IDs invalid");
+                    }
+                }
             }
 
             int insertedIssue = _issueService.CreateOpenIssue(request.ToIssueModel(), request.SalesCategoryIDs);

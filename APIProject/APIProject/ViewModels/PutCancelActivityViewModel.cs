@@ -1,4 +1,5 @@
-﻿using System;
+﻿using APIProject.Model.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,5 +11,15 @@ namespace APIProject.ViewModels
     {
         [Required]
         public int ID { get; set; }
+        [Required]
+        public int StaffID { get; set; }
+        public Activity ToActivityModel()
+        {
+            return new Activity
+            {
+                ID = this.ID,
+                CreateStaffID = this.StaffID
+            };
+        }
     }
 }

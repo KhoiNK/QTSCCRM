@@ -8,7 +8,7 @@ namespace APIProject.GlobalVariables
 {
     public static class OpportunityStage
     {
-        public static string Open = "Mới";
+        //public static string Open = "Mới";
         public static string Consider = "Xem xét";
         public static string MakeQuote = "Tạo báo giá";
         public static string ValidateQuote = "Duyệt báo giá";

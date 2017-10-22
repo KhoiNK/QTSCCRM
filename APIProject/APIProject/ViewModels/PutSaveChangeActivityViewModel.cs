@@ -12,6 +12,8 @@ namespace APIProject.ViewModels
         [Required]
         public int ID { get; set; }
         [Required]
+        public int StaffID { get; set; }
+        [Required]
         public string Title { get; set; }
         [Required]
         public string Description { get; set; }
@@ -25,6 +27,7 @@ namespace APIProject.ViewModels
             return new Activity
             {
                 ID = this.ID,
+                CreateStaffID=this.StaffID,
                 Title = this.Title,
                 Description = this.Description,
                 Method = this.Method,
