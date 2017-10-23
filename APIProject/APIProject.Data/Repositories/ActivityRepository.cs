@@ -13,10 +13,16 @@ namespace APIProject.Data.Repositories
         public ActivityRepository(IDbFactory dbFactory) : base(dbFactory)
         {
         }
+
+        public Activity GetLastOppActivty(int id)
+        {
+            var activities = this.DbContext.Activities.Where(c => c.OpportunityID == id).OrderByDescending(c=>c.ID);
+            return activities.FirstOrDefault();
+        }
     }
 
     public interface IActivityRepository : IRepository<Activity>
     {
-
+        Activity GetLastOppActivty(int id);
     }
 }

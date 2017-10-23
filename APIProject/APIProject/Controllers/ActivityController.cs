@@ -62,21 +62,30 @@ namespace APIProject.Controllers
             {
                 if(request.CategoryIDs != null)
                 {
+                    
                     if(request.Type != ActivityType.FromCustomer)
                     {
                         return BadRequest("To customer type can't generate opportunity at create");
+                    }
+
+                    List<int> categoryIDList = _salesCategoryService.GetAllCategories().Select(c => c.ID).ToList();
+                    bool checkCateIDValid = categoryIDList.Intersect(request.CategoryIDs).Count() == request.CategoryIDs.Count();
+                    if (!checkCateIDValid)
+                    {
+                        return BadRequest("Category IDs invalid");
                     }
                 }
             }
             Activity newActivity = request.ToActivityModel();
             
-            int insertedActivityID = _activityService.CreateNewActivity(newActivity);
-            if(insertedActivityID != 0)
+            int InsertedActivityID = _activityService.CreateNewActivity(newActivity);
+            int? InsertedOpportunityID = null;
+            if (InsertedActivityID != 0)
             {
                 //generate opp condition
                 if (request.CategoryIDs != null)
                 {
-                    var _insertedActivity = _activityService.GetAllActivities().Where(c => c.ID == insertedActivityID).SingleOrDefault();
+                    var _insertedActivity = _activityService.GetAllActivities().Where(c => c.ID == InsertedActivityID).SingleOrDefault();
                     Opportunity newOpportunity = new Opportunity
                     {
                         ContactID = _insertedActivity.ContactID,
@@ -85,15 +94,16 @@ namespace APIProject.Controllers
                         Description = _insertedActivity.Description
                     };
 
-                    int insertedOpportunityID = _opportunityService.CreateOpportunity(newOpportunity);
-                    bool insertedMapping = _opportunityCategoryMappingService.MapOpportunityCategories(insertedOpportunityID,
+                    InsertedOpportunityID = _opportunityService.CreateOpportunity(newOpportunity);
+                    bool insertedMapping = _opportunityCategoryMappingService.MapOpportunityCategories(InsertedOpportunityID.Value,
                         request.CategoryIDs);
-                    bool mapOpportunityActivity = _opportunityService.MapOpportunityActivity(insertedOpportunityID, insertedActivityID);
+                    bool mapOpportunityActivity = _opportunityService.MapOpportunityActivity(InsertedOpportunityID.Value, InsertedActivityID);
                     //newActivity.OpportunityID = insertedOpportunity.ID;
-                    return Ok(insertedOpportunityID);
+                    //return Ok(insertedOpportunityID);
                 }
             }
-            return Ok(insertedActivityID);
+            //return Ok(insertedActivityID);
+            return Ok(new { InsertedOpportunityID, InsertedActivityID });
         }
 
         [Route("PutSaveChangeActivity")]
@@ -109,8 +119,8 @@ namespace APIProject.Controllers
                 return BadRequest();
             }
 
-            bool saveOk = _activityService.SaveChangeActivity(request.ToActivityModel());
-            return Ok(saveOk);
+            bool Updated = _activityService.SaveChangeActivity(request.ToActivityModel());
+            return Ok(new { Updated });
         }
 
         [Route("PutCompleteActivity")]
@@ -129,10 +139,17 @@ namespace APIProject.Controllers
                 {
                     return BadRequest("Category IDs invalid");
                 }
+
+                bool IsOppActivity = _activityService.CheckIsOppActivity(request.ID);
+                if (IsOppActivity)
+                {
+                    return BadRequest("Opportunity can't generate opportunity");
+                }
             }
 
-            bool updated = _activityService.CompleteActivity(request.ToActivityModel());
-            if (updated)
+            bool Updated = _activityService.CompleteActivity(request.ToActivityModel());
+            int? InsertedOpportunityID = null;
+            if (Updated)
             {
                 if (request.CategoryIDs != null)
                 {
@@ -145,17 +162,16 @@ namespace APIProject.Controllers
                         Description = _updatedActivity.Description
                     };
 
-                    int insertedOpportunityID = _opportunityService.CreateOpportunity(newOpportunity);
-                    bool insertedMapping = _opportunityCategoryMappingService.MapOpportunityCategories(insertedOpportunityID,
+                    InsertedOpportunityID = _opportunityService.CreateOpportunity(newOpportunity);
+                    bool insertedMapping = _opportunityCategoryMappingService.MapOpportunityCategories(InsertedOpportunityID.Value,
                         request.CategoryIDs);
-                    bool mapOpportunityActivity = _opportunityService.MapOpportunityActivity(insertedOpportunityID, _updatedActivity.ID);
+                    bool mapOpportunityActivity = _opportunityService.MapOpportunityActivity(InsertedOpportunityID.Value, _updatedActivity.ID);
                     //newActivity.OpportunityID = insertedOpportunity.ID;
-                    return Ok(insertedOpportunityID);
+                    //return Ok(InsertedOpportunityID);
                 }
-                return Ok(CustomStatusCode.PutSuccess);
             }
 
-            return base.Ok(CustomStatusCode.PutFailed);
+            return base.Ok(new { Updated, InsertedOpportunityID });
         }
 
         [Route("PutCancelActivity")]
@@ -167,8 +183,8 @@ namespace APIProject.Controllers
                 return BadRequest(ModelState);
             }
 
-            bool cancelOk = _activityService.CancelActivity(request.ToActivityModel());
-            return Ok(cancelOk);
+            bool Updated = _activityService.CancelActivity(request.ToActivityModel());
+            return Ok(new { Updated});
         }
 
         //[Route("PutFinishActivity")]

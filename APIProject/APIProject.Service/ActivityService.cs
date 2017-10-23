@@ -14,7 +14,6 @@ namespace APIProject.Service
     public interface IActivityService
     {
         int CreateNewActivity(Activity activity);
-        bool EditActivity(Activity activity);
         IEnumerable<Activity> GetAllActivities();
         List<string> GetActivityTypeNames();
         List<string> GetActivityMethodNames();
@@ -24,6 +23,7 @@ namespace APIProject.Service
         bool SaveChangeActivity(Activity activity);
         bool CompleteActivity(Activity activity);
         bool CancelActivity(Activity activity);
+        bool CheckIsOppActivity(int activityID);
     }
     public class ActivityService : IActivityService
     {
@@ -46,9 +46,9 @@ namespace APIProject.Service
             this._contactRepository = _contactRepository;
             this._opportunityRepository = _opportunityRepository;
             this._unitOfWork = _unitOfWork;
-
-            
         }
+
+
         private void CheckAndChangeOverdue(Activity activity)
         {
             if(activity.Status == ActivityStatus.Open)
@@ -73,20 +73,33 @@ namespace APIProject.Service
             {
                 return 0;
             }
+            if (activity.OpportunityID.HasValue)
+            {
+                var foundOpp = _opportunityRepository.GetById(activity.OpportunityID.Value);
+                if(foundOpp == null)
+                {
+                    return 0;
+                }
+                else if(foundOpp.ContactID != activity.ContactID || foundOpp.CreateStaffID != activity.CreateStaffID)
+                {
+                    return 0;
+                }
+                else
+                {
+                    var lastOppActivity = _activityRepository.GetLastOppActivty(foundOpp.ID);
+                    if (lastOppActivity.Status == ActivityStatus.Open || lastOppActivity.Status == ActivityStatus.Overdue)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        activity.OfOpportunityStage = foundOpp.StageName;
+                    }
+                }
+
+            }
             activity.CustomerID = foundContact.Customer.ID;
             
-            //if (activity.OpportunityID.HasValue)
-            //{
-            //    var foundOpportunity = _opportunityRepository.GetById(activity.OpportunityID.Value);
-            //    if (foundOpportunity == null)
-            //    {
-            //        return 0;
-            //    }
-            //    else
-            //    {
-            //        activity.OfOpportunityStage = foundOpportunity.StageName;
-            //    }
-            //}
             if (ActivityType.GetList().Contains(activity.Type))
             {
                 if(activity.Type == ActivityType.FromCustomer)
@@ -117,11 +130,9 @@ namespace APIProject.Service
             return activity.ID;
         }
 
-        public bool EditActivity(Activity activity)
-        {
-            
-            return true;
-        }
+
+
+        
 
 
         public List<string> GetActivityMethodNames()
@@ -252,6 +263,12 @@ namespace APIProject.Service
                 }
             }
             return false;
+        }
+
+        public bool CheckIsOppActivity(int activityID)
+        {
+            var foundActivity = _activityRepository.GetById(activityID);
+            return foundActivity.OpportunityID.HasValue;
         }
     }
 }

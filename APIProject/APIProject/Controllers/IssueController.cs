@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.Http.Results;
 
 namespace APIProject.Controllers
 {
@@ -43,7 +44,9 @@ namespace APIProject.Controllers
             }
 
             int insertedIssue = _issueService.CreateOpenIssue(request.ToIssueModel(), request.SalesCategoryIDs);
-            return Ok(insertedIssue);
+            return Ok(new { IssueID = insertedIssue });
+            //return Json(new {IssueID = insertedIssue });
+            //return insertedIssue;
         }
 
         [Route("GetIssues")]
