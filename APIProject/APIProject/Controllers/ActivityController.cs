@@ -55,52 +55,54 @@ namespace APIProject.Controllers
         [Route("PostNewActivity")]
         public IHttpActionResult PostNewActivity(PostNewActivityViewModel request)
         {
-            if(!ModelState.IsValid || request == null)
+            if (!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
-            }else
+            }
+            else
             {
-                if(request.CategoryIDs != null)
+                if (request.CategoryIDs != null)
                 {
-                    
-                    if(request.Type != ActivityType.FromCustomer)
+
+                    if (request.Type != ActivityType.FromCustomer)
                     {
-                        return BadRequest("To customer type can't generate opportunity at create");
+                        return BadRequest("Type 'Đến khách hàng' thì chưa có cơ hội bán hàng");
                     }
 
                     List<int> categoryIDList = _salesCategoryService.GetAllCategories().Select(c => c.ID).ToList();
                     bool checkCateIDValid = categoryIDList.Intersect(request.CategoryIDs).Count() == request.CategoryIDs.Count();
                     if (!checkCateIDValid)
                     {
-                        return BadRequest("Category IDs invalid");
+                        return BadRequest("Category IDs lỗi");
                     }
                 }
             }
             Activity newActivity = request.ToActivityModel();
-            
-            int InsertedActivityID = _activityService.CreateNewActivity(newActivity);
-            int? InsertedOpportunityID = null;
-            if (InsertedActivityID != 0)
-            {
-                //generate opp condition
-                if (request.CategoryIDs != null)
-                {
-                    var _insertedActivity = _activityService.GetAllActivities().Where(c => c.ID == InsertedActivityID).SingleOrDefault();
-                    Opportunity newOpportunity = new Opportunity
-                    {
-                        ContactID = _insertedActivity.ContactID,
-                        CreateStaffID = _insertedActivity.CreateStaffID,
-                        Title = _insertedActivity.Title,
-                        Description = _insertedActivity.Description
-                    };
 
-                    InsertedOpportunityID = _opportunityService.CreateOpportunity(newOpportunity);
-                    bool insertedMapping = _opportunityCategoryMappingService.MapOpportunityCategories(InsertedOpportunityID.Value,
-                        request.CategoryIDs);
-                    bool mapOpportunityActivity = _opportunityService.MapOpportunityActivity(InsertedOpportunityID.Value, InsertedActivityID);
-                    //newActivity.OpportunityID = insertedOpportunity.ID;
-                    //return Ok(insertedOpportunityID);
-                }
+            int InsertedActivityID = _activityService.CreateNewActivity(newActivity);
+            if (InsertedActivityID == 0)
+            {
+                return BadRequest("Không thể tạo lịch hẹn, kiểm tra lại json khớp với business logic");
+            }
+            int? InsertedOpportunityID = null;
+            //generate opp condition
+            if (request.CategoryIDs != null)
+            {
+                var _insertedActivity = _activityService.GetAllActivities().Where(c => c.ID == InsertedActivityID).SingleOrDefault();
+                Opportunity newOpportunity = new Opportunity
+                {
+                    ContactID = _insertedActivity.ContactID,
+                    CreateStaffID = _insertedActivity.CreateStaffID,
+                    Title = _insertedActivity.Title,
+                    Description = _insertedActivity.Description
+                };
+
+                InsertedOpportunityID = _opportunityService.CreateOpportunity(newOpportunity);
+                bool insertedMapping = _opportunityCategoryMappingService.MapOpportunityCategories(InsertedOpportunityID.Value,
+                    request.CategoryIDs);
+                bool mapOpportunityActivity = _opportunityService.MapOpportunityActivity(InsertedOpportunityID.Value, InsertedActivityID);
+                //newActivity.OpportunityID = insertedOpportunity.ID;
+                //return Ok(insertedOpportunityID);
             }
             //return Ok(insertedActivityID);
             return Ok(new { InsertedOpportunityID, InsertedActivityID });
@@ -110,7 +112,7 @@ namespace APIProject.Controllers
         [ResponseType(typeof(Boolean))]
         public IHttpActionResult PutSaveChangeActivity(PutSaveChangeActivityViewModel request)
         {
-            if(!ModelState.IsValid || request == null)
+            if (!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
             }
@@ -120,7 +122,11 @@ namespace APIProject.Controllers
             }
 
             bool Updated = _activityService.SaveChangeActivity(request.ToActivityModel());
-            return Ok(new { Updated });
+            if (Updated)
+            {
+                return Ok(new { Updated });
+            }
+            return BadRequest("Không thể cập nhật, kiểm tra lại json phù hợp business logic");
         }
 
         [Route("PutCompleteActivity")]
@@ -137,20 +143,22 @@ namespace APIProject.Controllers
                 bool checkCateIDValid = categoryIDList.Intersect(request.CategoryIDs).Count() == request.CategoryIDs.Count();
                 if (!checkCateIDValid)
                 {
-                    return BadRequest("Category IDs invalid");
+                    return BadRequest("Category IDs sai");
                 }
 
                 bool IsOppActivity = _activityService.CheckIsOppActivity(request.ID);
                 if (IsOppActivity)
                 {
-                    return BadRequest("Opportunity can't generate opportunity");
+                    return BadRequest("Hoạt động của 1 cơ hội bán hàng không thể sinh ra cơ hội bán hàng khác");
                 }
             }
 
             bool Updated = _activityService.CompleteActivity(request.ToActivityModel());
-            int? InsertedOpportunityID = null;
-            if (Updated)
+            if (!Updated)
             {
+                return BadRequest("Không thể cập nhật, kiểm tra json phù hợp business logic");
+            }
+            int? InsertedOpportunityID = null;
                 if (request.CategoryIDs != null)
                 {
                     Activity _updatedActivity = _activityService.GetAllActivities().Where(c => c.ID == request.ID).SingleOrDefault();
@@ -169,7 +177,6 @@ namespace APIProject.Controllers
                     //newActivity.OpportunityID = insertedOpportunity.ID;
                     //return Ok(InsertedOpportunityID);
                 }
-            }
 
             return base.Ok(new { Updated, InsertedOpportunityID });
         }
@@ -178,13 +185,17 @@ namespace APIProject.Controllers
         [ResponseType(typeof(bool))]
         public IHttpActionResult PutCancelActivity(PutCancelActivityViewModel request)
         {
-            if(!ModelState.IsValid || request== null)
+            if (!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
             }
 
             bool Updated = _activityService.CancelActivity(request.ToActivityModel());
-            return Ok(new { Updated});
+            if (!Updated)
+            {
+                return BadRequest("Không thể cập nhật, kiểm tra json phù hợp business logic");
+            }
+            return Ok(new { Updated });
         }
 
         //[Route("PutFinishActivity")]
@@ -202,7 +213,7 @@ namespace APIProject.Controllers
         [Route("GetActivityList")]
         public IHttpActionResult GetActivityList()
         {
-            return Ok(_activityService.GetAllActivities().Select(c=> new ActivityViewModel(c)));
+            return Ok(_activityService.GetAllActivities().Select(c => new ActivityViewModel(c)));
         }
 
         [Route("GetActivityDetail")]
@@ -211,7 +222,7 @@ namespace APIProject.Controllers
         {
             if (id.HasValue)
             {
-                return Ok(_activityService.GetAllActivities().Where(c=>c.ID == id.Value)
+                return Ok(_activityService.GetAllActivities().Where(c => c.ID == id.Value)
                     .Select(c => new ActivityDetailViewModel(c)));
             }
             return BadRequest();
@@ -221,13 +232,13 @@ namespace APIProject.Controllers
         [ResponseType(typeof(ActivityDetailsViewModel))]
         public IHttpActionResult GetActivityDetail(int id = 0)
         {
-            if(id == 0)
+            if (id == 0)
             {
                 return BadRequest();
             }
 
             var foundActivity = _activityService.GetAllActivities().Where(c => c.ID == id).SingleOrDefault();
-            if(foundActivity != null)
+            if (foundActivity != null)
             {
                 _uploadNamingService.ConcatContactAvatar(foundActivity.Contact);
                 _uploadNamingService.ConcatCustomerAvatar(foundActivity.Customer);
@@ -241,7 +252,7 @@ namespace APIProject.Controllers
         [ResponseType(typeof(ActivityDetailViewModel))]
         public IHttpActionResult GetOpportunityActivities(int opportunityID = 0)
         {
-            if(opportunityID == 0)
+            if (opportunityID == 0)
             {
                 return BadRequest();
             }

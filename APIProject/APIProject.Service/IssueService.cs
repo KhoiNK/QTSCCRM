@@ -56,12 +56,14 @@ namespace APIProject.Service
                 {
                     return 0;
                 }
+
             }
             if (_staffRepository.GetById(issue.ModifiedStaffID.Value) == null)
             {
                 return 0;
             }
-            
+
+            issue.CustomerID = foundCustomer.ID;
             issue.Status = IssueStatus.Open;
             issue.CreateStaffID = issue.ModifiedStaffID;
             issue.OpenStaffID = issue.ModifiedStaffID;

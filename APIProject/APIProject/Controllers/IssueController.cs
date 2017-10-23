@@ -15,16 +15,20 @@ namespace APIProject.Controllers
     public class IssueController : ApiController
     {
         private readonly IIssueService _issueService;
+        private readonly IUploadNamingService _uploadNamingService;
         private readonly ISalesCategoryService _salesCategoryService;
 
-        public IssueController(IIssueService _issueService, ISalesCategoryService _salesCategoryService)
+        public IssueController(IIssueService _issueService, ISalesCategoryService _salesCategoryService,
+            IUploadNamingService _uploadNamingService)
         {
             this._issueService = _issueService;
             this._salesCategoryService = _salesCategoryService;
+            this._uploadNamingService = _uploadNamingService;
         }
 
         [Route("PostOpenIssue")]
-        public IHttpActionResult PostOpenIssue(PostOpenIssueViewModel request)
+        [HttpPost]
+        public IHttpActionResult PostOpenIssue([FromBody] PostOpenIssueViewModel request)
         {
             if(!ModelState.IsValid || request == null)
             {
@@ -69,6 +73,25 @@ namespace APIProject.Controllers
             if(foundIssue != null)
             {
                 return Ok(new IssueDetailViewModel(foundIssue));
+            }
+            return NotFound();
+        }
+
+        [Route("GetIssueDetails")]
+        [ResponseType(typeof(IssueDetailsViewModel))]
+        public IHttpActionResult GetIssueDetails(int id = 0)
+        {
+            if (id == 0)
+            {
+                return BadRequest();
+            }
+
+            var foundIssue = _issueService.GetAllIssues().Where(c => c.ID == id).SingleOrDefault();
+            if (foundIssue != null)
+            {
+                _uploadNamingService.ConcatContactAvatar(foundIssue.Contact);
+                _uploadNamingService.ConcatCustomerAvatar(foundIssue.Customer);
+                return Ok(new IssueDetailsViewModel(foundIssue));
             }
             return NotFound();
         }
