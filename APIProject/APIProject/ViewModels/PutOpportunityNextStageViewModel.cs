@@ -7,27 +7,19 @@ using System.Web;
 
 namespace APIProject.ViewModels
 {
-    public class PutOpportunityInformationViewModel
+    public class PutOpportunityNextStageViewModel
     {
         [Required]
         public int ID { get; set; }
         [Required]
         public int StaffID { get; set; }
-        [Required]
-        public string Title { get; set; }
-        [Required]
-        public string Description { get; set; }
-        [Required]
-        public List<int> CategoryIDs { get; set; }
 
         public Opportunity ToOpportunityModel()
         {
             return new Opportunity
             {
                 ID = this.ID,
-                CreateStaffID = this.StaffID,
-                Title = this.Title,
-                Description = this.Description
+                CreateStaffID = this.StaffID
             };
         }
     }

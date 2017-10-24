@@ -26,6 +26,7 @@ namespace APIProject.Model.Models
             MarketingPlans3 = new HashSet<MarketingPlan>();
             Opportunities = new HashSet<Opportunity>();
             Opportunities1 = new HashSet<Opportunity>();
+            Quotes = new HashSet<Quote>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -36,9 +37,15 @@ namespace APIProject.Model.Models
         public string Email { get; set; }
 
         public int? RoleID { get; set; }
+        [ForeignKey("RoleID")]
+        public virtual Role Role { get; set; }
+
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Activity> Activities { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Quote> Quotes { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Activity> Activities1 { get; set; }
@@ -79,6 +86,5 @@ namespace APIProject.Model.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Opportunity> Opportunities1 { get; set; }
 
-        public virtual Role Role { get; set; }
     }
 }

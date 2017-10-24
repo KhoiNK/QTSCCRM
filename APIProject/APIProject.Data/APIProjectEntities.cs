@@ -115,6 +115,11 @@ namespace APIProject.Data
                 .WithOptional(e => e.ModifyStaff)
                 .HasForeignKey(e => e.ModifyStaffID);
 
+            modelBuilder.Entity<Staff>()
+                .HasMany(e => e.Quotes)
+                .WithOptional(e => e.CreatedStaff)
+                .HasForeignKey(e => e.CreatedStaffID);
+
             //modelBuilder.Entity<Issue>()
             //    .HasMany(e => e.Issues)
             //    .WithMany(e => e.SalesCategories)

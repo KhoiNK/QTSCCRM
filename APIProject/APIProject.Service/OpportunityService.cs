@@ -19,6 +19,7 @@ namespace APIProject.Service
         bool MapOpportunityActivity(int insertedOpportunityID, int insertedActivityID);
         Opportunity GetByID(int id);
         void EditInfo(Opportunity opportunity);
+        void ProceedNextStage(Opportunity opportunity);
     }
     public class OpportunityService : IOpportunityService
     {
@@ -27,19 +28,22 @@ namespace APIProject.Service
         private readonly IContactRepository _contactRepository;
         private readonly IOpportunityCategoryMappingRepository _opportunityCategoryMappingRepository;
         private readonly IActivityRepository _activityRepository;
+        private readonly IQuoteRepository _quoteRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public OpportunityService(IOpportunityRepository _opportunityRepository,
             ICustomerRepository _customerRepository, IUnitOfWork _unitOfWork,
             IOpportunityCategoryMappingRepository _opportunityCategoryMappingRepository,
             IActivityRepository _activityRepository,
-            IContactRepository _contactRepository)
+            IContactRepository _contactRepository,
+            IQuoteRepository _quoteRepository)
         {
             this._opportunityRepository = _opportunityRepository;
             this._customerRepository = _customerRepository;
             this._opportunityCategoryMappingRepository = _opportunityCategoryMappingRepository;
             this._activityRepository = _activityRepository;
             this._contactRepository = _contactRepository;
+            this._quoteRepository = _quoteRepository;
             this._unitOfWork = _unitOfWork;
         }
 
@@ -48,7 +52,7 @@ namespace APIProject.Service
             _opportunityRepository.Add(newOpportunity);
             //newOpportunity.CustomerID = newOpportunity.Contact.CustomerID;
             var foundContact = _contactRepository.GetById(newOpportunity.ContactID.Value);
-            if(foundContact != null)
+            if (foundContact != null)
             {
                 newOpportunity.CustomerID = foundContact.CustomerID;
             }
@@ -66,11 +70,11 @@ namespace APIProject.Service
         public void EditInfo(Opportunity opportunity)
         {
             var foundOpp = _opportunityRepository.GetById(opportunity.ID);
-            if(foundOpp == null)
+            if (foundOpp == null)
             {
                 throw new Exception(CustomError.OpportunityNotFound);
             }
-            if(foundOpp.CreateStaffID != opportunity.CreateStaffID)
+            if (foundOpp.CreateStaffID != opportunity.CreateStaffID)
             {
                 throw new Exception(CustomError.WrongAuthorizedStaff);
             }
@@ -111,9 +115,9 @@ namespace APIProject.Service
             return OpportunityStage.GetList();
         }
 
-        
 
-        
+
+
 
         public bool MapOpportunityActivity(int insertedOpportunityID, int insertedActivityID)
         {
@@ -126,6 +130,79 @@ namespace APIProject.Service
             _unitOfWork.Commit();
 
             return true;
+        }
+
+        public void ProceedNextStage(Opportunity opportunity)
+        {
+            //validate business
+            var foundOpp = _opportunityRepository.GetById(opportunity.ID);
+            if (foundOpp == null)
+            {
+                throw new Exception(CustomError.OpportunityNotFound);
+            }
+            if (foundOpp.CreateStaffID != opportunity.CreateStaffID)
+            {
+                throw new Exception(CustomError.WrongAuthorizedStaff);
+            }
+            var lastQuote = _quoteRepository.GetLatestQuoteByOpportunity(foundOpp.ID);
+            if (foundOpp.StageName == OpportunityStage.MakeQuote)
+            {
+                if(lastQuote == null)
+                {
+                    throw new Exception(CustomError.QuoteRequired); 
+                }
+                if(lastQuote.Status == QuoteStatus.NotValid)
+                {
+                    throw new Exception(CustomError.NewQuoteRequired);
+                }
+            }
+
+            if(foundOpp.StageName == OpportunityStage.ValidateQuote)
+            {
+                if (lastQuote.Status == QuoteStatus.Validating)
+                {
+                    throw new Exception(CustomError.ValidateQuoteRequired);
+                }
+            }
+            if(foundOpp.StageName == OpportunityStage.SendQuote)
+            {
+                if (!lastQuote.SentCustomerDate.HasValue)
+                {
+                    throw new Exception(CustomError.SendQuoteRequired);
+                }
+            }
+            //end validate business
+
+            SetNextStage(foundOpp);
+            _unitOfWork.Commit();
+
+            //missing generate contract
+        }
+
+        private void SetNextStage(Opportunity opportunity)
+        {
+            if (opportunity.StageName == OpportunityStage.Consider)
+            {
+                opportunity.StageName = OpportunityStage.MakeQuote;
+            }
+            else if (opportunity.StageName == OpportunityStage.MakeQuote)
+            {
+                opportunity.StageName = OpportunityStage.ValidateQuote;
+
+            }
+            else if (opportunity.StageName == OpportunityStage.ValidateQuote)
+            {
+                opportunity.StageName = OpportunityStage.SendQuote;
+
+            }
+            else if (opportunity.StageName == OpportunityStage.SendQuote)
+            {
+                opportunity.StageName = OpportunityStage.Negotiation;
+            }
+            else
+            {
+                opportunity.StageName = OpportunityStage.Won;
+            }
         }
     }
 }

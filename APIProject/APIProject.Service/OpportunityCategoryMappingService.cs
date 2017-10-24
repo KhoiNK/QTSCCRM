@@ -27,13 +27,24 @@ namespace APIProject.Service
 
         public void MapOpportunityCategories(int opportunityID, List<int> categoryIDs)
         {
-            categoryIDs.ForEach(c =>
-                _opportunityCategoryMappingRepository.Add(new OpportunityCategoryMapping
+            var foundCategoryList = _opportunityCategoryMappingRepository.GetByOpportunity(opportunityID);
+            var intersectParts = foundCategoryList.Select(c => c.SalesCategoryID).ToList().Intersect(categoryIDs);
+            var insertParts = categoryIDs.Except(intersectParts);
+            var deleteParts = foundCategoryList.Select(c=>c.SalesCategoryID).ToList().Except(intersectParts);
+            foreach(var foundCategory in foundCategoryList)
+            {
+                if (deleteParts.Contains(foundCategory.SalesCategoryID))
                 {
-                    SalesCategoryID = c,
-                    OpportunityID = opportunityID,
-                    IsDeleted = false,
-                }));
+                    foundCategory.IsDeleted = true;
+                }
+            }
+            insertParts.ToList().ForEach(c =>
+                    _opportunityCategoryMappingRepository.Add(new OpportunityCategoryMapping
+                    {
+                        SalesCategoryID = c,
+                        OpportunityID = opportunityID,
+                        IsDeleted = false,
+                    }));
             _unitOfWork.Commit();
         }
     }

@@ -42,11 +42,11 @@ namespace APIProject.Data
             List<Opportunity> opportunityList = GetOpportunities();
             opportunityList.ForEach(c => context.Opportunities.Add(c));
             context.Commit();
-            GetOppActivities(opportunityList).ForEach(c => context.Activities.Add(c));
-            List<Quote> quoteList = GetQuotes();
-            quoteList.ForEach(c => context.Quotes.Add(c));
+            //GetOppActivities(opportunityList).ForEach(c => context.Activities.Add(c));
+            //List<Quote> quoteList = GetQuotes();
+            //quoteList.ForEach(c => context.Quotes.Add(c));
             context.Commit();
-            GetQuoteItems(quoteList, salesItemList).ForEach(c => context.QuoteItemMappings.Add(c));
+            //GetQuoteItems(quoteList, salesItemList).ForEach(c => context.QuoteItemMappings.Add(c));
             GetOppCategories(opportunityList, categoryList).ForEach(c => context.OpportunityCategoryMappings.Add(c));
             context.Commit();
 
@@ -711,13 +711,10 @@ namespace APIProject.Data
             List<Opportunity> list = new List<Opportunity>();
             List<string> stages = new List<string>
             {
-                OpportunityStage.Consider,
                 OpportunityStage.MakeQuote,
                 OpportunityStage.ValidateQuote,
                 OpportunityStage.SendQuote,
                 OpportunityStage.Negotiation,
-                OpportunityStage.Won,
-                OpportunityStage.Lost
             };
             int count = 1;
             foreach (string stage in stages)
@@ -749,7 +746,6 @@ namespace APIProject.Data
                 {
                     list.Add(new Quote
                     {
-                        IsDeleted = true,
                         OpportunityID = i,
                         Tax = 10,
                         Discount = 10,
@@ -757,7 +753,6 @@ namespace APIProject.Data
                     });
                     list.Add(new Quote
                     {
-                        IsDeleted = false,
                         OpportunityID = i,
                         Tax = 10,
                         Discount = 10,
@@ -768,7 +763,6 @@ namespace APIProject.Data
                 {
                     list.Add(new Quote
                     {
-                        IsDeleted = false,
                         OpportunityID = i,
                         Tax = 10,
                         Discount = 10,
@@ -782,7 +776,6 @@ namespace APIProject.Data
                 {
                     list.Add(new Quote
                     {
-                        IsDeleted = false,
                         OpportunityID = i,
                         Tax = 10,
                         Discount = 10,

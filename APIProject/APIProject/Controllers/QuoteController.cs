@@ -1,4 +1,5 @@
-﻿using APIProject.Service;
+﻿using APIProject.GlobalVariables;
+using APIProject.Service;
 using APIProject.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,30 @@ namespace APIProject.Controllers
             else
             {
                 return NotFound();
+            }
+        }
+
+        [Route("PostNewQuote")]
+        public IHttpActionResult PostNewQuote(PostNewQuoteViewModel request)
+        {
+            if(!ModelState.IsValid || request == null)
+            {
+                return BadRequest(ModelState);
+            }
+            var distinctIDs = new HashSet<int>(request.SalesItemIDs);
+            bool allDifferent = distinctIDs.Count == request.SalesItemIDs.Count;
+            if (!allDifferent)
+            {
+                return BadRequest(CustomError.DuplicateIDs);
+            }
+
+            try
+            {
+                _quoteService.CreateQuote(request.ToQuoteModel(),request.SalesItemIDs);
+                return Ok();
+            }catch(Exception serviceException)
+            {
+                return BadRequest(serviceException.Message);
             }
         }
     }

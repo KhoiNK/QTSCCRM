@@ -24,7 +24,8 @@ namespace APIProject.ViewModels
             {
                 HistoryActivities.Add(new ActivityDetailViewModel(activity));
             }
-            var lastQuote = dto.Quotes.Where(c => c.IsDeleted == false).SingleOrDefault();
+            //var lastQuote = dto.Quotes.Where(c => c.IsDeleted == false).SingleOrDefault();
+            var lastQuote = dto.Quotes.OrderByDescending(c => c.ID).FirstOrDefault();
             if (lastQuote != null)
             {
                 QuoteDetail = new QuoteViewModel(lastQuote);
@@ -32,7 +33,7 @@ namespace APIProject.ViewModels
             StaffDetail = new StaffDetailViewModel(dto.CreatedStaff);
             CustomerDetail = new CustomerDetailViewModel(dto.Customer);
             ContactDetail = new ContactViewModel(dto.Contact);
-            CategoryIDs = dto.OpportunityCategoryMappings.Select(c => c.SalesCategoryID).ToList();
+            CategoryIDs = dto.OpportunityCategoryMappings.Where(c=>c.IsDeleted==false).Select(c => c.SalesCategoryID).ToList();
 
         }
     }

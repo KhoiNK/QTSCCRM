@@ -98,7 +98,7 @@ namespace APIProject.Controllers
                 };
 
                 InsertedOpportunityID = _opportunityService.CreateOpportunity(newOpportunity);
-                bool insertedMapping = _opportunityCategoryMappingService.MapOpportunityCategories(InsertedOpportunityID.Value,
+                _opportunityCategoryMappingService.MapOpportunityCategories(InsertedOpportunityID.Value,
                     request.CategoryIDs);
                 bool mapOpportunityActivity = _opportunityService.MapOpportunityActivity(InsertedOpportunityID.Value, InsertedActivityID);
                 //newActivity.OpportunityID = insertedOpportunity.ID;
@@ -159,24 +159,24 @@ namespace APIProject.Controllers
                 return BadRequest("Không thể cập nhật, kiểm tra json phù hợp business logic");
             }
             int? InsertedOpportunityID = null;
-                if (request.CategoryIDs != null)
+            if (request.CategoryIDs != null)
+            {
+                Activity _updatedActivity = _activityService.GetAllActivities().Where(c => c.ID == request.ID).SingleOrDefault();
+                Opportunity newOpportunity = new Opportunity
                 {
-                    Activity _updatedActivity = _activityService.GetAllActivities().Where(c => c.ID == request.ID).SingleOrDefault();
-                    Opportunity newOpportunity = new Opportunity
-                    {
-                        ContactID = _updatedActivity.ContactID,
-                        CreateStaffID = _updatedActivity.CreateStaffID,
-                        Title = _updatedActivity.Title,
-                        Description = _updatedActivity.Description
-                    };
+                    ContactID = _updatedActivity.ContactID,
+                    CreateStaffID = _updatedActivity.CreateStaffID,
+                    Title = _updatedActivity.Title,
+                    Description = _updatedActivity.Description
+                };
 
-                    InsertedOpportunityID = _opportunityService.CreateOpportunity(newOpportunity);
-                    bool insertedMapping = _opportunityCategoryMappingService.MapOpportunityCategories(InsertedOpportunityID.Value,
-                        request.CategoryIDs);
-                    bool mapOpportunityActivity = _opportunityService.MapOpportunityActivity(InsertedOpportunityID.Value, _updatedActivity.ID);
-                    //newActivity.OpportunityID = insertedOpportunity.ID;
-                    //return Ok(InsertedOpportunityID);
-                }
+                InsertedOpportunityID = _opportunityService.CreateOpportunity(newOpportunity);
+                _opportunityCategoryMappingService.MapOpportunityCategories(InsertedOpportunityID.Value,
+                   request.CategoryIDs);
+                bool mapOpportunityActivity = _opportunityService.MapOpportunityActivity(InsertedOpportunityID.Value, _updatedActivity.ID);
+                //newActivity.OpportunityID = insertedOpportunity.ID;
+                //return Ok(InsertedOpportunityID);
+            }
 
             return base.Ok(new { Updated, InsertedOpportunityID });
         }

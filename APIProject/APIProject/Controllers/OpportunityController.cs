@@ -95,36 +95,60 @@ namespace APIProject.Controllers
             return NotFound();
         }
 
-        //[Route("PutOpportunityInformation")]
-        //public IHttpActionResult PutOpportunityInformation(PutOpportunityInformationViewModel request)
-        //{
-        //    if (!ModelState.IsValid || request == null)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //    if (request.CategoryIDs.Any())
-        //    {
-        //        var categoryList = _salesCategoryService.GetAllCategories().Select(c => c.ID).ToList();
-        //        if (categoryList.Intersect(request.CategoryIDs).Count() != request.CategoryIDs.Count())
-        //        {
-        //            return BadRequest("Invalid categories");
-        //        }
-        //    }
-        //    try
-        //    {
-        //        _opportunityService.EditInfo(request.ToOpportunityModel());
-        //        if (request.CategoryIDs.Any())
-        //        {
-        //            _opportunityCategoryMappingService.MapOpportunityCategories(request.ID, request.CategoryIDs);
-        //        }
+        [HttpPut]
+        [Route("PutOpportunityInformation")]
+        public IHttpActionResult PutOpportunityInformation(PutOpportunityInformationViewModel request)
+        {
+            //User.Identity.Name;
 
-        //    }
-        //    catch (Exception exceptionFromService)
-        //    {
-        //        return BadRequest(exceptionFromService.Message);
-        //    }
-           
-        //}
+
+            if (!ModelState.IsValid || request == null)
+            {
+                return BadRequest(ModelState);
+            }
+            if (request.CategoryIDs.Any())
+            {
+                var categoryList = _salesCategoryService.GetAllCategories().Select(c => c.ID).ToList();
+                if (categoryList.Intersect(request.CategoryIDs).Count() != request.CategoryIDs.Count())
+                {
+                    return BadRequest("Invalid categories");
+                }
+            }
+            try
+            {
+                _opportunityService.EditInfo(request.ToOpportunityModel());
+                if (request.CategoryIDs.Any())
+                {
+                    _opportunityCategoryMappingService.MapOpportunityCategories(request.ID, request.CategoryIDs);
+                }
+                return Ok();
+
+            }
+            catch (Exception exceptionFromService)
+            {
+                return BadRequest(exceptionFromService.Message);
+            }
+
+        }
+
+        [Route("PutOpportunityNextStage")]
+        public IHttpActionResult PutOpportunityNextStage(PutOpportunityNextStageViewModel request)
+        {
+            if (!ModelState.IsValid || request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                _opportunityService.ProceedNextStage(request.ToOpportunityModel());
+                return Ok();
+            }
+            catch (Exception serviceException)
+            {
+                return BadRequest(serviceException.Message);
+            }
+        }
 
         [Route("GetOpportunityStages")]
         public IHttpActionResult GetOpportunityStages()
