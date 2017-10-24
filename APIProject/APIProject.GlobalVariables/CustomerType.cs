@@ -19,7 +19,6 @@ namespace APIProject.GlobalVariables
         {
             return new List<string>
             {
-                Lead,
                 Official,
                 Inside,
                 Outside

@@ -60,8 +60,14 @@ namespace APIProject.Controllers
                 SaveFileHelper saveFileHelper = new SaveFileHelper();
                 saveFileHelper.SaveCustomerImage(request.Avatar.Name, request.Avatar.Base64Content);
             }
-
-            return Ok(_customerService.EditLead(request.ToCustomerModel()));
+            try
+            {
+                return Ok(_customerService.EditLead(request.ToCustomerModel()));
+            }
+            catch (Exception exceptionFromService)
+            {
+                return BadRequest(exceptionFromService.Message);
+            }
         }
 
         [Route("PutCustomerInformation")]
@@ -72,7 +78,16 @@ namespace APIProject.Controllers
                 return BadRequest(ModelState);
             }
 
-            return Ok(_customerService.EditCustomer(request.ToCustomerModel()));
+            try
+            {
+                _customerService.EditCustomer(request.ToCustomerModel());
+                return Ok("Updated");
+
+            }
+            catch (Exception exceptionFromService)
+            {
+                return Content(HttpStatusCode.BadRequest, exceptionFromService.Message);
+            }
         }
 
         [Route("GetCustomerList")]

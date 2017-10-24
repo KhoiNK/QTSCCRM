@@ -11,7 +11,7 @@ namespace APIProject.Service
 {
     public interface IOpportunityCategoryMappingService
     {
-        bool MapOpportunityCategories(int opportunityID, List<int> categoryIDs);
+        void MapOpportunityCategories(int opportunityID, List<int> categoryIDs);
     }
     public class OpportunityCategoryMappingService : IOpportunityCategoryMappingService
     {
@@ -25,7 +25,7 @@ namespace APIProject.Service
             this._unitOfWork = _unitOfWork;
         }
 
-        public bool MapOpportunityCategories(int opportunityID, List<int> categoryIDs)
+        public void MapOpportunityCategories(int opportunityID, List<int> categoryIDs)
         {
             categoryIDs.ForEach(c =>
                 _opportunityCategoryMappingRepository.Add(new OpportunityCategoryMapping
@@ -35,7 +35,6 @@ namespace APIProject.Service
                     IsDeleted = false,
                 }));
             _unitOfWork.Commit();
-            return true;
         }
     }
 }

@@ -48,16 +48,16 @@ namespace APIProject.Service
             Customer foundCustomer = _customerRepository.GetById(customer.ID);
             if (foundCustomer == null)
             {
-                return false;
+                throw new Exception("Customer not found");
             }
 
             if (foundCustomer.CustomerType == CustomerType.Lead)
             {
-                return false;
+                throw new Exception("Lead can't change customer type");
             }
-            if (CustomerType.GetList().Contains(customer.CustomerType))
+            if (!CustomerType.GetList().Contains(customer.CustomerType))
             {
-                return false;
+                throw new Exception("Wrong customer type format");
             }
 
             foundCustomer.CustomerType = customer.CustomerType;
@@ -72,12 +72,12 @@ namespace APIProject.Service
             Customer foundCustomer = _customerRepository.GetById(customer.ID);
             if (foundCustomer == null)
             {
-                return false;
+                throw new Exception("Customer not found");
             }
 
             if (foundCustomer.CustomerType != CustomerType.Lead)
             {
-                return false;
+                throw new Exception("Only lead can update information");
             }
 
             foundCustomer.Name = customer.Name;
@@ -131,13 +131,7 @@ namespace APIProject.Service
 
         public List<string> GetCustomerTypes()
         {
-            return new List<string>
-            {
-                CustomerType.Lead,
-                CustomerType.Official,
-                CustomerType.Inside,
-                CustomerType.Outside,
-            };
+            return CustomerType.GetList();
         }
 
         public Customer GetByIssue(int issueID)

@@ -14,10 +14,11 @@ namespace APIProject.Service
     {
         IEnumerable<Opportunity> GetAllOpportunities();
         IEnumerable<Opportunity> GetByCustomer(int customerID);
-        List<string> GetStages();
+        Dictionary<string, string> GetStageDescription();
         int CreateOpportunity(Opportunity newOpportunity);
         bool MapOpportunityActivity(int insertedOpportunityID, int insertedActivityID);
         Opportunity GetByID(int id);
+        void EditInfo(Opportunity opportunity);
     }
     public class OpportunityService : IOpportunityService
     {
@@ -62,6 +63,24 @@ namespace APIProject.Service
             return newOpportunity.ID;
         }
 
+        public void EditInfo(Opportunity opportunity)
+        {
+            var foundOpp = _opportunityRepository.GetById(opportunity.ID);
+            if(foundOpp == null)
+            {
+                throw new Exception(CustomError.OpportunityNotFound);
+            }
+            if(foundOpp.CreateStaffID != opportunity.CreateStaffID)
+            {
+                throw new Exception(CustomError.WrongAuthorizedStaff);
+            }
+
+            foundOpp.ModifyStaffID = opportunity.CreateStaffID;
+            foundOpp.Title = opportunity.Title;
+            foundOpp.Description = opportunity.Description;
+            _unitOfWork.Commit();
+        }
+
         public IEnumerable<Opportunity> GetAllOpportunities()
         {
             return _opportunityRepository.GetAll();
@@ -87,19 +106,14 @@ namespace APIProject.Service
             return _opportunityRepository.GetById(id);
         }
 
-        public List<string> GetStages()
+        public Dictionary<string, string> GetStageDescription()
         {
-            return new List<string>
-            {
-                OpportunityStage.Consider,
-                OpportunityStage.MakeQuote,
-                OpportunityStage.ValidateQuote,
-                OpportunityStage.SendQuote,
-                OpportunityStage.Negotiation,
-                OpportunityStage.Won,
-                OpportunityStage.Lost
-            };
+            return OpportunityStage.GetList();
         }
+
+        
+
+        
 
         public bool MapOpportunityActivity(int insertedOpportunityID, int insertedActivityID)
         {

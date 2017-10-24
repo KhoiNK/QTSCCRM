@@ -299,6 +299,7 @@
     <Compile Include="ViewModels\MarketingResultViewModel.cs" />
     <Compile Include="ViewModels\OpportunityDetailsViewModel.cs" />
     <Compile Include="ViewModels\OpportunityDetailViewModel.cs" />
+    <Compile Include="ViewModels\OpportunityStageViewModel.cs" />
     <Compile Include="ViewModels\OpportunityViewModel.cs" />
     <Compile Include="ViewModels\PostContactViewModel.cs" />
     <Compile Include="ViewModels\PostCreateStaffViewModel.cs" />
@@ -317,6 +318,7 @@
     <Compile Include="ViewModels\PutCustomerInformationViewModel.cs" />
     <Compile Include="ViewModels\PutDraftingMarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\PutLeadInformationViewModel.cs" />
+    <Compile Include="ViewModels\PutOpportunityInformationViewModel.cs" />
     <Compile Include="ViewModels\PutSaveChangeActivityViewModel.cs" />
     <Compile Include="ViewModels\PutValidateMarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\QuoteViewModel.cs" />
