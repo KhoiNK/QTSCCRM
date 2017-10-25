@@ -20,17 +20,20 @@
 
         public int? OpportunityID { get; set; }
         public int? CreatedStaffID { get; set; }
+        public int? ValidatedStaffID { get; set; }
 
         public double Tax { get; set; }
         public double Discount { get; set; }
         public string Status { get; set; }
         public DateTime? SentCustomerDate { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
         [ForeignKey("OpportunityID")]
         public virtual Opportunity Opportunity { get; set; }
         [ForeignKey("CreatedStaffID")]
         public virtual Staff CreatedStaff { get; set; }
-
+        [ForeignKey("ValidatedStaffID")]
+        public virtual Staff ValidatedStaff { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<QuoteItemMapping> QuoteItemMappings { get; set; }
     }

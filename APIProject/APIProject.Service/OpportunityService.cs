@@ -61,7 +61,7 @@ namespace APIProject.Service
                 return 0;
             }
             newOpportunity.StageName = OpportunityStage.Consider;
-            newOpportunity.ConsiderStart = DateTime.Today.Date;
+            newOpportunity.ConsiderStart = DateTime.Now;
             newOpportunity.Priority = Priority.Low;
             _unitOfWork.Commit();
             return newOpportunity.ID;
@@ -171,8 +171,28 @@ namespace APIProject.Service
                     throw new Exception(CustomError.SendQuoteRequired);
                 }
             }
+            if(foundOpp.StageName == OpportunityStage.Won ||
+                foundOpp.StageName==OpportunityStage.Lost)
+            {
+                throw new Exception(CustomError.OpportunityClosed);
+            }
             //end validate business
 
+            if (foundOpp.StageName == OpportunityStage.MakeQuote)
+            {
+                if(lastQuote.Status == QuoteStatus.Drafting)
+                {
+                    lastQuote.Status = QuoteStatus.Validating;
+                }
+            }
+            //later add send email function
+            if(foundOpp.StageName == OpportunityStage.ValidateQuote)
+            {
+                lastQuote.SentCustomerDate = DateTime.Now;
+            }
+
+
+            foundOpp.LastModified = DateTime.Now;
             SetNextStage(foundOpp);
             _unitOfWork.Commit();
 
@@ -181,27 +201,33 @@ namespace APIProject.Service
 
         private void SetNextStage(Opportunity opportunity)
         {
+            var dateTimeNow = DateTime.Now;
             if (opportunity.StageName == OpportunityStage.Consider)
             {
                 opportunity.StageName = OpportunityStage.MakeQuote;
+                opportunity.MakeQuoteStart = dateTimeNow;
             }
             else if (opportunity.StageName == OpportunityStage.MakeQuote)
             {
                 opportunity.StageName = OpportunityStage.ValidateQuote;
+                opportunity.ValidateQuoteStart = dateTimeNow;
 
             }
             else if (opportunity.StageName == OpportunityStage.ValidateQuote)
             {
                 opportunity.StageName = OpportunityStage.SendQuote;
+                opportunity.SendQuoteStart = dateTimeNow;
 
             }
             else if (opportunity.StageName == OpportunityStage.SendQuote)
             {
                 opportunity.StageName = OpportunityStage.Negotiation;
+                opportunity.NegotiationStart = dateTimeNow;
             }
             else
             {
                 opportunity.StageName = OpportunityStage.Won;
+                opportunity.ClosedDate = dateTimeNow;
             }
         }
     }

@@ -9,10 +9,14 @@ namespace APIProject.ViewModels
     public class QuoteViewModel
     {
         public int ID { get; set; }
-        public List<QuoteItemViewModel> Items { get; set; }
         public double Tax { get; set; }
         public double Discount { get; set; }
         public string Status { get; set; }
+        public StaffDetailViewModel ValidatedStaff { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public DateTime? SentCustomerDate { get; set; }
+        public List<QuoteItemViewModel> Items { get; set; }
+
 
         public QuoteViewModel(Quote dto)
         {
@@ -20,6 +24,7 @@ namespace APIProject.ViewModels
             this.Tax = dto.Tax;
             this.Discount = dto.Discount;
             this.Status = dto.Status;
+            this.SentCustomerDate = dto.SentCustomerDate;
             if (dto.QuoteItemMappings.Where(c => c.IsDeleted == false).Count() != 0)
             {
                 var quoteItems = dto.QuoteItemMappings.Where(c => c.IsDeleted == false);
@@ -29,6 +34,11 @@ namespace APIProject.ViewModels
                     Items.Add(new QuoteItemViewModel(item));
                 }
             }
+            if (dto.ValidatedStaffID.HasValue)
+            {
+                this.ValidatedStaff = new StaffDetailViewModel(dto.ValidatedStaff);
+            }
+            this.UpdatedDate = dto.UpdatedDate;
         }
     }
 

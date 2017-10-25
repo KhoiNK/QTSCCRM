@@ -182,33 +182,6 @@ namespace APIProject.Data
                     RoleID = item.ID,
                 });
                 i++;
-
-                _list.Add(new Staff
-                {
-                    Name = "Nguyễn Văn " + i,
-                    Phone = i + i + i + "-" + i + i + i + "-" + i + i + i,
-                    Email = i + i + i + "@" + i + i + i + "." + i + i + i,
-                    RoleID = item.ID,
-                });
-                i++;
-
-                _list.Add(new Staff
-                {
-                    Name = "Nguyễn Văn " + i,
-                    Phone = i + i + i + "-" + i + i + i + "-" + i + i + i,
-                    Email = i + i + i + "@" + i + i + i + "." + i + i + i,
-                    RoleID = item.ID,
-                });
-                i++;
-
-                _list.Add(new Staff
-                {
-                    Name = "Nguyễn Văn " + i,
-                    Phone = i + i + i + "-" + i + i + i + "-" + i + i + i,
-                    Email = i + i + i + "@" + i + i + i + "." + i + i + i,
-                    RoleID = item.ID,
-                });
-                i++;
             }
             return _list;
         }
@@ -286,9 +259,9 @@ namespace APIProject.Data
 
         private static List<Customer> GetCustomers()
         {
-            string imgName = "dummy.jpg";
+            string imgName = "a11f666d-104b-45f5-9442-443b004c915a_20171018204923.jpg";
             List<Customer> _list = new List<Customer>();
-            for (int i = 1; i <= 10; i++)
+            for (int i = 1; i <= 2; i++)
             {
                 _list.Add(new Customer
                 {
@@ -300,7 +273,7 @@ namespace APIProject.Data
                     TaxCode = i.ToString()+i+i+i+i+i+i+i+i+i
                 });
             }
-            for (int i = 11; i <= 20; i++)
+            for (int i = 3; i <= 4; i++)
             {
                 _list.Add(new Customer
                 {
@@ -312,7 +285,7 @@ namespace APIProject.Data
                     AvatarSrc = imgName
                 });
             }
-            for (int i = 21; i <= 30; i++)
+            for (int i = 5; i <= 6; i++)
             {
                 _list.Add(new Customer
                 {
@@ -324,7 +297,7 @@ namespace APIProject.Data
                     AvatarSrc = imgName
                 });
             }
-            for (int i = 31; i <= 40; i++)
+            for (int i = 7; i <= 8; i++)
             {
                 _list.Add(new Customer
                 {
@@ -342,7 +315,7 @@ namespace APIProject.Data
 
         private List<Contact> GetContacts(List<Customer> customerList)
         {
-            string imgSrc = "dummy.jpg";
+            string imgSrc = "e8c2fa60-2af6-48dc-b2db-18cfa2be60be_20171019104211.jpg";
             List<Contact> _list = new List<Contact>();
             int count = 1;
             foreach (Customer customer in customerList)

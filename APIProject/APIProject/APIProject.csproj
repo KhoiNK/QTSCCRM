@@ -323,6 +323,7 @@
     <Compile Include="ViewModels\PutOpportunityNextStageViewModel.cs" />
     <Compile Include="ViewModels\PutSaveChangeActivityViewModel.cs" />
     <Compile Include="ViewModels\PutValidateMarketingPlanViewModel.cs" />
+    <Compile Include="ViewModels\PutValidQuoteViewModel.cs" />
     <Compile Include="ViewModels\QuoteViewModel.cs" />
     <Compile Include="ViewModels\SalesCategoryViewModel.cs" />
     <Compile Include="ViewModels\SalesItemViewModel.cs" />

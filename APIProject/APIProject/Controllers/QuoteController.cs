@@ -54,7 +54,25 @@ namespace APIProject.Controllers
 
             try
             {
-                _quoteService.CreateQuote(request.ToQuoteModel(),request.SalesItemIDs);
+                var insertedQuoteID = _quoteService.CreateQuote(request.ToQuoteModel(),request.SalesItemIDs);
+                return Ok(new { QuoteID = insertedQuoteID});
+            }catch(Exception serviceException)
+            {
+                return BadRequest(serviceException.Message);
+            }
+        }
+
+        [Route("PutValidQuote")]
+        public IHttpActionResult PutValidQuote(PutValidQuoteViewModel request)
+        {
+            if(!ModelState.IsValid || request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                _quoteService.ValidateQuote(request.ID, true, request.StaffID);
                 return Ok();
             }catch(Exception serviceException)
             {

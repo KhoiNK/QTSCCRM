@@ -32,7 +32,12 @@ namespace APIProject.Model.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime? ConsiderStart { get; set; }
-
+        public DateTime? MakeQuoteStart { get; set; }
+        public DateTime? ValidateQuoteStart { get; set; }
+        public DateTime? SendQuoteStart { get; set; }   
+        public DateTime? NegotiationStart { get; set; }
+        public DateTime? ClosedDate { get; set; }
+        public DateTime? LastModified { get; set; }
         public string StageName { get; set; }
         public int Priority { get; set; }
         //public string StageDescription { get; set; }

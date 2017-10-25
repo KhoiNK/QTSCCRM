@@ -28,6 +28,8 @@ namespace APIProject.ViewModels
             {
                 CreatedStaffID = this.StaffID,
                 OpportunityID = this.OpportunityID,
+                Tax = this.Tax,
+                Discount = this.Discount
             };
         }
 

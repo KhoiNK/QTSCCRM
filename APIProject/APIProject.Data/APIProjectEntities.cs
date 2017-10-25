@@ -120,6 +120,11 @@ namespace APIProject.Data
                 .WithOptional(e => e.CreatedStaff)
                 .HasForeignKey(e => e.CreatedStaffID);
 
+            modelBuilder.Entity<Staff>()
+               .HasMany(e => e.ValidateQuotes)
+               .WithOptional(e => e.ValidatedStaff)
+               .HasForeignKey(e => e.ValidatedStaffID);
+
             //modelBuilder.Entity<Issue>()
             //    .HasMany(e => e.Issues)
             //    .WithMany(e => e.SalesCategories)

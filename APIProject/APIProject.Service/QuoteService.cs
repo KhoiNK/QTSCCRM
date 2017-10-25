@@ -13,26 +13,30 @@ namespace APIProject.Service
     public interface IQuoteService
     {
         Quote GetOpportunityQuote(int opportunityID);
-        void CreateQuote(Quote quote, List<int> quoteItems);
+        int CreateQuote(Quote quote, List<int> quoteItems);
+        void ValidateQuote(int quoteID, bool isValid, int staffID);
     }
     public class QuoteService : IQuoteService
     {
         private readonly IQuoteRepository _quoteRepository;
         private readonly IOpportunityRepository _opportunityRepository;
+        private readonly IStaffRepository _staffRepository;
         private readonly ISalesItemRepository _salesItemRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public QuoteService(IQuoteRepository _quoteRepository, IUnitOfWork _unitOfWork,
             IOpportunityRepository _opportunityRepository,
-            ISalesItemRepository _salesItemRepository)
+            ISalesItemRepository _salesItemRepository,
+            IStaffRepository _staffRepository)
         {
             this._quoteRepository = _quoteRepository;
             this._opportunityRepository = _opportunityRepository;
             this._salesItemRepository = _salesItemRepository;
+            this._staffRepository = _staffRepository;
             this._unitOfWork = _unitOfWork;
         }
 
-        public void CreateQuote(Quote quote, List<int> quoteItems)
+        public int CreateQuote(Quote quote, List<int> quoteItems)
         {
             string errorMessage = CheckCreateQuoteRequest(quote, quoteItems);
             if (errorMessage != null)
@@ -41,9 +45,11 @@ namespace APIProject.Service
             }
 
             quote.CreatedDate = DateTime.Now;
+            quote.Status = QuoteStatus.Drafting;
             quote.QuoteItemMappings = CreateQuoteItems(quoteItems);
             _quoteRepository.Add(quote);
             _unitOfWork.Commit();
+            return quote.ID;
         }
 
         private List<QuoteItemMapping> CreateQuoteItems(List<int> quoteItemIDs)
@@ -94,6 +100,57 @@ namespace APIProject.Service
         public Quote GetOpportunityQuote(int opportunityID)
         {
             return _quoteRepository.GetLatestQuoteByOpportunity(opportunityID);
+        }
+
+        private string CheckValidateQuoteRequest(Quote foundQuote, Staff foundStaff)
+        {
+            if(foundQuote == null)
+            {
+                return CustomError.QuoteNotFound;
+            }else if(foundQuote.Status != QuoteStatus.Validating)
+            {
+                return CustomError.ValidatingQuoteRequired;
+            }
+            if(foundStaff == null)
+            {
+                return CustomError.StaffNotFound;
+            }
+            else if(foundStaff.Role.Name != RoleName.Director)
+            {
+                return CustomError.WrongAuthorizedStaff;
+            }
+            return null;
+        }
+
+        public void ValidateQuote(int quoteID, bool isValid, int staffID)
+        {
+            var foundQuote = _quoteRepository.GetById(quoteID);
+            var foundStaff = _staffRepository.GetById(staffID);
+            string errorMessage = CheckValidateQuoteRequest(foundQuote, foundStaff);
+            if(errorMessage != null)
+            {
+                throw new Exception(errorMessage);
+            }
+
+            if (isValid)
+            {
+                foundQuote.Status = QuoteStatus.Valid;
+                foundQuote.ValidatedStaffID = foundStaff.ID;
+            }
+            else
+            {
+                foundQuote.Status = QuoteStatus.NotValid;
+            }
+            foundQuote.UpdatedDate = DateTime.Now;
+            _unitOfWork.Commit();
+
+            //later send quote function
+        }
+
+        private void SendQuoteToCustomer(Quote quote)
+        {
+            quote.SentCustomerDate = DateTime.Now;
+            _unitOfWork.Commit();
         }
     }
 }
