@@ -25,9 +25,9 @@ namespace APIProject.ViewModels
             this.Discount = dto.Discount;
             this.Status = dto.Status;
             this.SentCustomerDate = dto.SentCustomerDate;
-            if (dto.QuoteItemMappings.Where(c => c.IsDeleted == false).Count() != 0)
+            if (dto.QuoteItemMappings.Where(c => c.IsDelete == false).Count() != 0)
             {
-                var quoteItems = dto.QuoteItemMappings.Where(c => c.IsDeleted == false);
+                var quoteItems = dto.QuoteItemMappings.Where(c => c.IsDelete == false);
                 Items = new List<QuoteItemViewModel>();
                 foreach (QuoteItemMapping item in quoteItems)
                 {

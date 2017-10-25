@@ -12,9 +12,9 @@ namespace APIProject.Model.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-        public Boolean isDelete { get; set; }
-        public DateTime? DateCreated { get; set; }
-        public DateTime? DateUpdated { get; set; }
+        public int ID { get; set; }
+        public Boolean IsDelete { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
     }
 }

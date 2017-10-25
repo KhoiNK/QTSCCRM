@@ -318,6 +318,7 @@
     <Compile Include="ViewModels\PutContactInformationViewModel.cs" />
     <Compile Include="ViewModels\PutCustomerInformationViewModel.cs" />
     <Compile Include="ViewModels\PutDraftingMarketingPlanViewModel.cs" />
+    <Compile Include="ViewModels\PutInValidQuoteViewModel.cs" />
     <Compile Include="ViewModels\PutLeadInformationViewModel.cs" />
     <Compile Include="ViewModels\PutOpportunityInformationViewModel.cs" />
     <Compile Include="ViewModels\PutOpportunityNextStageViewModel.cs" />

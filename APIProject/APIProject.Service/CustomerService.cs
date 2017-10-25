@@ -144,6 +144,22 @@ namespace APIProject.Service
             return null;
         }
 
+        public Customer Get(int id)
+        {
+            return _customerRepository.GetById(id);
+        }
+        public void Update(Customer customer)
+        {
+            var entity = _customerRepository.GetById(customer.ID);
+            entity = customer;
+            entity.UpdatedDate = DateTime.Now;
+            _customerRepository.Update(entity);
+        }
+        public void SaveChanges()
+        {
+            _unitOfWork.Commit();
+        }
+
 
     }
 
@@ -157,5 +173,8 @@ namespace APIProject.Service
         IEnumerable<Customer> GetCustomerList();
         List<string> GetCustomerTypes();
         Customer GetByIssue(int issueID);
+        Customer Get(int id);
+        void Update(Customer customer);
+        void SaveChanges();
     }
 }

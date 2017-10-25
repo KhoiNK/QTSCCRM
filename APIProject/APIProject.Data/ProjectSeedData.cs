@@ -109,8 +109,7 @@ namespace APIProject.Data
                         SalesItemID = salesItem.ID,
                         Price = salesItem.Price,
                         SalesItemName = salesItem.Name,
-                        Unit = salesItem.Unit,
-                        IsDeleted = false
+                        Unit = salesItem.Unit
                     });
                 }
             }
@@ -155,15 +154,15 @@ namespace APIProject.Data
             {
                 new Category {
                     Name = "Food",
-                    isDelete = false,
+                    IsDelete = false,
                 },
                 new Category {
                     Name = "Drink",
-                    isDelete = false,
+                    IsDelete = false,
                 },
                 new Category {
                     Name = "Snack",
-                    isDelete = false,
+                    IsDelete = false,
                 }
             };
         }
@@ -698,8 +697,7 @@ namespace APIProject.Data
                     {
                         ContactID = i,
                         CustomerID = i,
-                        CreateStaffID = i,
-                        ModifyStaffID = i,
+                        CreatedStaffID = i,
                         Title = "Cơ hội " + count++,
                         StageName = stage
                     });
@@ -898,7 +896,7 @@ namespace APIProject.Data
                     OpportunityID = item.ID,
                     CustomerID = item.CustomerID,
                     ContactID = item.ContactID,
-                    CreateStaffID = item.CreateStaffID,
+                    CreateStaffID = item.CreatedStaffID,
                     Type = ActivityType.ToCustomer,
                     Method = ActivityMethod.Direct,
                     Title = "Bàn về vấn đề: " + i,
@@ -914,7 +912,7 @@ namespace APIProject.Data
                     OpportunityID = item.ID,
                     CustomerID = item.CustomerID,
                     ContactID = item.ContactID,
-                    CreateStaffID = item.CreateStaffID,
+                    CreateStaffID = item.CreatedStaffID,
                     Type = ActivityType.ToCustomer,
                     Method = ActivityMethod.Direct,
                     Title = "Bàn về vấn đề: " + i,
@@ -930,7 +928,7 @@ namespace APIProject.Data
                     OpportunityID = item.ID,
                     CustomerID = item.CustomerID,
                     ContactID = item.ContactID,
-                    CreateStaffID = item.CreateStaffID,
+                    CreateStaffID = item.CreatedStaffID,
                     Type = ActivityType.ToCustomer,
                     Method = ActivityMethod.Direct,
                     Title = "Bàn về vấn đề: " + i,
@@ -946,7 +944,7 @@ namespace APIProject.Data
                     OpportunityID = item.ID,
                     CustomerID = item.CustomerID,
                     ContactID = item.ContactID,
-                    CreateStaffID = item.CreateStaffID,
+                    CreateStaffID = item.CreatedStaffID,
                     Type = ActivityType.ToCustomer,
                     Method = ActivityMethod.Direct,
                     Title = "Bàn về vấn đề: " + i,
@@ -962,7 +960,7 @@ namespace APIProject.Data
                     OpportunityID = item.ID,
                     CustomerID = item.CustomerID,
                     ContactID = item.ContactID,
-                    CreateStaffID = item.CreateStaffID,
+                    CreateStaffID = item.CreatedStaffID,
                     Type = ActivityType.ToCustomer,
                     Method = ActivityMethod.Direct,
                     Title = "Bàn về vấn đề: " + i,
@@ -978,7 +976,7 @@ namespace APIProject.Data
                     OpportunityID = item.ID,
                     CustomerID = item.CustomerID,
                     ContactID = item.ContactID,
-                    CreateStaffID = item.CreateStaffID,
+                    CreateStaffID = item.CreatedStaffID,
                     Type = ActivityType.ToCustomer,
                     Method = ActivityMethod.Direct,
                     Title = "Bàn về vấn đề: " + i,
@@ -994,7 +992,7 @@ namespace APIProject.Data
                     OpportunityID = item.ID,
                     CustomerID = item.CustomerID,
                     ContactID = item.ContactID,
-                    CreateStaffID = item.CreateStaffID,
+                    CreateStaffID = item.CreatedStaffID,
                     Type = ActivityType.ToCustomer,
                     Method = ActivityMethod.Direct,
                     Title = "Bàn về vấn đề: " + i,

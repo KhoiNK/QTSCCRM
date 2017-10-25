@@ -1,4 +1,5 @@
-﻿using System;
+﻿using APIProject.Model.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -6,8 +7,9 @@ using System.Web;
 
 namespace APIProject.ViewModels
 {
-    public class PutValidQuoteViewModel
+    public class PutInValidQuoteViewModel
     {
+
         [Required]
         public int ID { get; set; }
         [Required]

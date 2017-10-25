@@ -2,6 +2,7 @@
 using APIProject.Model.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -32,5 +33,13 @@ namespace APIProject.ViewModels
             }
             Owner = dto.CreatedStaff.Name;
         }
+    }
+
+    public class PutWonOpportunityViewModel
+    {
+        [Required]
+        public int ID { get; set; }
+        [Required]
+        public int StaffID { get; set; }
     }
 }

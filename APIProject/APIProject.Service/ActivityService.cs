@@ -80,7 +80,7 @@ namespace APIProject.Service
                 {
                     return 0;
                 }
-                else if(foundOpp.ContactID != activity.ContactID || foundOpp.CreateStaffID != activity.CreateStaffID)
+                else if(foundOpp.ContactID != activity.ContactID || foundOpp.CreatedStaffID != activity.CreateStaffID)
                 {
                     return 0;
                 }

@@ -7,7 +7,7 @@ namespace APIProject.Model.Models
     using System.Data.Entity.Spatial;
 
     [Table("Opportunity")]
-    public partial class Opportunity
+    public partial class Opportunity:BaseEntity
     {
         public Opportunity()
         {
@@ -17,8 +17,8 @@ namespace APIProject.Model.Models
 
         }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //public int ID { get; set; }
 
         public int? CustomerID { get; set; }
         //public int? StageID { get; set; }
@@ -26,9 +26,9 @@ namespace APIProject.Model.Models
 
         public int? ContactID { get; set; }
 
-        public int? CreateStaffID { get; set; }
+        public int? CreatedStaffID { get; set; }
 
-        public int? ModifyStaffID { get; set; }
+        public int? UpdatedStaffID { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime? ConsiderStart { get; set; }
@@ -37,7 +37,7 @@ namespace APIProject.Model.Models
         public DateTime? SendQuoteStart { get; set; }   
         public DateTime? NegotiationStart { get; set; }
         public DateTime? ClosedDate { get; set; }
-        public DateTime? LastModified { get; set; }
+        //public DateTime? UpdatedDate { get; set; }
         public string StageName { get; set; }
         public int Priority { get; set; }
         //public string StageDescription { get; set; }
@@ -45,10 +45,10 @@ namespace APIProject.Model.Models
         public virtual Contact Contact { get; set; }
 
         public virtual Customer Customer { get; set; }
-        [ForeignKey("CreateStaffID")]
+        [ForeignKey("CreatedStaffID")]
         public virtual Staff CreatedStaff { get; set; }
-
-        public virtual Staff ModifyStaff { get; set; }
+        [ForeignKey("UpdatedStaffID")]
+        public virtual Staff UpdatedStaff { get; set; }
         //[ForeignKey("StageID")]
         //public virtual Stage Stage { get; set; }
 

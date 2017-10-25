@@ -20,6 +20,10 @@ namespace APIProject.Service
         Opportunity GetByID(int id);
         void EditInfo(Opportunity opportunity);
         void ProceedNextStage(Opportunity opportunity);
+        void SetMakeQuoteStage(int opportunityID);
+        Opportunity Get(int id);
+        void Update(Opportunity opportunity);
+        void SaveChanges();
     }
     public class OpportunityService : IOpportunityService
     {
@@ -74,15 +78,20 @@ namespace APIProject.Service
             {
                 throw new Exception(CustomError.OpportunityNotFound);
             }
-            if (foundOpp.CreateStaffID != opportunity.CreateStaffID)
+            if (foundOpp.CreatedStaffID != opportunity.CreatedStaffID)
             {
                 throw new Exception(CustomError.WrongAuthorizedStaff);
             }
 
-            foundOpp.ModifyStaffID = opportunity.CreateStaffID;
+            foundOpp.UpdatedStaffID = opportunity.CreatedStaffID;
             foundOpp.Title = opportunity.Title;
             foundOpp.Description = opportunity.Description;
             _unitOfWork.Commit();
+        }
+
+        public Opportunity Get(int id)
+        {
+            return _opportunityRepository.GetById(id);
         }
 
         public IEnumerable<Opportunity> GetAllOpportunities()
@@ -140,7 +149,7 @@ namespace APIProject.Service
             {
                 throw new Exception(CustomError.OpportunityNotFound);
             }
-            if (foundOpp.CreateStaffID != opportunity.CreateStaffID)
+            if (foundOpp.CreatedStaffID != opportunity.CreatedStaffID)
             {
                 throw new Exception(CustomError.WrongAuthorizedStaff);
             }
@@ -192,11 +201,36 @@ namespace APIProject.Service
             }
 
 
-            foundOpp.LastModified = DateTime.Now;
+            foundOpp.UpdatedDate = DateTime.Now;
             SetNextStage(foundOpp);
             _unitOfWork.Commit();
 
             //missing generate contract
+        }
+
+        public void SaveChanges()
+        {
+            _unitOfWork.Commit();
+        }
+
+        public void SetMakeQuoteStage(int opportunityID)
+        {
+            var foundOpp = _opportunityRepository.GetById(opportunityID);
+            if (foundOpp == null)
+            {
+                throw new Exception(CustomError.OpportunityNotFound);
+            }
+            foundOpp.StageName = OpportunityStage.MakeQuote;
+            foundOpp.UpdatedDate = DateTime.Now;
+            _unitOfWork.Commit();
+        }
+
+        public void Update(Opportunity opportunity)
+        {
+            var entity = _opportunityRepository.GetById(opportunity.ID);
+            entity = opportunity;
+            entity.UpdatedDate = DateTime.Now;
+            _opportunityRepository.Update(entity);
         }
 
         private void SetNextStage(Opportunity opportunity)

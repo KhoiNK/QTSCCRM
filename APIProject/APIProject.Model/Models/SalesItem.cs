@@ -7,7 +7,7 @@ namespace APIProject.Model.Models
     using System.Data.Entity.Spatial;
 
     [Table("SalesItem")]
-    public partial class SalesItem
+    public partial class SalesItem:BaseEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public SalesItem()
@@ -15,8 +15,8 @@ namespace APIProject.Model.Models
             QuoteItemMappings = new HashSet<QuoteItemMapping>();
         }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //public int ID { get; set; }
         public string Name { get; set; }
         public int Price { get; set; }
         public string Unit { get; set; }

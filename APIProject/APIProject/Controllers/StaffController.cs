@@ -57,5 +57,13 @@ namespace APIProject.Controllers
                 return NotFound();
             }
         }
+
+        [Route("GetStaffs")]
+        [ResponseType(typeof(StaffDetailViewModel))]
+        public IHttpActionResult GetStaffs()
+        {
+            var staffs = _staffService.GetAllStaffs();
+            return Ok(staffs.Select(c => new StaffDetailViewModel(c)));
+        }
     }
 }

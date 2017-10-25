@@ -22,7 +22,7 @@ namespace APIProject.Data.Repositories
 
         public override void Update(Category entity)
         {
-            entity.DateUpdated = DateTime.Now;
+            entity.UpdatedDate = DateTime.Now;
             base.Update(entity);
         }
     }

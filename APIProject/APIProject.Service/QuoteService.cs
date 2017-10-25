@@ -12,9 +12,14 @@ namespace APIProject.Service
 {
     public interface IQuoteService
     {
+        Quote Get(int id);
+
         Quote GetOpportunityQuote(int opportunityID);
         int CreateQuote(Quote quote, List<int> quoteItems);
-        void ValidateQuote(int quoteID, bool isValid, int staffID);
+        Quote ValidateQuote(int quoteID, bool isValid, int staffID, string notes);
+        void SaveChanges();
+        void Update(Quote quote);
+        void Add(Quote quote);
     }
     public class QuoteService : IQuoteService
     {
@@ -76,7 +81,7 @@ namespace APIProject.Service
             {
                 return CustomError.OpportunityNotFound;
             }
-            if (foundOpportunity.CreateStaffID != quote.CreatedStaffID)
+            if (foundOpportunity.CreatedStaffID != quote.CreatedStaffID)
             {
                 return CustomError.WrongAuthorizedStaff;
             }
@@ -122,7 +127,7 @@ namespace APIProject.Service
             return null;
         }
 
-        public void ValidateQuote(int quoteID, bool isValid, int staffID)
+        public Quote ValidateQuote(int quoteID, bool isValid, int staffID, string notes)
         {
             var foundQuote = _quoteRepository.GetById(quoteID);
             var foundStaff = _staffRepository.GetById(staffID);
@@ -141,16 +146,43 @@ namespace APIProject.Service
             {
                 foundQuote.Status = QuoteStatus.NotValid;
             }
+            foundQuote.Notes = notes;
             foundQuote.UpdatedDate = DateTime.Now;
             _unitOfWork.Commit();
-
             //later send quote function
+
+            return foundQuote;
         }
+
 
         private void SendQuoteToCustomer(Quote quote)
         {
             quote.SentCustomerDate = DateTime.Now;
             _unitOfWork.Commit();
+        }
+
+        public void SaveChanges()
+        {
+            _unitOfWork.Commit();
+        }
+
+        public Quote Get(int id)
+        {
+            return _quoteRepository.GetById(id);
+        }
+
+        public void Update(Quote quote)
+        {
+            var entity = _quoteRepository.GetById(quote.ID);
+            entity = quote;
+            entity.UpdatedDate = DateTime.Now;
+            _quoteRepository.Update(entity);
+        }
+
+        public void Add(Quote quote)
+        {
+            quote.CreatedDate = DateTime.Now;
+            _quoteRepository.Add(quote);
         }
     }
 }

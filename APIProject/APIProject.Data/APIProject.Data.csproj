@@ -74,6 +74,7 @@
     <Compile Include="Repositories\MarketingResultRepository.cs" />
     <Compile Include="Repositories\OpportunityCategoryMappingRepository.cs" />
     <Compile Include="Repositories\OpportunityRepository.cs" />
+    <Compile Include="Repositories\QuoteItemMappingRepository.cs" />
     <Compile Include="Repositories\QuoteRepository.cs" />
     <Compile Include="Repositories\RoleRepository.cs" />
     <Compile Include="Repositories\SalesCategoryRepository.cs" />

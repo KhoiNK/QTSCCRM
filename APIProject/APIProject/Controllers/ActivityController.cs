@@ -92,7 +92,7 @@ namespace APIProject.Controllers
                 Opportunity newOpportunity = new Opportunity
                 {
                     ContactID = _insertedActivity.ContactID,
-                    CreateStaffID = _insertedActivity.CreateStaffID,
+                    CreatedStaffID = _insertedActivity.CreateStaffID,
                     Title = _insertedActivity.Title,
                     Description = _insertedActivity.Description
                 };
@@ -165,7 +165,7 @@ namespace APIProject.Controllers
                 Opportunity newOpportunity = new Opportunity
                 {
                     ContactID = _updatedActivity.ContactID,
-                    CreateStaffID = _updatedActivity.CreateStaffID,
+                    CreatedStaffID = _updatedActivity.CreateStaffID,
                     Title = _updatedActivity.Title,
                     Description = _updatedActivity.Description
                 };

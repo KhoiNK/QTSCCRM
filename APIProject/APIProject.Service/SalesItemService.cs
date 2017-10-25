@@ -13,6 +13,8 @@ namespace APIProject.Service
     {
         IEnumerable<SalesItem> GetByCategory(int categoryID);
         int CreateNewItem(SalesItem salesItem);
+        IEnumerable<SalesItem> GetAll();
+        SalesItem Get(int id);
     }
     public class SalesItemService: ISalesItemService
     {
@@ -39,6 +41,16 @@ namespace APIProject.Service
             }
 
             return 0;
+        }
+
+        public SalesItem Get(int id)
+        {
+            return _salesItemRepository.GetById(id);
+        }
+
+        public IEnumerable<SalesItem> GetAll()
+        {
+            return _salesItemRepository.GetAll();
         }
 
         public IEnumerable<SalesItem> GetByCategory(int categoryID)

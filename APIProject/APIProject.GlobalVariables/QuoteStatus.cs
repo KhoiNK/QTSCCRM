@@ -12,5 +12,7 @@ namespace APIProject.GlobalVariables
         public static string Validating = "Chờ duyệt";
         public static string NotValid = "Không đạt";
         public static string Valid = "Đạt";
+
+        public static string SentCustomer = "Đã gửi cho khách hàng";
     }
 }

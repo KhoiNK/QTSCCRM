@@ -7,7 +7,7 @@
     using System.Data.Entity.Spatial;
 
     [Table("Quote")]
-    public partial class Quote
+    public partial class Quote:BaseEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Quote()
@@ -15,8 +15,8 @@
             QuoteItemMappings = new HashSet<QuoteItemMapping>();
         }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //public int ID { get; set; }
 
         public int? OpportunityID { get; set; }
         public int? CreatedStaffID { get; set; }
@@ -25,9 +25,10 @@
         public double Tax { get; set; }
         public double Discount { get; set; }
         public string Status { get; set; }
+        public string Notes { get; set; }
         public DateTime? SentCustomerDate { get; set; }
-        public DateTime? CreatedDate { get; set; }
-        public DateTime? UpdatedDate { get; set; }
+        //public DateTime? CreatedDate { get; set; }
+        //public DateTime? UpdatedDate { get; set; }
         [ForeignKey("OpportunityID")]
         public virtual Opportunity Opportunity { get; set; }
         [ForeignKey("CreatedStaffID")]

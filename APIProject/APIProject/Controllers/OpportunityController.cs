@@ -16,15 +16,21 @@ namespace APIProject.Controllers
     public class OpportunityController : ApiController
     {
         private readonly IOpportunityService _opportunityService;
+        private readonly ICustomerService _customerService;
         private readonly IUploadNamingService _uploadNamingService;
+        private readonly IStaffService _staffService;
         private readonly ISalesCategoryService _salesCategoryService;
         private readonly IOpportunityCategoryMappingService _opportunityCategoryMappingService;
 
         public OpportunityController(IOpportunityService _opportunityService,
             IUploadNamingService _uploadNamingService,
+            ICustomerService _customerService,
+            IStaffService _staffService,
             ISalesCategoryService _salesCategoryService,
             IOpportunityCategoryMappingService _opportunityCategoryMappingService)
         {
+            this._staffService = _staffService;
+            this._customerService = _customerService;
             this._opportunityService = _opportunityService;
             this._uploadNamingService = _uploadNamingService;
             this._salesCategoryService = _salesCategoryService;
@@ -148,6 +154,48 @@ namespace APIProject.Controllers
             {
                 return BadRequest(serviceException.Message);
             }
+        }
+
+        [Route("PutWonOpportunity")]
+        public IHttpActionResult PutWonOpportunity(PutWonOpportunityViewModel request)
+        {
+            if(!ModelState.IsValid || request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var foundStaff = _staffService.Get(request.StaffID);
+            if (foundStaff == null)
+            {
+                return BadRequest(message: CustomError.StaffNotFound);
+            }
+
+            var foundOpportunity = _opportunityService.Get(request.ID);
+            if (foundOpportunity == null)
+            {
+                return BadRequest(message: CustomError.OpportunityNotFound);
+            }
+            if (foundOpportunity.StageName != OpportunityStage.Negotiation)
+            {
+                return BadRequest(message: CustomError.OppStageRequired + OpportunityStage.Negotiation);
+            }
+
+
+            foundOpportunity.StageName = OpportunityStage.Won;
+            foundOpportunity.UpdatedStaffID = request.StaffID;
+            foundOpportunity.ClosedDate = DateTime.Today;
+            _opportunityService.Update(foundOpportunity);
+            _opportunityService.SaveChanges();
+
+            var foundCustomer = _customerService.Get(foundOpportunity.CustomerID.Value);
+            foundCustomer.CustomerType = CustomerType.Official;
+            foundCustomer.ConvertedDate = DateTime.Today;
+            _customerService.Update(foundCustomer);
+            _customerService.SaveChanges();
+
+            //todo
+
+            return Ok();
         }
 
         [Route("GetOpportunityStages")]

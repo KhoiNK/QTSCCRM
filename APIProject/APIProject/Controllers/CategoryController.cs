@@ -16,7 +16,7 @@ namespace APIProject.Controllers
         // GET: api/Category
         public IEnumerable<CategoryViewModel> Get()
         {
-            return _categoryService.GetCategories().Where(c => !c.isDelete).Select(c => new CategoryViewModel() { Id = c.Id, Name = c.Name});
+            return _categoryService.GetCategories().Where(c => !c.IsDelete).Select(c => new CategoryViewModel() { Id = c.ID, Name = c.Name});
         }
 
         // POST: api/Category

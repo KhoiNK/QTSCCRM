@@ -14,6 +14,9 @@ namespace APIProject.Service
         Staff GetByOpportunity(int opportunityID);
         Staff GetByActivity(int activityID);
         void CreateStaff(Staff staff);
+        IEnumerable<Staff> GetAllStaffs();
+        Staff Get(int id);
+        void SaveChanges();
     }
     public class StaffService:IStaffService
     {
@@ -36,6 +39,16 @@ namespace APIProject.Service
             _unitOfWork.Commit();
         }
 
+        public Staff Get(int id)
+        {
+            return _staffRepository.GetById(id);
+        }
+
+        public IEnumerable<Staff> GetAllStaffs()
+        {
+            return _staffRepository.GetAll();
+        }
+
         public Staff GetByActivity(int activityID)
         {
             var foundActivity = _activityRepository.GetById(activityID);
@@ -54,6 +67,11 @@ namespace APIProject.Service
                 return foundOpportunity.CreatedStaff;
             }
             return null;
+        }
+
+        public void SaveChanges()
+        {
+            _unitOfWork.Commit();
         }
     }
 }
