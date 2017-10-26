@@ -446,10 +446,6 @@ namespace APIProject.Data
                 new SalesCategory
                 {
                     Name = "Quay phim - quảng cáo",
-                },
-                new SalesCategory
-                {
-                    Name = "Khác"
                 }
             };
         }

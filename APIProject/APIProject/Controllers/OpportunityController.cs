@@ -112,28 +112,92 @@ namespace APIProject.Controllers
             {
                 return BadRequest(ModelState);
             }
-            if (request.CategoryIDs.Any())
-            {
-                var categoryList = _salesCategoryService.GetAllCategories().Select(c => c.ID).ToList();
-                if (categoryList.Intersect(request.CategoryIDs).Count() != request.CategoryIDs.Count())
-                {
-                    return BadRequest("Invalid categories");
-                }
-            }
-            try
-            {
-                _opportunityService.EditInfo(request.ToOpportunityModel());
-                if (request.CategoryIDs.Any())
-                {
-                    _opportunityCategoryMappingService.MapOpportunityCategories(request.ID, request.CategoryIDs);
-                }
-                return Ok();
 
-            }
-            catch (Exception exceptionFromService)
+            #region validate category ids
+            if (request.CategoryIDs != null)
             {
-                return BadRequest(exceptionFromService.Message);
+                if (!request.CategoryIDs.Any())
+                {
+                    return BadRequest(message: CustomError.OpportunitySalesCategoriesRequired);
+                }
+                if (request.CategoryIDs.Distinct().Count() != request.CategoryIDs.Count)
+                {
+                    return BadRequest(message: CustomError.OppCategoryNotDuplicateRequired);
+                }
             }
+            #endregion
+            #region verify category ids
+            var dbCategoryIDs = _salesCategoryService.GetAll().Where(c => c.IsDelete == false)
+                .Select(c => c.ID);
+            if (dbCategoryIDs.Intersect(request.CategoryIDs).Count() != request.CategoryIDs.Count)
+            {
+                return BadRequest(message: CustomError.OppCategoriesNotFound);
+            }
+            #endregion
+            #region verify staff
+            //exits
+            var foundStaff = _staffService.Get(request.StaffID);
+            if (foundStaff == null)
+            {
+                return BadRequest(message: CustomError.StaffNotFound);
+            }
+            #endregion
+            #region verify opportunity
+            var foundOpp = _opportunityService.Get(request.ID);
+            if (foundOpp == null)
+            {
+                return BadRequest(message: CustomError.OpportunityNotFound);
+            }
+            var CanChangeInfoStages = new List<string>
+            {
+                OpportunityStage.Consider,
+                OpportunityStage.MakeQuote,
+                OpportunityStage.ValidateQuote,
+                OpportunityStage.SendQuote,
+                OpportunityStage.Negotiation
+            };
+            if (!CanChangeInfoStages.Contains(foundOpp.StageName))
+            {
+                return BadRequest(message: CustomError.ChangeInfoStageRequired +
+                    String.Join(", ", CanChangeInfoStages));
+            }
+            var CanChangeCategoriesStages = new List<string>
+            {
+                OpportunityStage.Consider,
+                OpportunityStage.MakeQuote
+            };
+            if (!CanChangeCategoriesStages.Contains(foundOpp.StageName))
+            {
+                //todo
+            }
+            #endregion
+
+            return Ok();
+
+
+
+            //if (request.CategoryIDs.Any())
+            //{
+            //    var categoryList = _salesCategoryService.GetAllCategories().Select(c => c.ID).ToList();
+            //    if (categoryList.Intersect(request.CategoryIDs).Count() != request.CategoryIDs.Count())
+            //    {
+            //        return BadRequest("Invalid categories");
+            //    }
+            //}
+            //try
+            //{
+            //    _opportunityService.EditInfo(request.ToOpportunityModel());
+            //    if (request.CategoryIDs.Any())
+            //    {
+            //        _opportunityCategoryMappingService.MapOpportunityCategories(request.ID, request.CategoryIDs);
+            //    }
+            //    return Ok();
+
+            //}
+            //catch (Exception exceptionFromService)
+            //{
+            //    return BadRequest(exceptionFromService.Message);
+            //}
 
         }
 
@@ -159,7 +223,7 @@ namespace APIProject.Controllers
         [Route("PutWonOpportunity")]
         public IHttpActionResult PutWonOpportunity(PutWonOpportunityViewModel request)
         {
-            if(!ModelState.IsValid || request == null)
+            if (!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
             }

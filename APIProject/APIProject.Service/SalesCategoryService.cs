@@ -11,6 +11,7 @@ namespace APIProject.Service
 {
     public interface ISalesCategoryService
     {
+        IEnumerable<SalesCategory> GetAll();
         IEnumerable<SalesCategory> GetAllCategories();
         IEnumerable<SalesCategory> GetByOpportunity(int opportunityID);
         IEnumerable<SalesCategory> GetByIssue(int issueID);
@@ -30,6 +31,11 @@ namespace APIProject.Service
             this._opportunityRepository = _opportunityRepository;
             this._issueCategoryMappingRepository = _issueCategoryMappingRepository;
             this._unitOfWork = _unitOfWork;
+        }
+
+        public IEnumerable<SalesCategory> GetAll()
+        {
+            return _salesCategoryRepository.GetAll();
         }
 
         public IEnumerable<SalesCategory> GetAllCategories()

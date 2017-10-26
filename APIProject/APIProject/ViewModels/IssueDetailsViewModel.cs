@@ -11,8 +11,8 @@ namespace APIProject.ViewModels
         public IssueDetailViewModel IssueDetail { get; set; }
         public CustomerDetailViewModel CustomerDetail { get; set; }
         public ContactViewModel ContactDetail { get; set; }
-        public List<int> CategoryIDs { get; set; }
-
+        //public List<int> CategoryIDs { get; set; }
+        public List<string> CategoryNames { get; set; }
         public IssueDetailsViewModel(Issue dto)
         {
             IssueDetail = new IssueDetailViewModel(dto);
@@ -20,7 +20,8 @@ namespace APIProject.ViewModels
             ContactDetail = new ContactViewModel(dto.Contact);
             if (dto.IssueCategoryMappings.Any())
             {
-                CategoryIDs = dto.IssueCategoryMappings.Select(c => c.SalesCategoryID).ToList();
+                //CategoryIDs = dto.IssueCategoryMappings.Select(c => c.SalesCategoryID).ToList();
+                CategoryNames = dto.IssueCategoryMappings.Select(c => c.SalesCategory.Name).ToList();
             }
         }
     }

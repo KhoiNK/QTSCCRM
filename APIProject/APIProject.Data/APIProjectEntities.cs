@@ -30,6 +30,7 @@ namespace APIProject.Data
         public virtual DbSet<OpportunityCategoryMapping> OpportunityCategoryMappings { get; set; }
         public virtual DbSet<QuoteItemMapping> QuoteItemMappings { get; set; }
         public virtual DbSet<Quote> Quotes { get; set; }
+        public virtual DbSet<Contract> Contracts { get; set; }
         public virtual DbSet<AppConfig> AppConfigs { get; set; }
         //public virtual DbSet<Stage> Stages { get; set; }
 

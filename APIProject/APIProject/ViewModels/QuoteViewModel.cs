@@ -1,6 +1,7 @@
 ﻿using APIProject.Model.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -44,17 +45,33 @@ namespace APIProject.ViewModels
 
     public class QuoteItemViewModel
     {
-        public int ItemID { get; set; }
+        public int ID { get; set; }
         public string Name { get; set; }
         public int Price { get; set; }
         public string Unit { get; set; }
 
         public QuoteItemViewModel(QuoteItemMapping dto)
         {
-            this.ItemID = dto.SalesItemID;
+            this.ID = dto.SalesItemID;
             this.Name = dto.SalesItemName;
             this.Price = dto.Price.Value;
             this.Unit = dto.Unit;
         }
+    }
+
+    public class PutUpdateQuoteViewModel
+    {
+        [Required]
+        public int ID { get; set; }
+        [Required]
+        public int StaffID { get; set; }
+        [Required]
+        public List<int> SalesItemIDs { get; set; }
+        [Range(0, 100,
+            ErrorMessage = "Giá trị của thuế phải từ {1} đến {2}.")]
+        public double Tax { get; set; }
+        [Range(0, 100,
+           ErrorMessage = "Giá trị của khuyến mãi phải từ {1} đến {2}.")]
+        public double Discount { get; set; }
     }
 }

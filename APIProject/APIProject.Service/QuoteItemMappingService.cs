@@ -25,15 +25,30 @@ namespace APIProject.Service
             quoteItem.CreatedDate = DateTime.Now;
             _quoteItemMappingRepository.Add(quoteItem);
         }
-        void SaveChanges()
+        public void SaveChanges()
         {
             _unitOfWork.Commit();
         }
 
-        void IQuoteItemMappingService.SaveChanges()
+        
+        public void DeleteBySalesItemID(int salesItemID)
         {
-            _unitOfWork.Commit();
+            var entity = _quoteItemMappingRepository.GetBySalesItemID(salesItemID);
+            entity.UpdatedDate = DateTime.Now;
+            entity.IsDelete = true;
+            _quoteItemMappingRepository.Delete(entity);
         }
+
+        public void Delete(QuoteItemMapping quoteItem)
+        {
+            var entity = _quoteItemMappingRepository.GetById(quoteItem.ID);
+            entity = quoteItem;
+            entity.UpdatedDate = DateTime.Now;
+            entity.IsDelete = true;
+            _quoteItemMappingRepository.Update(entity);
+        }
+
+
     }
 
 
@@ -41,5 +56,7 @@ namespace APIProject.Service
     {
         void Add(QuoteItemMapping quoteItem);
         void SaveChanges();
+        void DeleteBySalesItemID(int salesItemID);
+        void Delete(QuoteItemMapping quoteItem);
     }
 }

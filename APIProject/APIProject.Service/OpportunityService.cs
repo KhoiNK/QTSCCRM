@@ -86,6 +86,7 @@ namespace APIProject.Service
             foundOpp.UpdatedStaffID = opportunity.CreatedStaffID;
             foundOpp.Title = opportunity.Title;
             foundOpp.Description = opportunity.Description;
+            _opportunityRepository.Update(foundOpp);
             _unitOfWork.Commit();
         }
 

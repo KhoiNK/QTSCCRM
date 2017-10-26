@@ -216,17 +216,17 @@ namespace APIProject.Controllers
             return Ok(_activityService.GetAllActivities().Select(c => new ActivityViewModel(c)));
         }
 
-        [Route("GetActivityDetail")]
-        [ResponseType(typeof(ActivityDetailViewModel))]
-        public IHttpActionResult GetActivityDetail(int? id)
-        {
-            if (id.HasValue)
-            {
-                return Ok(_activityService.GetAllActivities().Where(c => c.ID == id.Value)
-                    .Select(c => new ActivityDetailViewModel(c)));
-            }
-            return BadRequest();
-        }
+        //[Route("GetActivityDetail")]
+        //[ResponseType(typeof(ActivityDetailViewModel))]
+        //public IHttpActionResult GetActivityDetail(int? id)
+        //{
+        //    if (id.HasValue)
+        //    {
+        //        return Ok(_activityService.GetAllActivities().Where(c => c.ID == id.Value)
+        //            .Select(c => new ActivityDetailViewModel(c)));
+        //    }
+        //    return BadRequest();
+        //}
 
         [Route("GetActivityDetails")]
         [ResponseType(typeof(ActivityDetailsViewModel))]

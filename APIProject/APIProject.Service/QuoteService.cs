@@ -20,6 +20,7 @@ namespace APIProject.Service
         void SaveChanges();
         void Update(Quote quote);
         void Add(Quote quote);
+        void Delete(Quote quote);
     }
     public class QuoteService : IQuoteService
     {
@@ -183,6 +184,14 @@ namespace APIProject.Service
         {
             quote.CreatedDate = DateTime.Now;
             _quoteRepository.Add(quote);
+        }
+
+        public void Delete(Quote quote)
+        {
+            var entity = _quoteRepository.GetById(quote.ID);
+            entity = quote;
+            entity.IsDelete = true;
+            _quoteRepository.Update(entity);
         }
     }
 }

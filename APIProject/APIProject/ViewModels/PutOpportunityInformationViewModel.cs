@@ -17,7 +17,6 @@ namespace APIProject.ViewModels
         public string Title { get; set; }
         [Required]
         public string Description { get; set; }
-        [Required]
         public List<int> CategoryIDs { get; set; }
 
         public Opportunity ToOpportunityModel()

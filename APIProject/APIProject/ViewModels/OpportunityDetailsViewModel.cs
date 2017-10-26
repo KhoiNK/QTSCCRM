@@ -25,7 +25,7 @@ namespace APIProject.ViewModels
                 HistoryActivities.Add(new ActivityDetailViewModel(activity));
             }
             //var lastQuote = dto.Quotes.Where(c => c.IsDeleted == false).SingleOrDefault();
-            var lastQuote = dto.Quotes.OrderByDescending(c => c.ID).FirstOrDefault();
+            var lastQuote = dto.Quotes.Where(c => c.IsDelete == false).OrderByDescending(c => c.ID).FirstOrDefault();
             if (lastQuote != null)
             {
                 QuoteDetail = new QuoteViewModel(lastQuote);

@@ -7,7 +7,7 @@ namespace APIProject.Model.Models
     using System.Data.Entity.Spatial;
 
     [Table("SalesCategory")]
-    public partial class SalesCategory
+    public partial class SalesCategory:BaseEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public SalesCategory()
@@ -20,8 +20,8 @@ namespace APIProject.Model.Models
             SalesItems = new HashSet<SalesItem>();
         }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //public int ID { get; set; }
         public string Name { get; set; }
 
         public int? OfCategoryID { get; set; }

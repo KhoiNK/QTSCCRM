@@ -15,7 +15,10 @@ namespace APIProject.GlobalVariables
         public static string OpportunityNotFound = "Không tìm thấy cơ hội bán hàng";
         public static string OppStageRequired = "Yêu cầu cơ hội bán hàng ở giai đoạn:";
         public static string OpportunityClosed = "Cơ hội bán hàng đã kết thúc";
-
+        public static string OpportunitySalesCategoriesRequired = "Tối thiểu 1 loại dịch vụ";
+        public static string OppCategoryNotDuplicateRequired = "Các loại dịch vụ không được trùng lặp";
+        public static string OppCategoriesNotFound = "Không tìm thấy một vài loại dịch vụ";
+        public static string ChangeInfoStageRequired = "Chỉ được đổi thông tin cơ bản ở một trong các giai đoạn sau:";
 
         public static string WrongAuthorizedStaff = "Nhân viên không có quyền thực hiện thao tác này";
         public static string StaffRoleRequired = "Yêu cầu nhân viên có chức vụ:";
@@ -36,9 +39,11 @@ namespace APIProject.GlobalVariables
         public static string ValidatingQuoteRequired = "Báo giá chưa hoàn thành để kiểm duyệt";
         public static string PendingQuoteExisted = "Chỉ tồn tại 1 báo giá trong một thời điểm";
         public static string QuoteItemsNotFound = "Không tìm thấy một vài mục trong báo giá";
-
+        public static string QuoteItemRequired = "Phải ít nhất 1 hạng mục báo giá";
 
         public static string InvalidSalesItems = "Danh sách mục báo giá không hợp lệ";
+
+
 
     }
 }

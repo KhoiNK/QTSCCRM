@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace APIProject.Controllers
 {
@@ -49,6 +50,25 @@ namespace APIProject.Controllers
             }
         }
 
+        [Route("GetQuoteDetails")]
+        [ResponseType(typeof(QuoteViewModel))]
+        public IHttpActionResult GetQuoteDetails(int id = 0)
+        {
+            if (id == 0)
+            {
+                return BadRequest();
+            }
+
+            var foundQuote = _quoteService.Get(id);
+            if (foundQuote == null)
+            {
+                return BadRequest(message: CustomError.QuoteNotFound);
+            }
+
+            return Ok(new QuoteViewModel(foundQuote));
+
+        }
+
         [Route("PostNewQuote")]
         public IHttpActionResult PostNewQuote(PostNewQuoteViewModel request)
         {
@@ -56,23 +76,12 @@ namespace APIProject.Controllers
             {
                 return BadRequest(ModelState);
             }
-            //var distinctIDs = new HashSet<int>(request.SalesItemIDs);
-            //bool allDifferent = distinctIDs.Count == request.SalesItemIDs.Count;
-            //if (!allDifferent)
-            //{
-            //    return BadRequest(CustomError.DuplicateIDs);
-            //}
 
-            //try
-            //{
-            //    var insertedQuoteID = _quoteService.CreateQuote(request.ToQuoteModel(), request.SalesItemIDs);
-            //    return Ok(new { QuoteID = insertedQuoteID });
-            //}
-            //catch (Exception serviceException)
-            //{
-            //    return BadRequest(serviceException.Message);
-            //}
             #region validate request
+            if (!request.SalesItemIDs.Any())
+            {
+                return BadRequest(message: CustomError.QuoteItemRequired);
+            }
             if (request.SalesItemIDs.Distinct().Count() != request.SalesItemIDs.Count)
             {
                 List<string> errors = new List<string>();
@@ -129,7 +138,7 @@ namespace APIProject.Controllers
                 OpportunityID = request.OpportunityID,
                 Tax = request.Tax,
                 Discount = request.Discount,
-                Status=QuoteStatus.Drafting
+                Status = QuoteStatus.Drafting
             };
 
             _quoteService.Add(newQuote);
@@ -146,7 +155,7 @@ namespace APIProject.Controllers
                     SalesItemID = foundItem.ID,
                     SalesItemName = foundItem.Name,
                     Price = foundItem.Price,
-                    Unit=foundItem.Unit
+                    Unit = foundItem.Unit
                 });
             }
             _quoteItemMappingService.SaveChanges();
@@ -255,6 +264,116 @@ namespace APIProject.Controllers
             foundOpp.StageName = OpportunityStage.MakeQuote;
             foundOpp.UpdatedStaffID = foundStaff.ID;
 
+            _opportunityService.Update(foundOpp);
+            _opportunityService.SaveChanges();
+
+            return Ok();
+        }
+
+        [Route("PutUpdateQuote")]
+        public IHttpActionResult PutUpdateQuote(PutUpdateQuoteViewModel request)
+        {
+            if (!ModelState.IsValid || request == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            #region validate request
+            if (!request.SalesItemIDs.Any())
+            {
+                return BadRequest(message: CustomError.QuoteItemRequired);
+            }
+            if (request.SalesItemIDs.Distinct().Count() != request.SalesItemIDs.Count)
+            {
+                List<string> errors = new List<string>();
+                return BadRequest(message: CustomError.QuoteItemNotDuplicateRequired);
+            }
+
+            #endregion
+
+            #region verify quote
+            var foundQuote = _quoteService.Get(request.ID);
+            if (foundQuote == null)
+            {
+                return BadRequest(message: CustomError.QuoteNotFound);
+            }
+            if (foundQuote.Status != QuoteStatus.Drafting)
+            {
+                return BadRequest(message: CustomError.QuoteStatusRequired + QuoteStatus.Drafting);
+            }
+            #endregion
+            #region verify staff
+            var foundStaff = _staffService.Get(request.StaffID);
+            if (foundStaff == null)
+            {
+                return BadRequest(message: CustomError.StaffNotFound);
+            }
+            if (foundQuote.CreatedStaffID.Value != foundStaff.ID)
+            {
+                return BadRequest(message: CustomError.WrongAuthorizedStaff);
+            }
+            #endregion
+            #region verify quote items
+            var salesItemIDs = _salesItemService.GetAll().Where(c => c.IsDelete == false).Select(c => c.ID);
+            if (salesItemIDs.Intersect(request.SalesItemIDs).Count() != request.SalesItemIDs.Count)
+            {
+                return BadRequest(CustomError.QuoteItemsNotFound);
+            }
+            #endregion
+
+            foundQuote.Tax = request.Tax;
+            foundQuote.Discount = foundQuote.Discount;
+            _quoteService.Update(foundQuote);
+            _quoteService.SaveChanges();
+
+            var oldSalesItemIDs = foundQuote.QuoteItemMappings.Where(c=>c.IsDelete==false).Select(c => c.SalesItemID);
+            var intersectPart = oldSalesItemIDs.Intersect(request.SalesItemIDs);
+            var insertPart = request.SalesItemIDs.Except(intersectPart).ToList()
+                .Select(c=>_salesItemService.Get(c));
+            var deleteIDsPart = oldSalesItemIDs.Except(intersectPart).ToList();
+            var deleteParts = foundQuote.QuoteItemMappings.Where(c => deleteIDsPart.Contains(c.SalesItemID)
+            && c.IsDelete == false);
+            foreach (var part in insertPart)
+            {
+                _quoteItemMappingService.Add(new QuoteItemMapping
+                {
+                    QuoteID=foundQuote.ID,
+                    SalesItemID= part.ID,
+                    SalesItemName= part.Name,
+                    Price= part.Price,
+                    Unit= part.Unit
+                });
+            }
+            foreach(var quoteItem in deleteParts)
+            {
+                //_quoteItemMappingService.DeleteBySalesItemID(itemID);
+                _quoteItemMappingService.Delete(quoteItem);
+            }
+            _quoteItemMappingService.SaveChanges();
+
+            return Ok();
+        }
+
+        [Route("DeleteQuote")]
+        public IHttpActionResult DeleteQuote(int id = 0)
+        {
+            if (id == 0)
+            {
+                return BadRequest();
+            }
+
+            var foundQuote = _quoteService.Get(id);
+            if (foundQuote == null)
+            {
+                return BadRequest(message: CustomError.QuoteNotFound);
+            }
+
+            _quoteService.Delete(foundQuote);
+            _quoteService.SaveChanges();
+
+            //for debug
+            var foundOpp = foundQuote.Opportunity;
+            foundOpp.StageName = OpportunityStage.MakeQuote;
             _opportunityService.Update(foundOpp);
             _opportunityService.SaveChanges();
 
