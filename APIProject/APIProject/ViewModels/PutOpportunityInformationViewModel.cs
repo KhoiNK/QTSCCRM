@@ -15,7 +15,6 @@ namespace APIProject.ViewModels
         public int StaffID { get; set; }
         [Required]
         public string Title { get; set; }
-        [Required]
         public string Description { get; set; }
         public List<int> CategoryIDs { get; set; }
 

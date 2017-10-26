@@ -21,7 +21,7 @@ namespace APIProject.Data.Repositories
 
         public IEnumerable<OpportunityCategoryMapping> GetByOpportunity(int opportunityID)
         {
-            return this.DbContext.OpportunityCategoryMappings.Where(c => c.OpportunityID == opportunityID && c.IsDeleted== false);
+            return this.DbContext.OpportunityCategoryMappings.Where(c => c.OpportunityID == opportunityID && c.IsDelete== false);
         }
     }
 }

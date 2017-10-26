@@ -19,6 +19,7 @@ namespace APIProject.GlobalVariables
         public static string OppCategoryNotDuplicateRequired = "Các loại dịch vụ không được trùng lặp";
         public static string OppCategoriesNotFound = "Không tìm thấy một vài loại dịch vụ";
         public static string ChangeInfoStageRequired = "Chỉ được đổi thông tin cơ bản ở một trong các giai đoạn sau:";
+        public static string ChangeCategoryStageRequired = "Chỉ được đổi các loại dịch vụ ở một trong các giai đoạn sau:";
 
         public static string WrongAuthorizedStaff = "Nhân viên không có quyền thực hiện thao tác này";
         public static string StaffRoleRequired = "Yêu cầu nhân viên có chức vụ:";
@@ -27,7 +28,7 @@ namespace APIProject.GlobalVariables
 
         public static string DuplicateIDs = "ID không được trùng lặp";
 
-
+        public static string CreateQuoteRequired = "Phải tạo báo giá trước";
         public static string QuoteStatusRequired = "Báo giá phải ở trạng thái:";
         public static string QuoteExisted = "Đã tạo một báo giá trước đó";
         public static string QuoteNotFound = "Không tìm thấy báo giá";

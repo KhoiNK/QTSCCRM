@@ -1,4 +1,5 @@
 ﻿using APIProject.GlobalVariables;
+using APIProject.Model.Models;
 using APIProject.Service;
 using APIProject.ViewModels;
 using System;
@@ -19,6 +20,7 @@ namespace APIProject.Controllers
         private readonly ICustomerService _customerService;
         private readonly IUploadNamingService _uploadNamingService;
         private readonly IStaffService _staffService;
+        private readonly IQuoteService _quoteService;
         private readonly ISalesCategoryService _salesCategoryService;
         private readonly IOpportunityCategoryMappingService _opportunityCategoryMappingService;
 
@@ -27,8 +29,10 @@ namespace APIProject.Controllers
             ICustomerService _customerService,
             IStaffService _staffService,
             ISalesCategoryService _salesCategoryService,
+            IQuoteService _quoteService,
             IOpportunityCategoryMappingService _opportunityCategoryMappingService)
         {
+            this._quoteService = _quoteService;
             this._staffService = _staffService;
             this._customerService = _customerService;
             this._opportunityService = _opportunityService;
@@ -168,37 +172,42 @@ namespace APIProject.Controllers
             };
             if (!CanChangeCategoriesStages.Contains(foundOpp.StageName))
             {
-                //todo
+                return BadRequest(message: CustomError.ChangeCategoryStageRequired +
+                    String.Join(", ", CanChangeCategoriesStages));
             }
             #endregion
 
+            foundOpp.UpdatedStaffID = request.StaffID;
+            foundOpp.Title = request.Title;
+            foundOpp.Description = request.Description;
+            _opportunityService.Update(foundOpp);
+            _opportunityService.SaveChanges();
+
+
+            if (request.CategoryIDs != null)
+            {
+                var oppCategories = foundOpp.OpportunityCategoryMappings.Where(c => c.IsDelete == false);
+                var oppCategoryIDs = oppCategories.Select(c => c.SalesCategoryID);
+                var intersectIDs = oppCategoryIDs.Intersect(request.CategoryIDs);
+                var insertIDs = request.CategoryIDs.Except(intersectIDs);
+                var deleteIDs = oppCategoryIDs.Except(intersectIDs);
+                var deleteParts = oppCategories.Where(c => deleteIDs.Contains(c.SalesCategoryID));
+                foreach (var insertID in insertIDs)
+                {
+                    _opportunityCategoryMappingService.Add(new OpportunityCategoryMapping
+                    {
+                        OpportunityID = foundOpp.ID,
+                        SalesCategoryID = insertID
+                    });
+                }
+                foreach (var deleteCategory in deleteParts)
+                {
+                    _opportunityCategoryMappingService.Delete(deleteCategory);
+                }
+                _opportunityCategoryMappingService.SaveChanges();
+            }
+
             return Ok();
-
-
-
-            //if (request.CategoryIDs.Any())
-            //{
-            //    var categoryList = _salesCategoryService.GetAllCategories().Select(c => c.ID).ToList();
-            //    if (categoryList.Intersect(request.CategoryIDs).Count() != request.CategoryIDs.Count())
-            //    {
-            //        return BadRequest("Invalid categories");
-            //    }
-            //}
-            //try
-            //{
-            //    _opportunityService.EditInfo(request.ToOpportunityModel());
-            //    if (request.CategoryIDs.Any())
-            //    {
-            //        _opportunityCategoryMappingService.MapOpportunityCategories(request.ID, request.CategoryIDs);
-            //    }
-            //    return Ok();
-
-            //}
-            //catch (Exception exceptionFromService)
-            //{
-            //    return BadRequest(exceptionFromService.Message);
-            //}
-
         }
 
         [Route("PutOpportunityNextStage")]
@@ -209,15 +218,63 @@ namespace APIProject.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
+            #region verify staff
+            var foundStaff = _staffService.Get(request.StaffID);
+            if (foundStaff == null)
             {
-                _opportunityService.ProceedNextStage(request.ToOpportunityModel());
-                return Ok();
+                return BadRequest(message: CustomError.StaffNotFound);
             }
-            catch (Exception serviceException)
+            #endregion
+            #region verify opportunity
+            var foundOpp = _opportunityService.Get(request.ID);
+            if (foundOpp == null)
             {
-                return BadRequest(serviceException.Message);
+                return BadRequest(message: CustomError.OpportunityNotFound);
             }
+            List<string> RequiredStages = new List<string>
+            {
+                OpportunityStage.Consider,
+                OpportunityStage.MakeQuote,
+                OpportunityStage.ValidateQuote,
+                OpportunityStage.SendQuote,
+            };
+            if (!RequiredStages.Contains(foundOpp.StageName))
+            {
+                return BadRequest(message: CustomError.OppStageRequired +
+                    String.Join(", ", RequiredStages));
+            }
+            var foundQuote = foundOpp.Quotes.Where(c => c.IsDelete == false)
+                    .OrderByDescending(c => c.CreatedDate).FirstOrDefault();
+            if (foundOpp.StageName == OpportunityStage.MakeQuote)
+            {
+                if (foundQuote == null)
+                {
+                    return BadRequest(message: CustomError.CreateQuoteRequired);
+                }
+            }
+            if (foundOpp.StageName == OpportunityStage.ValidateQuote)
+            {
+                if (foundQuote.Status != QuoteStatus.Valid)
+                {
+                    return BadRequest(message: CustomError.QuoteStatusRequired + QuoteStatus.Valid);
+                }
+            }
+            if (foundOpp.StageName == OpportunityStage.SendQuote)
+            {
+                if (!foundQuote.SentCustomerDate.HasValue)
+                {
+                    return BadRequest(message: CustomError.SendQuoteRequired);
+                }
+            }
+            #endregion
+
+            foundOpp.StageName = NextStageName(foundOpp.StageName);
+            foundOpp.UpdatedStaffID = request.StaffID;
+            _opportunityService.Update(foundOpp);
+            _opportunityService.SaveChanges();
+            return Ok();
+
+            
         }
 
         [Route("PutWonOpportunity")]
@@ -257,8 +314,6 @@ namespace APIProject.Controllers
             _customerService.Update(foundCustomer);
             _customerService.SaveChanges();
 
-            //todo
-
             return Ok();
         }
 
@@ -272,6 +327,25 @@ namespace APIProject.Controllers
                 returnResult.Add(new OpportunityStageViewModel { Name = item.Key, Description = item.Value });
             }
             return Ok(returnResult);
+        }
+
+        private String NextStageName(string currentStageName)
+        {
+            string result;
+            if (currentStageName == OpportunityStage.Consider)
+            {
+                result = OpportunityStage.MakeQuote;
+            }else if (currentStageName == OpportunityStage.MakeQuote)
+            {
+                result = OpportunityStage.ValidateQuote;
+            }else if (currentStageName == OpportunityStage.ValidateQuote)
+            {
+                result = OpportunityStage.SendQuote;
+            }else
+            {
+                result = OpportunityStage.Negotiation;
+            }
+            return result;
         }
     }
 }

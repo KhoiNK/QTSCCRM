@@ -33,7 +33,7 @@ namespace APIProject.ViewModels
             StaffDetail = new StaffDetailViewModel(dto.CreatedStaff);
             CustomerDetail = new CustomerDetailViewModel(dto.Customer);
             ContactDetail = new ContactViewModel(dto.Contact);
-            CategoryIDs = dto.OpportunityCategoryMappings.Where(c=>c.IsDeleted==false).Select(c => c.SalesCategoryID).ToList();
+            CategoryIDs = dto.OpportunityCategoryMappings.Where(c=>c.IsDelete==false).Select(c => c.SalesCategoryID).ToList();
 
         }
     }

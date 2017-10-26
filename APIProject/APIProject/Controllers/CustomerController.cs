@@ -94,30 +94,30 @@ namespace APIProject.Controllers
         [ResponseType(typeof(CustomerViewModel))]
         public IHttpActionResult GetCustomerList()
         {
+            //bool? onlyCustomer, int pageIndex, int pageSize
+
             var customers = _customerService.GetCustomerList();
             if (customers.Any())
             {
-                foreach(var customer in customers)
+                foreach (var customer in customers)
                 {
                     _uploadNamingService.ConcatCustomerAvatar(customer);
                 }
-                return Ok(customers.Select(c=> new CustomerViewModel(c)));
+                return Ok(customers.Select(c => new CustomerViewModel(c)));
             }
             return NotFound();
-        }
-        [Route("GetCustomerDetail")]
-        [ResponseType(typeof(CustomerDetailViewModel))]
-        public IHttpActionResult GetCustomerDetail(int ID)
-        {
-            var foundCustomer = _customerService.GetCustomerList().Where(c => c.ID == ID).SingleOrDefault();
-            if(foundCustomer != null)
-            {
-                _uploadNamingService.ConcatCustomerAvatar(foundCustomer);
-                return Ok(new CustomerDetailViewModel(foundCustomer));
-            }
-            return NotFound();
+
+            //var customers = _customerService.GetAll().Where(c=>c.IsDelete==false);
+            //if (onlyCustomer.Value)
+            //{
+            //    customers = customers.Where(c => c.CustomerType != CustomerType.Lead);
+            //}
+            // //results.ToList().ForEach(c => _uploadNamingService.ConcatCustomerAvatar(c));
+            // customers.ToList()
+            //return Ok()
         }
 
+       
         [Route("GetCustomerDetails")]
         [ResponseType(typeof(CustomerDetailViewModel))]
         public IHttpActionResult GetCustomerDetails(int ID)
@@ -202,5 +202,21 @@ namespace APIProject.Controllers
                 return NotFound();
             }
         }
+
+
+        [NonAction]
+        [Route("GetCustomerDetail")]
+        [ResponseType(typeof(CustomerDetailViewModel))]
+        public IHttpActionResult GetCustomerDetail(int ID)
+        {
+            var foundCustomer = _customerService.GetCustomerList().Where(c => c.ID == ID).SingleOrDefault();
+            if (foundCustomer != null)
+            {
+                _uploadNamingService.ConcatCustomerAvatar(foundCustomer);
+                return Ok(new CustomerDetailViewModel(foundCustomer));
+            }
+            return NotFound();
+        }
+
     }
 }

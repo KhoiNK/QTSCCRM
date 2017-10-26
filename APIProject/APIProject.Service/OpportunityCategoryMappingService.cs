@@ -12,6 +12,9 @@ namespace APIProject.Service
     public interface IOpportunityCategoryMappingService
     {
         void MapOpportunityCategories(int opportunityID, List<int> categoryIDs);
+        void Add(OpportunityCategoryMapping opportunityCategory);
+        void SaveChanges();
+        void Delete(OpportunityCategoryMapping oppCategory);
     }
     public class OpportunityCategoryMappingService : IOpportunityCategoryMappingService
     {
@@ -25,6 +28,21 @@ namespace APIProject.Service
             this._unitOfWork = _unitOfWork;
         }
 
+        public void Add(OpportunityCategoryMapping opportunityCategory)
+        {
+            opportunityCategory.CreatedDate = DateTime.Now;
+            _opportunityCategoryMappingRepository.Add(opportunityCategory);
+        }
+
+        public void Delete(OpportunityCategoryMapping oppCategory)
+        {
+            var entity = _opportunityCategoryMappingRepository.GetById(oppCategory.ID);
+            entity = oppCategory;
+            entity.IsDelete = true;
+            entity.UpdatedDate = DateTime.Now;
+            _opportunityCategoryMappingRepository.Update(entity);
+        }
+
         public void MapOpportunityCategories(int opportunityID, List<int> categoryIDs)
         {
             var foundCategoryList = _opportunityCategoryMappingRepository.GetByOpportunity(opportunityID);
@@ -35,7 +53,7 @@ namespace APIProject.Service
             {
                 if (deleteParts.Contains(foundCategory.SalesCategoryID))
                 {
-                    foundCategory.IsDeleted = true;
+                    foundCategory.IsDelete = true;
                 }
             }
             insertParts.ToList().ForEach(c =>
@@ -43,8 +61,13 @@ namespace APIProject.Service
                     {
                         SalesCategoryID = c,
                         OpportunityID = opportunityID,
-                        IsDeleted = false,
+                        IsDelete = false,
                     }));
+            _unitOfWork.Commit();
+        }
+
+        public void SaveChanges()
+        {
             _unitOfWork.Commit();
         }
     }

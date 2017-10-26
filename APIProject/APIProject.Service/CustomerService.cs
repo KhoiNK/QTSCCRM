@@ -143,7 +143,10 @@ namespace APIProject.Service
             }
             return null;
         }
-
+        public IEnumerable<Customer> GetAll()
+        {
+            return _customerRepository.GetAll();
+        }
         public Customer Get(int id)
         {
             return _customerRepository.GetById(id);
@@ -174,6 +177,7 @@ namespace APIProject.Service
         List<string> GetCustomerTypes();
         Customer GetByIssue(int issueID);
         Customer Get(int id);
+        IEnumerable<Customer> GetAll();
         void Update(Customer customer);
         void SaveChanges();
     }

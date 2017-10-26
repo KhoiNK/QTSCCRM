@@ -15,6 +15,7 @@ namespace APIProject.Service
         IEnumerable<SalesCategory> GetAllCategories();
         IEnumerable<SalesCategory> GetByOpportunity(int opportunityID);
         IEnumerable<SalesCategory> GetByIssue(int issueID);
+        SalesCategory Get(int id);
     }
     public class SalesCategoryService : ISalesCategoryService
     {
@@ -31,6 +32,11 @@ namespace APIProject.Service
             this._opportunityRepository = _opportunityRepository;
             this._issueCategoryMappingRepository = _issueCategoryMappingRepository;
             this._unitOfWork = _unitOfWork;
+        }
+
+        public SalesCategory Get(int id)
+        {
+            return _salesCategoryRepository.GetById(id);
         }
 
         public IEnumerable<SalesCategory> GetAll()
@@ -62,7 +68,7 @@ namespace APIProject.Service
                 var mappings = foundOpportunity.OpportunityCategoryMappings;
                 if (mappings.Any())
                 {
-                    return mappings.Where(c=>c.IsDeleted == false).Select(c => c.SalesCategory);
+                    return mappings.Where(c=>c.IsDelete == false).Select(c => c.SalesCategory);
                 }
             }
             return null;

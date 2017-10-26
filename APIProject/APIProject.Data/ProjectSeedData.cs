@@ -67,7 +67,7 @@ namespace APIProject.Data
                         IsDeleted=false
                     });
                 }
-                if (i < 7)
+                if (i < 6)
                 {
                     i++;
                 }
@@ -88,7 +88,7 @@ namespace APIProject.Data
                 {
                     _list.Add(new OpportunityCategoryMapping
                     {
-                        IsDeleted = false,
+                        IsDelete = false,
                         OpportunityID = oppItem.ID,
                         SalesCategoryID = category.ID
                     });
@@ -190,7 +190,7 @@ namespace APIProject.Data
             return new AppConfig
             {
                 Name = "Host",
-                Value = "http://localhost:50198"
+                Value = "http://crmcp.azurewebsites.net"
             };
         }
 
