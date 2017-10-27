@@ -24,6 +24,7 @@ namespace APIProject.Service
         Opportunity Get(int id);
         void Update(Opportunity opportunity);
         void SaveChanges();
+        void SetWon(Opportunity opp);
     }
     public class OpportunityService : IOpportunityService
     {
@@ -92,7 +93,15 @@ namespace APIProject.Service
 
         public Opportunity Get(int id)
         {
-            return _opportunityRepository.GetById(id);
+            var entity = _opportunityRepository.GetById(id);
+            if (entity != null)
+            {
+                return entity;
+            }
+            else
+            {
+                throw new Exception(CustomError.OpportunityNotFound);
+            }
         }
 
         public IEnumerable<Opportunity> GetAllOpportunities()
@@ -224,6 +233,12 @@ namespace APIProject.Service
             foundOpp.StageName = OpportunityStage.MakeQuote;
             foundOpp.UpdatedDate = DateTime.Now;
             _unitOfWork.Commit();
+        }
+
+        public void SetWon(Opportunity opp)
+        {
+            opp.StageName = OpportunityStage.Won;
+            opp.ClosedDate = DateTime.Today;
         }
 
         public void Update(Opportunity opportunity)

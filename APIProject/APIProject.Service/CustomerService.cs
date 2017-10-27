@@ -158,6 +158,12 @@ namespace APIProject.Service
             entity.UpdatedDate = DateTime.Now;
             _customerRepository.Update(entity);
         }
+        public void ConvertToCustomer(Customer customer)
+        {
+            customer.CustomerType = CustomerType.Official;
+            customer.ConvertedDate = DateTime.Today.Date;
+        }
+
         public void SaveChanges()
         {
             _unitOfWork.Commit();
@@ -179,6 +185,7 @@ namespace APIProject.Service
         Customer Get(int id);
         IEnumerable<Customer> GetAll();
         void Update(Customer customer);
+        void ConvertToCustomer(Customer customer);
         void SaveChanges();
     }
 }

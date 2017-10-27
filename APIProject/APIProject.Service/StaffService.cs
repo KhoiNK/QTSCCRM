@@ -1,5 +1,6 @@
 ﻿using APIProject.Data.Infrastructure;
 using APIProject.Data.Repositories;
+using APIProject.GlobalVariables;
 using APIProject.Model.Models;
 using System;
 using System.Collections.Generic;
@@ -41,7 +42,15 @@ namespace APIProject.Service
 
         public Staff Get(int id)
         {
-            return _staffRepository.GetById(id);
+            var entity = _staffRepository.GetById(id);
+            if (entity != null)
+            {
+                return entity;
+            }
+            else
+            {
+                throw new Exception(CustomError.StaffNotFound);
+            }
         }
 
         public IEnumerable<Staff> GetAllStaffs()

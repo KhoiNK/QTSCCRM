@@ -42,4 +42,11 @@ namespace APIProject.ViewModels
         [Required]
         public int StaffID { get; set; }
     }
+    public class PutLostOpportunityViewModdel
+    {
+        [Required]
+        public int ID { get; set; }
+        [Required]
+        public int StaffID { get; set; }
+    }
 }
