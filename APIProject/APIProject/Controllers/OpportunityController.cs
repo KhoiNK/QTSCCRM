@@ -130,32 +130,24 @@ namespace APIProject.Controllers
                 }
             }
             #endregion
-            #region verify category ids
-            var dbCategoryIDs = _salesCategoryService.GetAll().Where(c => c.IsDelete == false)
-                .Select(c => c.ID);
-            if (dbCategoryIDs.Intersect(request.CategoryIDs).Count() != request.CategoryIDs.Count)
-            {
-                return BadRequest(message: CustomError.OppCategoriesNotFound);
-            }
-            #endregion
 
             try
             {
                 var foundOpp = _opportunityService.Get(request.ID);
                 var foundStaff = _staffService.Get(request.StaffID);
-                var CanChangeInfoStages = new List<string>
-                {
-                    OpportunityStage.Consider,
-                    OpportunityStage.MakeQuote,
-                    OpportunityStage.ValidateQuote,
-                    OpportunityStage.SendQuote,
-                    OpportunityStage.Negotiation
-                };
-                if (!CanChangeInfoStages.Contains(foundOpp.StageName))
-                {
-                    return BadRequest(message: CustomError.ChangeInfoStageRequired +
-                        String.Join(", ", CanChangeInfoStages));
-                }
+                //var CanChangeInfoStages = new List<string>
+                //{
+                //    OpportunityStage.Consider,
+                //    OpportunityStage.MakeQuote,
+                //    OpportunityStage.ValidateQuote,
+                //    OpportunityStage.SendQuote,
+                //    OpportunityStage.Negotiation
+                //};
+                //if (!CanChangeInfoStages.Contains(foundOpp.StageName))
+                //{
+                //    return BadRequest(message: CustomError.ChangeInfoStageRequired +
+                //        String.Join(", ", CanChangeInfoStages));
+                //}
                 var CanChangeCategoriesStages = new List<string>
                 {
                     OpportunityStage.Consider,
@@ -166,10 +158,12 @@ namespace APIProject.Controllers
                     return BadRequest(message: CustomError.ChangeCategoryStageRequired +
                         String.Join(", ", CanChangeCategoriesStages));
                 }
-                foundOpp.UpdatedStaffID = request.StaffID;
-                foundOpp.Title = request.Title;
-                foundOpp.Description = request.Description;
-                _opportunityService.Update(foundOpp);
+                //foundOpp.UpdatedStaffID = request.StaffID;
+                //foundOpp.Title = request.Title;
+                //foundOpp.Description = request.Description;
+                //_opportunityService.Update(foundOpp);
+
+                _opportunityService.UpdateInfo(request.ToOpportunityModel());
 
 
                 if (request.CategoryIDs != null)

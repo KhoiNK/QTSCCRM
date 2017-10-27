@@ -23,7 +23,7 @@ namespace APIProject.ViewModels
             return new Opportunity
             {
                 ID = this.ID,
-                CreatedStaffID = this.StaffID,
+                UpdatedStaffID = this.StaffID,
                 Title = this.Title,
                 Description = this.Description
             };

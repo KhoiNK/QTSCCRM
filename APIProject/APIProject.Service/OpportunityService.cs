@@ -22,6 +22,7 @@ namespace APIProject.Service
         void ProceedNextStage(Opportunity opportunity);
         void SetMakeQuoteStage(int opportunityID);
         Opportunity Get(int id);
+        void UpdateInfo(Opportunity opportunity);
         void Update(Opportunity opportunity);
         void SaveChanges();
         void SetWon(Opportunity opp);
@@ -135,9 +136,6 @@ namespace APIProject.Service
         }
 
 
-
-
-
         public bool MapOpportunityActivity(int insertedOpportunityID, int insertedActivityID)
         {
             var foundOpportunity = _opportunityRepository.GetById(insertedOpportunityID);
@@ -166,32 +164,32 @@ namespace APIProject.Service
             var lastQuote = _quoteRepository.GetLatestQuoteByOpportunity(foundOpp.ID);
             if (foundOpp.StageName == OpportunityStage.MakeQuote)
             {
-                if(lastQuote == null)
+                if (lastQuote == null)
                 {
-                    throw new Exception(CustomError.QuoteRequired); 
+                    throw new Exception(CustomError.QuoteRequired);
                 }
-                if(lastQuote.Status == QuoteStatus.NotValid)
+                if (lastQuote.Status == QuoteStatus.NotValid)
                 {
                     throw new Exception(CustomError.NewQuoteRequired);
                 }
             }
 
-            if(foundOpp.StageName == OpportunityStage.ValidateQuote)
+            if (foundOpp.StageName == OpportunityStage.ValidateQuote)
             {
                 if (lastQuote.Status == QuoteStatus.Validating)
                 {
                     throw new Exception(CustomError.ValidateQuoteRequired);
                 }
             }
-            if(foundOpp.StageName == OpportunityStage.SendQuote)
+            if (foundOpp.StageName == OpportunityStage.SendQuote)
             {
                 if (!lastQuote.SentCustomerDate.HasValue)
                 {
                     throw new Exception(CustomError.SendQuoteRequired);
                 }
             }
-            if(foundOpp.StageName == OpportunityStage.Won ||
-                foundOpp.StageName==OpportunityStage.Lost)
+            if (foundOpp.StageName == OpportunityStage.Won ||
+                foundOpp.StageName == OpportunityStage.Lost)
             {
                 throw new Exception(CustomError.OpportunityClosed);
             }
@@ -199,13 +197,13 @@ namespace APIProject.Service
 
             if (foundOpp.StageName == OpportunityStage.MakeQuote)
             {
-                if(lastQuote.Status == QuoteStatus.Drafting)
+                if (lastQuote.Status == QuoteStatus.Drafting)
                 {
                     lastQuote.Status = QuoteStatus.Validating;
                 }
             }
             //later add send email function
-            if(foundOpp.StageName == OpportunityStage.ValidateQuote)
+            if (foundOpp.StageName == OpportunityStage.ValidateQuote)
             {
                 lastQuote.SentCustomerDate = DateTime.Now;
             }
@@ -218,10 +216,7 @@ namespace APIProject.Service
             //missing generate contract
         }
 
-        public void SaveChanges()
-        {
-            _unitOfWork.Commit();
-        }
+        
 
         public void SetMakeQuoteStage(int opportunityID)
         {
@@ -240,6 +235,16 @@ namespace APIProject.Service
             opp.StageName = OpportunityStage.Won;
             opp.ClosedDate = DateTime.Today;
         }
+        public void UpdateInfo(Opportunity opportunity)
+        {
+            var entity = _opportunityRepository.GetById(opportunity.ID);
+            VerifyStageCanChangeInfo(entity);
+            entity.UpdatedStaffID = opportunity.UpdatedStaffID;
+            entity.Title = opportunity.Title;
+            entity.Description = opportunity.Description;
+            entity.UpdatedDate = DateTime.Now;
+            _opportunityRepository.Update(entity);
+        }
 
         public void Update(Opportunity opportunity)
         {
@@ -247,6 +252,10 @@ namespace APIProject.Service
             entity = opportunity;
             entity.UpdatedDate = DateTime.Now;
             _opportunityRepository.Update(entity);
+        }
+        public void SaveChanges()
+        {
+            _unitOfWork.Commit();
         }
 
         private void SetNextStage(Opportunity opportunity)
@@ -280,5 +289,23 @@ namespace APIProject.Service
                 opportunity.ClosedDate = dateTimeNow;
             }
         }
+
+        private void VerifyStageCanChangeInfo(Opportunity opportunity)
+        {
+            var requiredStages = new List<string>
+                {
+                    OpportunityStage.Consider,
+                    OpportunityStage.MakeQuote,
+                    OpportunityStage.ValidateQuote,
+                    OpportunityStage.SendQuote,
+                    OpportunityStage.Negotiation
+                };
+            if (!requiredStages.Contains(opportunity.StageName))
+            {
+                throw new Exception(CustomError.ChangeInfoStageRequired +
+                    String.Join(", ", requiredStages));
+            }
+        }
+        
     }
 }
