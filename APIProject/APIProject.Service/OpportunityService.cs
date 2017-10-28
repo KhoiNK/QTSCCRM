@@ -19,13 +19,16 @@ namespace APIProject.Service
         bool MapOpportunityActivity(int insertedOpportunityID, int insertedActivityID);
         Opportunity GetByID(int id);
         void EditInfo(Opportunity opportunity);
-        void ProceedNextStage(Opportunity opportunity);
-        void SetMakeQuoteStage(int opportunityID);
         Opportunity Get(int id);
+        Opportunity GetByQuote(int quoteID);
+        Opportunity Add(Opportunity opp);
         void UpdateInfo(Opportunity opportunity);
+        Opportunity SetNextStage(Opportunity opp);
+        void SetMakeQuoteStage(Opportunity opp);
+        void SetWon(Opportunity opp);
+        void SetLost(Opportunity opp);
         void Update(Opportunity opportunity);
         void SaveChanges();
-        void SetWon(Opportunity opp);
     }
     public class OpportunityService : IOpportunityService
     {
@@ -105,6 +108,14 @@ namespace APIProject.Service
             }
         }
 
+        public Opportunity GetByQuote(int quoteID)
+        {
+            var oppID = _quoteRepository.GetById(quoteID).OpportunityID;
+            var quoteOpp = _opportunityRepository.GetById(oppID);
+            return quoteOpp;
+        }
+
+
         public IEnumerable<Opportunity> GetAllOpportunities()
         {
             return _opportunityRepository.GetAll();
@@ -149,103 +160,93 @@ namespace APIProject.Service
             return true;
         }
 
-        public void ProceedNextStage(Opportunity opportunity)
+
+
+        public Opportunity Add(Opportunity opp)
         {
-            //validate business
-            var foundOpp = _opportunityRepository.GetById(opportunity.ID);
-            if (foundOpp == null)
+            var entity = new Opportunity
             {
-                throw new Exception(CustomError.OpportunityNotFound);
-            }
-            if (foundOpp.CreatedStaffID != opportunity.CreatedStaffID)
-            {
-                throw new Exception(CustomError.WrongAuthorizedStaff);
-            }
-            var lastQuote = _quoteRepository.GetLatestQuoteByOpportunity(foundOpp.ID);
-            if (foundOpp.StageName == OpportunityStage.MakeQuote)
-            {
-                if (lastQuote == null)
-                {
-                    throw new Exception(CustomError.QuoteRequired);
-                }
-                if (lastQuote.Status == QuoteStatus.NotValid)
-                {
-                    throw new Exception(CustomError.NewQuoteRequired);
-                }
-            }
-
-            if (foundOpp.StageName == OpportunityStage.ValidateQuote)
-            {
-                if (lastQuote.Status == QuoteStatus.Validating)
-                {
-                    throw new Exception(CustomError.ValidateQuoteRequired);
-                }
-            }
-            if (foundOpp.StageName == OpportunityStage.SendQuote)
-            {
-                if (!lastQuote.SentCustomerDate.HasValue)
-                {
-                    throw new Exception(CustomError.SendQuoteRequired);
-                }
-            }
-            if (foundOpp.StageName == OpportunityStage.Won ||
-                foundOpp.StageName == OpportunityStage.Lost)
-            {
-                throw new Exception(CustomError.OpportunityClosed);
-            }
-            //end validate business
-
-            if (foundOpp.StageName == OpportunityStage.MakeQuote)
-            {
-                if (lastQuote.Status == QuoteStatus.Drafting)
-                {
-                    lastQuote.Status = QuoteStatus.Validating;
-                }
-            }
-            //later add send email function
-            if (foundOpp.StageName == OpportunityStage.ValidateQuote)
-            {
-                lastQuote.SentCustomerDate = DateTime.Now;
-            }
-
-
-            foundOpp.UpdatedDate = DateTime.Now;
-            SetNextStage(foundOpp);
+                StageName = OpportunityStage.Consider,
+                ConsiderStart = DateTime.Today,
+                CreatedDate = DateTime.Now,
+                CreatedStaffID = opp.CreatedStaffID,
+                UpdatedStaffID = opp.CreatedStaffID
+            };
+            _opportunityRepository.Add(entity);
             _unitOfWork.Commit();
-
-            //missing generate contract
+            return entity;
         }
 
-        
-
-        public void SetMakeQuoteStage(int opportunityID)
-        {
-            var foundOpp = _opportunityRepository.GetById(opportunityID);
-            if (foundOpp == null)
-            {
-                throw new Exception(CustomError.OpportunityNotFound);
-            }
-            foundOpp.StageName = OpportunityStage.MakeQuote;
-            foundOpp.UpdatedDate = DateTime.Now;
-            _unitOfWork.Commit();
-        }
-
-        public void SetWon(Opportunity opp)
-        {
-            opp.StageName = OpportunityStage.Won;
-            opp.ClosedDate = DateTime.Today;
-        }
         public void UpdateInfo(Opportunity opportunity)
         {
             var entity = _opportunityRepository.GetById(opportunity.ID);
             VerifyStageCanChangeInfo(entity);
-            entity.UpdatedStaffID = opportunity.UpdatedStaffID;
             entity.Title = opportunity.Title;
             entity.Description = opportunity.Description;
             entity.UpdatedDate = DateTime.Now;
+            entity.UpdatedStaffID = opportunity.UpdatedStaffID;
             _opportunityRepository.Update(entity);
         }
 
+        public Opportunity SetNextStage(Opportunity opp)
+        {
+            var entity = _opportunityRepository.GetById(opp.ID);
+            VerifyCanSetNextStage(entity);
+            #region move stage 
+            if (entity.StageName == OpportunityStage.Consider)
+            {
+                entity.StageName = OpportunityStage.MakeQuote;
+                entity.MakeQuoteStart = DateTime.Now;
+            }
+            else if (entity.StageName == OpportunityStage.MakeQuote)
+            {
+                entity.StageName = OpportunityStage.ValidateQuote;
+                entity.ValidateQuoteStart = DateTime.Now;
+            }
+            else if (entity.StageName == OpportunityStage.ValidateQuote)
+            {
+                entity.StageName = OpportunityStage.SendQuote;
+                entity.SendQuoteStart = DateTime.Now;
+            }
+            else
+            {
+                entity.StageName = OpportunityStage.Negotiation;
+                entity.NegotiationStart = DateTime.Now;
+            }
+            #endregion
+            entity.UpdatedStaffID = opp.UpdatedStaffID;
+            entity.UpdatedDate = DateTime.Now;
+            _opportunityRepository.Update(entity);
+            return entity;
+        }
+        public void SetMakeQuoteStage(Opportunity opp)
+        {
+            var entity = _opportunityRepository.GetById(opp.ID);
+            entity.StageName = OpportunityStage.MakeQuote;
+            entity.UpdatedDate = DateTime.Now;
+            entity.UpdatedStaffID = opp.UpdatedStaffID;
+            _opportunityRepository.Update(entity);
+        }
+        public void SetWon(Opportunity opp)
+        {
+            var entity = _opportunityRepository.GetById(opp.ID);
+            VerifyCanSetWonStage(entity);
+            entity.StageName = OpportunityStage.Won;
+            entity.ClosedDate = DateTime.Today;
+            entity.UpdatedStaffID = opp.UpdatedStaffID;
+            entity.UpdatedDate = DateTime.Now;
+            _opportunityRepository.Update(entity);
+        }
+        public void SetLost(Opportunity opp)
+        {
+            var entity = _opportunityRepository.GetById(opp.ID);
+            VeryfiCanSetLostStage(entity);
+            entity.StageName = OpportunityStage.Lost;
+            entity.ClosedDate = DateTime.Today;
+            entity.UpdatedStaffID = opp.UpdatedStaffID;
+            entity.UpdatedDate = DateTime.Now;
+            _opportunityRepository.Update(entity);
+        }
         public void Update(Opportunity opportunity)
         {
             var entity = _opportunityRepository.GetById(opportunity.ID);
@@ -258,38 +259,9 @@ namespace APIProject.Service
             _unitOfWork.Commit();
         }
 
-        private void SetNextStage(Opportunity opportunity)
-        {
-            var dateTimeNow = DateTime.Now;
-            if (opportunity.StageName == OpportunityStage.Consider)
-            {
-                opportunity.StageName = OpportunityStage.MakeQuote;
-                opportunity.MakeQuoteStart = dateTimeNow;
-            }
-            else if (opportunity.StageName == OpportunityStage.MakeQuote)
-            {
-                opportunity.StageName = OpportunityStage.ValidateQuote;
-                opportunity.ValidateQuoteStart = dateTimeNow;
 
-            }
-            else if (opportunity.StageName == OpportunityStage.ValidateQuote)
-            {
-                opportunity.StageName = OpportunityStage.SendQuote;
-                opportunity.SendQuoteStart = dateTimeNow;
 
-            }
-            else if (opportunity.StageName == OpportunityStage.SendQuote)
-            {
-                opportunity.StageName = OpportunityStage.Negotiation;
-                opportunity.NegotiationStart = dateTimeNow;
-            }
-            else
-            {
-                opportunity.StageName = OpportunityStage.Won;
-                opportunity.ClosedDate = dateTimeNow;
-            }
-        }
-
+        #region private verify
         private void VerifyStageCanChangeInfo(Opportunity opportunity)
         {
             var requiredStages = new List<string>
@@ -298,7 +270,6 @@ namespace APIProject.Service
                     OpportunityStage.MakeQuote,
                     OpportunityStage.ValidateQuote,
                     OpportunityStage.SendQuote,
-                    OpportunityStage.Negotiation
                 };
             if (!requiredStages.Contains(opportunity.StageName))
             {
@@ -306,6 +277,69 @@ namespace APIProject.Service
                     String.Join(", ", requiredStages));
             }
         }
-        
+        private void VerifyCanSetNextStage(Opportunity opp)
+        {
+            List<string> RequiredStages = new List<string>
+            {
+                OpportunityStage.Consider,
+                OpportunityStage.MakeQuote,
+                OpportunityStage.ValidateQuote,
+                OpportunityStage.SendQuote,
+            };
+            if (!RequiredStages.Contains(opp.StageName))
+            {
+                throw new Exception(CustomError.OppStageRequired +
+                    String.Join(", ", RequiredStages));
+            }
+            var quoteEntity = opp.Quotes.Where(c => c.IsDelete == false).SingleOrDefault();
+
+            if (opp.StageName == OpportunityStage.MakeQuote)
+            {
+                if (quoteEntity == null)
+                {
+                    throw new Exception(CustomError.CreateQuoteRequired);
+                }
+            }
+            if (opp.StageName == OpportunityStage.ValidateQuote)
+            {
+                if (quoteEntity.Status != QuoteStatus.Valid)
+                {
+                    throw new Exception(CustomError.QuoteStatusRequired +
+                        QuoteStatus.Valid);
+                }
+            }
+            if (opp.StageName == OpportunityStage.SendQuote)
+            {
+                if (!quoteEntity.SentCustomerDate.HasValue)
+                {
+                    throw new Exception(CustomError.SendQuoteRequired);
+                }
+            }
+        }
+        private void VerifyCanSetWonStage(Opportunity opp)
+        {
+            if (opp.StageName != OpportunityStage.Negotiation)
+            {
+                throw new Exception(CustomError.OppStageRequired
+                    + OpportunityStage.Negotiation);
+            }
+        }
+        private void VeryfiCanSetLostStage(Opportunity opp)
+        {
+            List<string> requiredStages = new List<string>
+            {
+                OpportunityStage.Consider,
+                OpportunityStage.MakeQuote,
+                OpportunityStage.ValidateQuote,
+                OpportunityStage.SendQuote,
+                OpportunityStage.Negotiation
+            };
+            if (!requiredStages.Contains(opp.StageName))
+            {
+                throw new Exception(CustomError.OppStageRequired
+                    + String.Join(", ", requiredStages));
+            }
+        }
+        #endregion
     }
 }

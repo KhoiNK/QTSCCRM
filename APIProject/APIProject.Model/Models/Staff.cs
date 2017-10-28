@@ -24,9 +24,9 @@ namespace APIProject.Model.Models
             MarketingPlans1 = new HashSet<MarketingPlan>();
             MarketingPlans2 = new HashSet<MarketingPlan>();
             MarketingPlans3 = new HashSet<MarketingPlan>();
-            CreatedOpportunities = new HashSet<Opportunity>();
-            UpdatedOpportunities = new HashSet<Opportunity>();
-            Quotes = new HashSet<Quote>();
+            //CreatedOpportunities = new HashSet<Opportunity>();
+            //UpdatedOpportunities = new HashSet<Opportunity>();
+            //Quotes = new HashSet<Quote>();
             ValidateQuotes = new HashSet<Quote>();
         }
 
@@ -36,8 +36,9 @@ namespace APIProject.Model.Models
         public string Username { get; set; }
         public string Phone { get; set;}
         public string Email { get; set; }
+        public string AvatarSrc { get; set; }
 
-        public int? RoleID { get; set; }
+        public int RoleID { get; set; }
         [ForeignKey("RoleID")]
         public virtual Role Role { get; set; }
 
@@ -45,8 +46,8 @@ namespace APIProject.Model.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Activity> Activities { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Quote> Quotes { get; set; }
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        //public virtual ICollection<Quote> Quotes { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Quote> ValidateQuotes { get; set; }
@@ -84,11 +85,11 @@ namespace APIProject.Model.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MarketingPlan> MarketingPlans3 { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Opportunity> CreatedOpportunities { get; set; }
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        //public virtual ICollection<Opportunity> CreatedOpportunities { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Opportunity> UpdatedOpportunities { get; set; }
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        //public virtual ICollection<Opportunity> UpdatedOpportunities { get; set; }
 
     }
 }

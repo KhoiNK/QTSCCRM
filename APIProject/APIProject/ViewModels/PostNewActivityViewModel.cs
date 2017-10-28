@@ -33,7 +33,6 @@ namespace APIProject.ViewModels
                 CreateStaffID = this.StaffID,
                 ContactID = this.ContactID,
                 Title = this.Title,
-                OpportunityID = this.OpportunityID,
                 Description = this.Description,
                 Type = this.Type,
                 Method = this.Method,

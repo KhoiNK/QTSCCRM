@@ -109,15 +109,7 @@ namespace APIProject.Service
 
 
 
-        public Customer GetByOpportunity(int opportunityID)
-        {
-            var foundOpportunity = _opportunityRepository.GetById(opportunityID);
-            if (foundOpportunity != null)
-            {
-                return foundOpportunity.Customer;
-            }
-            return null;
-        }
+        
 
         public Customer GetByActivity(int activityID)
         {
@@ -151,6 +143,13 @@ namespace APIProject.Service
         {
             return _customerRepository.GetById(id);
         }
+        public Customer GetByOpportunity(int opportunityID)
+        {
+            var foundOpportunity = _opportunityRepository.GetById(opportunityID);
+            var customerID = _opportunityRepository.GetById(opportunityID).CustomerID;
+            var oppCus = _customerRepository.GetById(customerID.Value);
+            return oppCus;
+        }
         public void Update(Customer customer)
         {
             var entity = _customerRepository.GetById(customer.ID);
@@ -160,8 +159,11 @@ namespace APIProject.Service
         }
         public void ConvertToCustomer(Customer customer)
         {
-            customer.CustomerType = CustomerType.Official;
-            customer.ConvertedDate = DateTime.Today.Date;
+            var entity = _customerRepository.GetById(customer.ID);
+            VerifyCanConvert(entity);
+            entity.CustomerType = CustomerType.Official;
+            entity.ConvertedDate = DateTime.Today.Date;
+            entity.UpdatedDate = DateTime.Now;
         }
 
         public void SaveChanges()
@@ -169,7 +171,16 @@ namespace APIProject.Service
             _unitOfWork.Commit();
         }
 
-
+        #region private verify
+        private void VerifyCanConvert(Customer cus)
+        {
+            if (cus.CustomerType != CustomerType.Lead)
+            {
+                throw new Exception(CustomError.CustomerTypeRequired
+                    + CustomerType.Lead);
+            }
+        }
+#endregion
     }
 
     public interface ICustomerService
@@ -178,12 +189,12 @@ namespace APIProject.Service
         bool EditCustomer(Customer customer);
         bool EditLead(Customer customer);
         Customer GetByActivity(int activityID);
-        Customer GetByOpportunity(int opportunityID);
         IEnumerable<Customer> GetCustomerList();
         List<string> GetCustomerTypes();
         Customer GetByIssue(int issueID);
         Customer Get(int id);
         IEnumerable<Customer> GetAll();
+        Customer GetByOpportunity(int opportunityID);
         void Update(Customer customer);
         void ConvertToCustomer(Customer customer);
         void SaveChanges();

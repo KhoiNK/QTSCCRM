@@ -64,10 +64,7 @@ namespace APIProject.Controllers
                 if (request.CategoryIDs != null)
                 {
 
-                    if (request.Type != ActivityType.FromCustomer)
-                    {
-                        return BadRequest("Type 'Đến khách hàng' thì chưa có cơ hội bán hàng");
-                    }
+                    
 
                     List<int> categoryIDList = _salesCategoryService.GetAllCategories().Select(c => c.ID).ToList();
                     bool checkCateIDValid = categoryIDList.Intersect(request.CategoryIDs).Count() == request.CategoryIDs.Count();
@@ -79,33 +76,72 @@ namespace APIProject.Controllers
             }
             Activity newActivity = request.ToActivityModel();
 
-            int InsertedActivityID = _activityService.CreateNewActivity(newActivity);
-            if (InsertedActivityID == 0)
+            #region validate activty
+            List<string> RequiredTypes = new List<string>
             {
-                return BadRequest("Không thể tạo lịch hẹn, kiểm tra lại json khớp với business logic");
+                ActivityType.FromCustomer,
+                ActivityType.ToCustomer
+            };
+            if (!RequiredTypes.Contains(request.Type))
+            {
+                return BadRequest(message: CustomError.ActivityTypesRequired +
+                    String.Join(", ", RequiredTypes));
             }
+            List<string> RequiredMethods = new List<string>
+            {
+                ActivityMethod.Direct,
+                ActivityMethod.Email,
+                ActivityMethod.Phone
+            };
+            if (!RequiredMethods.Contains(request.Method))
+            {
+                return BadRequest(message: CustomError.ActivityMethodsRequired
+                    + String.Join(", ", RequiredMethods));
+            }
+            if (request.Type == ActivityType.FromCustomer)
+            {
+                if(DateTime.Compare(DateTime.Now,request.TodoTime) < 0)
+                {
+                    return BadRequest(message: CustomError.ActivityTodoNotPassCurrent);
+                }
+            }
+            else
+            {
+                if(DateTime.Compare(DateTime.Now,request.TodoTime) > 0)
+                {
+                    return BadRequest(message: CustomError.ActivityTodoMustPassCurrent);
+                }
+                if (request.CategoryIDs != null)
+                {
+                    return BadRequest(message:CustomError.TypeToCustomerNotHaveCategories);
+                }
+            }
+            #endregion
+
+            var insertedActivity = _activityService.Add(newActivity);
+            
             int? InsertedOpportunityID = null;
             //generate opp condition
             if (request.CategoryIDs != null)
             {
-                var _insertedActivity = _activityService.GetAllActivities().Where(c => c.ID == InsertedActivityID).SingleOrDefault();
-                Opportunity newOpportunity = new Opportunity
+               
+                Opportunity newOpp = new Opportunity
                 {
-                    ContactID = _insertedActivity.ContactID,
-                    CreatedStaffID = _insertedActivity.CreateStaffID,
-                    Title = _insertedActivity.Title,
-                    Description = _insertedActivity.Description
+                    Title = request.Title,
+                    Description = request.Description,
+                    CreatedStaffID=request.StaffID,
+                    ContactID=request.ContactID,
                 };
-
-                InsertedOpportunityID = _opportunityService.CreateOpportunity(newOpportunity);
-                _opportunityCategoryMappingService.MapOpportunityCategories(InsertedOpportunityID.Value,
-                    request.CategoryIDs);
-                bool mapOpportunityActivity = _opportunityService.MapOpportunityActivity(InsertedOpportunityID.Value, InsertedActivityID);
-                //newActivity.OpportunityID = insertedOpportunity.ID;
-                //return Ok(insertedOpportunityID);
+                //InsertedOpportunityID = _opportunityService.CreateOpportunity(newOpportunity);
+                var insertedOpp = _opportunityService.Add(newOpp);
+                //_opportunityCategoryMappingService.MapOpportunityCategories(InsertedOpportunityID.Value,
+                //    request.CategoryIDs);
+                _opportunityCategoryMappingService.AddRange(insertedOpp.ID, request.CategoryIDs);
+                _activityService.MapOpportunity(insertedActivity, insertedOpp);
+                _activityService.SaveChanges();
             }
             //return Ok(insertedActivityID);
-            return Ok(new { InsertedOpportunityID, InsertedActivityID });
+            return Ok(new { InsertedOpportunityID, insertedActivity.ID });
         }
 
         [Route("PutSaveChangeActivity")]
@@ -164,7 +200,7 @@ namespace APIProject.Controllers
                 Activity _updatedActivity = _activityService.GetAllActivities().Where(c => c.ID == request.ID).SingleOrDefault();
                 Opportunity newOpportunity = new Opportunity
                 {
-                    ContactID = _updatedActivity.ContactID,
+                    ContactID = _updatedActivity.ContactID.Value,
                     CreatedStaffID = _updatedActivity.CreateStaffID,
                     Title = _updatedActivity.Title,
                     Description = _updatedActivity.Description

@@ -14,6 +14,7 @@ namespace APIProject.Service
     {
         void MapOpportunityCategories(int opportunityID, List<int> categoryIDs);
         void Add(OpportunityCategoryMapping opportunityCategory);
+        void AddRange(int opportunityID, List<int> categoryIDs);
         void UpdateRange(int opportunityID, List<int> categoryIDs);
         void Delete(OpportunityCategoryMapping oppCategory);
 
@@ -41,6 +42,19 @@ namespace APIProject.Service
         {
             opportunityCategory.CreatedDate = DateTime.Now;
             _opportunityCategoryMappingRepository.Add(opportunityCategory);
+        }
+
+        public void AddRange(int opportunityID, List<int> categoryIDs)
+        {
+            VerifyCategoriesRequest(categoryIDs);
+            foreach(var insertID in categoryIDs)
+            {
+                Add(new OpportunityCategoryMapping
+                {
+                    OpportunityID = opportunityID,
+                    SalesCategoryID = insertID
+                });
+            }
         }
 
         public void Delete(OpportunityCategoryMapping oppCategory)
@@ -93,7 +107,6 @@ namespace APIProject.Service
                     SalesCategoryID = insertID
                 });
             }
-            //doing here
             var deleteEntities = oppEntity.OpportunityCategoryMappings
                 .Where(c => c.IsDelete == false &&
                 deleteIDs.Contains(c.SalesCategoryID));

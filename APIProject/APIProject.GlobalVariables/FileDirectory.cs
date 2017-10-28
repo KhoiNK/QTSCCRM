@@ -10,5 +10,6 @@ namespace APIProject.GlobalVariables
     {
         public static string CustomerAvatarFolder = "Resources/CustomerAvatarFiles";
         public static string ContactAvatarFolder = "Resources/ContactAvatarFiles";
+        public static string StaffAvatarFolder = "Resources/StaffAvatarFiles";
     }
 }

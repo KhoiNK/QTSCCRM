@@ -24,6 +24,9 @@ namespace APIProject.Service
         bool CompleteActivity(Activity activity);
         bool CancelActivity(Activity activity);
         bool CheckIsOppActivity(int activityID);
+        Activity Add(Activity activity);
+        void MapOpportunity(Activity activity, Opportunity opportunity);
+        void SaveChanges();
     }
     public class ActivityService : IActivityService
     {
@@ -270,5 +273,40 @@ namespace APIProject.Service
             var foundActivity = _activityRepository.GetById(activityID);
             return foundActivity.OpportunityID.HasValue;
         }
+
+        public Activity Add(Activity activity)
+        {
+            var entity = new Activity
+            {
+                CreateStaffID = activity.CreateStaffID,
+                ContactID = activity.ContactID,
+                Title = activity.Title,
+                Description = activity.Description,
+                Type = activity.Type,
+                Method = activity.Method,
+                TodoTime = activity.TodoTime
+            };
+            var customerID = _contactRepository.GetById(activity.ContactID.Value)
+                .CustomerID;
+            entity.CustomerID = customerID;
+            _activityRepository.Update(entity);
+            _unitOfWork.Commit();
+            return entity;
+        }
+
+        public void MapOpportunity(Activity activity, Opportunity opportunity)
+        {
+            var actEntity = _activityRepository.GetById(activity.ID);
+            var OppEntity = _opportunityRepository.GetById(opportunity.ID);
+            actEntity.OpportunityID = OppEntity.ID;
+            actEntity.OfOpportunityStage = OppEntity.StageName;
+            _activityRepository.Update(actEntity);
+        }
+
+        public void SaveChanges()
+        {
+            _unitOfWork.Commit();
+        }
+
     }
 }

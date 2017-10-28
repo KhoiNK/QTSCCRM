@@ -43,8 +43,8 @@ namespace APIProject.Data
             opportunityList.ForEach(c => context.Opportunities.Add(c));
             context.Commit();
             //GetOppActivities(opportunityList).ForEach(c => context.Activities.Add(c));
-            //List<Quote> quoteList = GetQuotes();
-            //quoteList.ForEach(c => context.Quotes.Add(c));
+            List<Quote> quoteList = GetQuotes();
+            quoteList.ForEach(c => context.Quotes.Add(c));
             context.Commit();
             //GetQuoteItems(quoteList, salesItemList).ForEach(c => context.QuoteItemMappings.Add(c));
             GetOppCategories(opportunityList, categoryList).ForEach(c => context.OpportunityCategoryMappings.Add(c));
@@ -687,7 +687,7 @@ namespace APIProject.Data
             int count = 1;
             foreach (string stage in stages)
             {
-                for (int i = 1; i <= 4; i++)
+                for (int i = 1; i <= 1; i++)
                 {
                     list.Add(new Opportunity
                     {
@@ -714,42 +714,13 @@ namespace APIProject.Data
                     list.Add(new Quote
                     {
                         OpportunityID = i,
-                        Tax = 10,
-                        Discount = 10,
-                        Status = QuoteStatus.NotValid
-                    });
-                    list.Add(new Quote
-                    {
-                        OpportunityID = i,
+                        CreatedStaffID=1,
                         Tax = 10,
                         Discount = 10,
                         Status = QuoteStatus.Drafting
                     });
                 }
-                if (oppItem.StageName == OpportunityStage.ValidateQuote)
-                {
-                    list.Add(new Quote
-                    {
-                        OpportunityID = i,
-                        Tax = 10,
-                        Discount = 10,
-                        Status = QuoteStatus.Validating
-                    });
-                }
-                if (oppItem.StageName == OpportunityStage.SendQuote
-                    || oppItem.StageName == OpportunityStage.Negotiation
-                    || oppItem.StageName == OpportunityStage.Won
-                    || oppItem.StageName == OpportunityStage.Lost)
-                {
-                    list.Add(new Quote
-                    {
-                        OpportunityID = i,
-                        Tax = 10,
-                        Discount = 10,
-                        Status = QuoteStatus.Valid
-                    });
-                }
-                i++;
+                
             }
             return list;
         }

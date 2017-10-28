@@ -14,10 +14,13 @@ namespace APIProject.Controllers
     public class StaffController : ApiController
     {
         private readonly IStaffService _staffService;
+        private readonly IUploadNamingService _uploadNamingService;
 
-        public StaffController(IStaffService _staffService)
+        public StaffController(IStaffService _staffService,
+            IUploadNamingService _uploadNamingService)
         {
             this._staffService = _staffService;
+            this._uploadNamingService = _uploadNamingService;
         }
 
         [Route("GetOpportunityStaff")]
@@ -64,6 +67,16 @@ namespace APIProject.Controllers
         {
             var staffs = _staffService.GetAllStaffs();
             return Ok(staffs.Select(c => new StaffDetailViewModel(c)));
+        }
+
+        [Authorize]
+        [Route("GetStaff")]
+        public IHttpActionResult GetStaff()
+        {
+            var foundStaff = _staffService.GetByUserName(User.Identity.Name);
+            _uploadNamingService.ConcatStaffAvatar(foundStaff);
+            return Ok(new StaffDetailViewModel(foundStaff));
+
         }
     }
 }

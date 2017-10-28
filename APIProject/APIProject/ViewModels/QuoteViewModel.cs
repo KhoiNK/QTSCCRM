@@ -65,13 +65,74 @@ namespace APIProject.ViewModels
         public int ID { get; set; }
         [Required]
         public int StaffID { get; set; }
-        [Required]
-        public List<int> SalesItemIDs { get; set; }
         [Range(0, 100,
             ErrorMessage = "Giá trị của thuế phải từ {1} đến {2}.")]
         public double Tax { get; set; }
         [Range(0, 100,
            ErrorMessage = "Giá trị của khuyến mãi phải từ {1} đến {2}.")]
         public double Discount { get; set; }
+        [Required]
+        public List<int> SalesItemIDs { get; set; }
+
+        public Quote ToQuoteModel()
+        {
+            return new Quote
+            {
+                ID=this.ID,
+                CreatedStaffID=this.StaffID,
+                Tax=this.Tax,
+                Discount=this.Discount
+            };
+        }
+    }
+    public class PutUpdateQuoteResponseViewModel
+    {
+        public bool BasicInfoUpdated { get; set; }
+        public bool QuoteItemsUpdated { get; set; }
+    }
+
+    public class PutValidQuoteViewModel
+    {
+        [Required]
+        public int ID { get; set; }
+        [Required]
+        public int StaffID { get; set; }
+        public string Notes { get; set; }
+        public Quote ToQuoteModel()
+        {
+            return new Quote
+            {
+                ID = this.ID,
+                ValidatedStaffID = this.StaffID,
+                Notes = this.Notes
+            };
+        }
+    }
+    public class PutValidQuoteResponseViewModel
+    {
+        public bool QuoteUpdated { get; set; }
+        public bool OpportunityUpdated { get; set; }
+    }
+    public class PutInValidQuoteViewModel
+    {
+        [Required]
+        public int ID { get; set; }
+        [Required]
+        public int StaffID { get; set; }
+        public string Notes { get; set; }
+        public Quote ToQuoteModel()
+        {
+            return new Quote
+            {
+                ID = this.ID,
+                ValidatedStaffID = this.StaffID,
+                Notes = this.Notes,
+            };
+        }
+    }
+    public class PutInvalidQuoteResponseViewModel
+    {
+        public bool QuoteUpdated { get; set; }
+        public bool OpportunityUpdated { get; set; }
     }
 }

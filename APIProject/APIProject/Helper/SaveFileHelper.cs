@@ -45,5 +45,24 @@ namespace APIProject.Helper
                 return false;
             }
         }
+
+        public bool SaveStaffImage(string fileName, string b64Content)
+        {
+            string fileRoot = HttpContext.Current.Server.MapPath("~/Resources/StaffAvatarFiles");
+            if (!Directory.Exists(fileRoot))
+            {
+                Directory.CreateDirectory(fileRoot);
+            }
+            string filePath = Path.Combine(fileRoot, fileName);
+            try
+            {
+                File.WriteAllBytes(filePath, Convert.FromBase64String(b64Content));
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

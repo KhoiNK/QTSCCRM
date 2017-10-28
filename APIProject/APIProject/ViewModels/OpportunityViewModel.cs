@@ -25,14 +25,42 @@ namespace APIProject.ViewModels
             this.CustomerName = dto.Customer.Name;
             this.Title = dto.Title;
             this.StageName = dto.StageName;
-            var foundLastOngoingActivity = dto.Activities.Where(c =>  c.Type == ActivityType.ToCustomer
+            var foundLastOngoingActivity = dto.Activities.Where(c => c.Type == ActivityType.ToCustomer
             && (c.Status == ActivityStatus.Open || c.Status == ActivityStatus.Overdue)).LastOrDefault();
-            if(foundLastOngoingActivity != null)
+            if (foundLastOngoingActivity != null)
             {
                 NextActivityTime = foundLastOngoingActivity.TodoTime.Value;
             }
             Owner = dto.CreatedStaff.Name;
         }
+    }
+
+    public class PutOpportunityInformationViewModel
+    {
+        [Required]
+        public int ID { get; set; }
+        [Required]
+        public int StaffID { get; set; }
+        [Required]
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public List<int> CategoryIDs { get; set; }
+
+        public Opportunity ToOpportunityModel()
+        {
+            return new Opportunity
+            {
+                ID = this.ID,
+                UpdatedStaffID = this.StaffID,
+                Title = this.Title,
+                Description = this.Description
+            };
+        }
+    }
+    public class PutOpportunityInformationResponseViewModel
+    {
+        public bool BasicInfoUpdated { get; set; }
+        public bool CategoriesUpdated { get; set; }
     }
 
     public class PutWonOpportunityViewModel
@@ -41,12 +69,61 @@ namespace APIProject.ViewModels
         public int ID { get; set; }
         [Required]
         public int StaffID { get; set; }
+        public Opportunity ToOpportunityModel()
+        {
+            return new Opportunity
+            {
+                ID = this.ID,
+                UpdatedStaffID = this.StaffID
+            };
+        }
     }
+    public class PutWonOppResponseViewModel
+    {
+        public bool OpportunityUpdated { get; set; }
+        public bool CustomerConverted { get; set; }
+    }
+
     public class PutLostOpportunityViewModdel
     {
         [Required]
         public int ID { get; set; }
         [Required]
         public int StaffID { get; set; }
+        public Opportunity ToOpportunityModel()
+        {
+            return new Opportunity
+            {
+                ID = this.ID,
+                UpdatedStaffID = this.StaffID
+            };
+        }
     }
+    public class PutLostOppResponseViewModel
+    {
+        public bool OpportunityUpdated { get; set; }
+    }
+
+    public class PutOpportunityNextStageViewModel
+    {
+        [Required]
+        public int ID { get; set; }
+        [Required]
+        public int StaffID { get; set; }
+
+        public Opportunity ToOpportunityModel()
+        {
+            return new Opportunity
+            {
+                ID = this.ID,
+                UpdatedStaffID = this.StaffID
+            };
+        }
+    }
+    public class PutOpportunityNextStageResponseViewModel
+    {
+        public bool OpportunityUpdated { get; set; }
+        public bool QuoteUpdated { get; set; }
+    }
+
 }

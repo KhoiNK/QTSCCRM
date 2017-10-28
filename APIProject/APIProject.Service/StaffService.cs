@@ -17,6 +17,7 @@ namespace APIProject.Service
         void CreateStaff(Staff staff);
         IEnumerable<Staff> GetAllStaffs();
         Staff Get(int id);
+        Staff GetByUserName(string username);
         void SaveChanges();
     }
     public class StaffService:IStaffService
@@ -51,6 +52,11 @@ namespace APIProject.Service
             {
                 throw new Exception(CustomError.StaffNotFound);
             }
+        }
+        public Staff GetByUserName(string username)
+        {
+            var entity = _staffRepository.GetAll().Where(c => c.Username == username).SingleOrDefault();
+            return entity;
         }
 
         public IEnumerable<Staff> GetAllStaffs()

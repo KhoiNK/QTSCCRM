@@ -18,8 +18,8 @@
         //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         //public int ID { get; set; }
 
-        public int? OpportunityID { get; set; }
-        public int? CreatedStaffID { get; set; }
+        public int OpportunityID { get; set; }
+        public int CreatedStaffID { get; set; }
         public int? ValidatedStaffID { get; set; }
 
         public double Tax { get; set; }

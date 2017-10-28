@@ -18,19 +18,19 @@ namespace APIProject.ViewModels
         [Required]
         public string Phone { get; set; }
         [Required]
-        public string Email { get; set; }
-        [Required]
         public int RoleID { get; set; }
-
+        [Required]
+        public CustomB64ImageFileViewModel Avatar { get; set; }
         public Staff ToStaffModel()
         {
             return new Staff
             {
-                Name=this.Name,
-                Username=this.Username,
-                Phone=this.Phone,
-                Email=this.Email,
-                RoleID=this.RoleID
+                Name = this.Name,
+                Username = this.Username,
+                Email=this.Username,
+                Phone = this.Phone,
+                RoleID = this.RoleID,
+                AvatarSrc = this.Avatar.Name
             };
         }
     }

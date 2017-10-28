@@ -15,6 +15,8 @@ namespace APIProject.Service
         void ConcatCustomerAvatar(Customer customer);
         string GetContactAvatarNaming();
         void ConcatContactAvatar(Contact contact);
+        string GetStaffAvatarNaming();
+        void ConcatStaffAvatar(Staff staff);
 
     }
 
@@ -57,6 +59,18 @@ namespace APIProject.Service
                     + FileDirectory.ContactAvatarFolder + "/"
                     + contact.AvatarSrc;
             }
+        }
+
+        public string GetStaffAvatarNaming()
+        {
+            DateTime date = DateTime.Now;
+            return Guid.NewGuid().ToString() + "_" + date.Year + date.Month + date.Day + date.Hour + date.Minute + date.Second;
+        }
+        public void ConcatStaffAvatar(Staff staff)
+        {
+            staff.AvatarSrc = _appConfigRepository.GetHost() + "/"
+                    + FileDirectory.StaffAvatarFolder + "/"
+                    + staff.AvatarSrc;
         }
 
     }

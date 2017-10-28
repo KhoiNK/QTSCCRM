@@ -21,6 +21,8 @@ using APIProject.Model.Models;
 using System.Linq;
 using APIProject.ViewModels;
 using APIProject.Service;
+using System.IO;
+using APIProject.Helper;
 
 namespace APIProject.Controllers
 {
@@ -35,14 +37,17 @@ namespace APIProject.Controllers
 
         private readonly IRoleService _roleService;
         private readonly IStaffService _staffService;
+        private readonly IUploadNamingService _uploadNamingService;
 
 
-        public AccountController(IRoleService _roleService, IStaffService _staffService)
+        public AccountController(IRoleService _roleService, IStaffService _staffService,
+            IUploadNamingService _uploadNamingService)
         {
             _roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new ApplicationDbContext()));
             context = new APIProjectEntities();
             this._roleService = _roleService;
             this._staffService = _staffService;
+            this._uploadNamingService = _uploadNamingService;
         }
 
         public AccountController(ApplicationUserManager userManager,
@@ -524,7 +529,7 @@ namespace APIProject.Controllers
             {
                 return BadRequest("Wrong role name");
             }
-            var user = new ApplicationUser() { UserName = request.Username, Email = request.Email };
+            var user = new ApplicationUser() { UserName = request.Username, Email = request.Username };
             IdentityResult result = await UserManager.CreateAsync(user, request.Password);
             if (!result.Succeeded)
             {
@@ -532,6 +537,13 @@ namespace APIProject.Controllers
             }
             else
             {
+                if (request.Avatar != null)
+                {
+                    string avatarExtension = Path.GetExtension(request.Avatar.Name).ToLower();
+                    request.Avatar.Name = _uploadNamingService.GetStaffAvatarNaming() + avatarExtension;
+                    SaveFileHelper saveFileHelper = new SaveFileHelper();
+                    saveFileHelper.SaveStaffImage(request.Avatar.Name, request.Avatar.Base64Content);
+                }
                 _staffService.CreateStaff(request.ToStaffModel());
                 if (_roleManager.FindByName(foundRole.Name) == null)
                 {
@@ -539,6 +551,8 @@ namespace APIProject.Controllers
                 }
                 UserManager.AddToRole(user.Id, foundRole.Name);
             }
+
+
             return Ok();
         }
         #endregion

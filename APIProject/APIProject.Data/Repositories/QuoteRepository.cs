@@ -10,7 +10,6 @@ namespace APIProject.Data.Repositories
 {
     public interface IQuoteRepository: IRepository<Quote>
     {
-        Quote GetLatestQuoteByOpportunity(int opportunityID);
     }
     public class QuoteRepository : RepositoryBase<Quote>, IQuoteRepository
     {
@@ -18,9 +17,5 @@ namespace APIProject.Data.Repositories
         {
         }
 
-        public Quote GetLatestQuoteByOpportunity(int opportunityID)
-        {
-            return this.DbContext.Quotes.Where(c => c.OpportunityID == opportunityID).OrderByDescending(x=>x.ID).FirstOrDefault();
-        }
     }
 }

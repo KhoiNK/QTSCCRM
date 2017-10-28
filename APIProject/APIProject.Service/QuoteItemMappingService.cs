@@ -1,5 +1,6 @@
 ﻿using APIProject.Data.Infrastructure;
 using APIProject.Data.Repositories;
+using APIProject.GlobalVariables;
 using APIProject.Model.Models;
 using System;
 using System.Collections.Generic;
@@ -12,11 +13,13 @@ namespace APIProject.Service
     public class QuoteItemMappingService: IQuoteItemMappingService
     {
         private readonly IQuoteItemMappingRepository _quoteItemMappingRepository;
+        private readonly ISalesItemRepository _salesItemRepository;
         private readonly IUnitOfWork _unitOfWork;
         public QuoteItemMappingService(IQuoteItemMappingRepository _quoteItemMappingRepository,
-            IUnitOfWork _unitOfWork)
+            IUnitOfWork _unitOfWork, ISalesItemRepository _salesItemRepository)
         {
             this._quoteItemMappingRepository = _quoteItemMappingRepository;
+            this._salesItemRepository = _salesItemRepository;
             this._unitOfWork = _unitOfWork;
         }
 
@@ -30,7 +33,34 @@ namespace APIProject.Service
             _unitOfWork.Commit();
         }
 
-        
+        public void UpdateRange(int quoteID, List<int> itemIDs)
+        {
+            VerifySalesItemsExist(itemIDs);
+            var oldItemEntities = _quoteItemMappingRepository.GetAll()
+                .Where(c => c.QuoteID == quoteID && c.IsDelete == false);
+            var intersectItemIDs = oldItemEntities.Select(c => c.SalesItemID)
+                .Intersect(itemIDs);
+            var deleteEntities = oldItemEntities.Where(c => intersectItemIDs.Contains(c.SalesItemID));
+            var insertItemIDs = itemIDs.Except(intersectItemIDs);
+            foreach(var deleteEntity in deleteEntities)
+            {
+                Delete(deleteEntity);
+            }
+            foreach(var insertID in insertItemIDs)
+            {
+                var salesItemEntity = _salesItemRepository.GetById(insertID);
+                Add(new QuoteItemMapping
+                {
+                    SalesItemID=insertID,
+                    QuoteID=quoteID,
+                    SalesItemName=salesItemEntity.Name,
+                    Price=salesItemEntity.Price,
+                    Unit=salesItemEntity.Unit,
+                });
+            }
+        }
+
+
         public void DeleteBySalesItemID(int salesItemID)
         {
             var entity = _quoteItemMappingRepository.GetBySalesItemID(salesItemID);
@@ -48,15 +78,26 @@ namespace APIProject.Service
             _quoteItemMappingRepository.Update(entity);
         }
 
-
+        #region private verify
+        private void VerifySalesItemsExist(List<int> itemIDs)
+        {
+            var salesItemEntities = _salesItemRepository.GetAll()
+                .Where(c=>c.IsDelete==false).Select(c => c.ID);
+            if (salesItemEntities.Intersect(itemIDs).Count() != itemIDs.Count)
+            {
+                throw new Exception(CustomError.QuoteItemsNotFound);
+            }
+        }
+#endregion
     }
 
 
     public interface IQuoteItemMappingService
     {
         void Add(QuoteItemMapping quoteItem);
-        void SaveChanges();
+        void UpdateRange(int quoteID, List<int> itemIDs);
         void DeleteBySalesItemID(int salesItemID);
         void Delete(QuoteItemMapping quoteItem);
+        void SaveChanges();
     }
 }

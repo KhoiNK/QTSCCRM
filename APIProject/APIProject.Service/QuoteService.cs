@@ -12,15 +12,17 @@ namespace APIProject.Service
 {
     public interface IQuoteService
     {
-        Quote Get(int id);
 
-        Quote GetOpportunityQuote(int opportunityID);
-        int CreateQuote(Quote quote, List<int> quoteItems);
-        Quote ValidateQuote(int quoteID, bool isValid, int staffID, string notes);
-        void SaveChanges();
-        void Update(Quote quote);
+        Quote Get(int id);
+        Quote GetByOpportunity(int opportunityID);
         void Add(Quote quote);
+        void SetValidatingStatus(Quote quote);
+        void SetValid(Quote quote);
+        void SetInvalid(Quote quote);
+        void UpdateInfo(Quote quote);
+        void Update(Quote quote);
         void Delete(Quote quote);
+        void SaveChanges();
     }
     public class QuoteService : IQuoteService
     {
@@ -28,162 +30,105 @@ namespace APIProject.Service
         private readonly IOpportunityRepository _opportunityRepository;
         private readonly IStaffRepository _staffRepository;
         private readonly ISalesItemRepository _salesItemRepository;
+        private readonly IRoleRepository _roleRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public QuoteService(IQuoteRepository _quoteRepository, IUnitOfWork _unitOfWork,
             IOpportunityRepository _opportunityRepository,
             ISalesItemRepository _salesItemRepository,
-            IStaffRepository _staffRepository)
+            IStaffRepository _staffRepository,
+            IRoleRepository _roleRepository)
         {
             this._quoteRepository = _quoteRepository;
+            this._roleRepository = _roleRepository;
             this._opportunityRepository = _opportunityRepository;
             this._salesItemRepository = _salesItemRepository;
             this._staffRepository = _staffRepository;
             this._unitOfWork = _unitOfWork;
         }
 
-        public int CreateQuote(Quote quote, List<int> quoteItems)
-        {
-            string errorMessage = CheckCreateQuoteRequest(quote, quoteItems);
-            if (errorMessage != null)
-            {
-                throw new Exception(errorMessage);
-            }
-
-            quote.CreatedDate = DateTime.Now;
-            quote.Status = QuoteStatus.Drafting;
-            quote.QuoteItemMappings = CreateQuoteItems(quoteItems);
-            _quoteRepository.Add(quote);
-            _unitOfWork.Commit();
-            return quote.ID;
-        }
-
-        private List<QuoteItemMapping> CreateQuoteItems(List<int> quoteItemIDs)
-        {
-            List<QuoteItemMapping> _list = new List<QuoteItemMapping>();
-            foreach (var itemID in quoteItemIDs)
-            {
-                var foundItem = _salesItemRepository.GetById(itemID);
-                _list.Add(new QuoteItemMapping
-                {
-                    SalesItemID = itemID,
-                    Price = foundItem.Price,
-                    Unit = foundItem.Unit,
-                    SalesItemName = foundItem.Name
-                });
-            }
-            return _list;
-        }
-
-        private string CheckCreateQuoteRequest(Quote quote, List<int> quoteItems)
-        {
-            var foundOpportunity = _opportunityRepository.GetById(quote.OpportunityID.Value);
-            if (foundOpportunity == null)
-            {
-                return CustomError.OpportunityNotFound;
-            }
-            if (foundOpportunity.CreatedStaffID != quote.CreatedStaffID)
-            {
-                return CustomError.WrongAuthorizedStaff;
-            }
-            var lastQuote = _quoteRepository.GetLatestQuoteByOpportunity(foundOpportunity.ID);
-            if (lastQuote != null)
-            {
-                if (lastQuote.Status != QuoteStatus.NotValid)
-                {
-                    return CustomError.PendingQuoteExisted;
-                }
-            }
-            var SalesItemIDs = _salesItemRepository.GetAll().Select(c => c.ID).ToList();
-            bool okToInsertItems = SalesItemIDs.Intersect(quoteItems).Count() == quoteItems.Count;
-            if (!okToInsertItems)
-            {
-                return CustomError.InvalidSalesItems;
-            }
-            return null;
-        }
-
-        public Quote GetOpportunityQuote(int opportunityID)
-        {
-            return _quoteRepository.GetLatestQuoteByOpportunity(opportunityID);
-        }
-
-        private string CheckValidateQuoteRequest(Quote foundQuote, Staff foundStaff)
-        {
-            if(foundQuote == null)
-            {
-                return CustomError.QuoteNotFound;
-            }else if(foundQuote.Status != QuoteStatus.Validating)
-            {
-                return CustomError.ValidatingQuoteRequired;
-            }
-            if(foundStaff == null)
-            {
-                return CustomError.StaffNotFound;
-            }
-            else if(foundStaff.Role.Name != RoleName.Director)
-            {
-                return CustomError.WrongAuthorizedStaff;
-            }
-            return null;
-        }
-
-        public Quote ValidateQuote(int quoteID, bool isValid, int staffID, string notes)
-        {
-            var foundQuote = _quoteRepository.GetById(quoteID);
-            var foundStaff = _staffRepository.GetById(staffID);
-            string errorMessage = CheckValidateQuoteRequest(foundQuote, foundStaff);
-            if(errorMessage != null)
-            {
-                throw new Exception(errorMessage);
-            }
-
-            if (isValid)
-            {
-                foundQuote.Status = QuoteStatus.Valid;
-                foundQuote.ValidatedStaffID = foundStaff.ID;
-            }
-            else
-            {
-                foundQuote.Status = QuoteStatus.NotValid;
-            }
-            foundQuote.Notes = notes;
-            foundQuote.UpdatedDate = DateTime.Now;
-            _unitOfWork.Commit();
-            //later send quote function
-
-            return foundQuote;
-        }
-
-
-        private void SendQuoteToCustomer(Quote quote)
-        {
-            quote.SentCustomerDate = DateTime.Now;
-            _unitOfWork.Commit();
-        }
-
-        public void SaveChanges()
-        {
-            _unitOfWork.Commit();
-        }
+        
 
         public Quote Get(int id)
         {
-            return _quoteRepository.GetById(id);
+            var entity = _quoteRepository.GetById(id);
+            if (entity != null)
+            {
+                return entity;
+            }
+            else
+            {
+                throw new Exception(CustomError.QuoteNotFound);
+            }
         }
 
-        public void Update(Quote quote)
+        public Quote GetByOpportunity(int opportunityID)
         {
-            var entity = _quoteRepository.GetById(quote.ID);
-            entity = quote;
-            entity.UpdatedDate = DateTime.Now;
-            _quoteRepository.Update(entity);
+            var entity = _quoteRepository.GetAll().Where(c => c.OpportunityID == opportunityID &&
+              c.IsDelete == false).SingleOrDefault();
+            if (entity != null)
+            {
+                return entity;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public void Add(Quote quote)
         {
             quote.CreatedDate = DateTime.Now;
             _quoteRepository.Add(quote);
+        }
+
+        public void SetValidatingStatus(Quote quote)
+        {
+            var entity = _quoteRepository.GetById(quote.ID);
+            entity.Status = QuoteStatus.Validating;
+            entity.UpdatedDate = DateTime.Now;
+            _quoteRepository.Update(entity);
+        }
+        public void SetValid(Quote quote)
+        {
+            var entity = _quoteRepository.GetById(quote.ID);
+            VerifyCanSetValid(entity);
+            var validateStaff = _staffRepository.GetById(quote.ValidatedStaffID.Value);
+            VerifyCanSetValidStaff(validateStaff);
+            entity.ValidatedStaffID = quote.ValidatedStaffID;
+            entity.Notes = quote.Notes;
+            entity.UpdatedDate = DateTime.Now;
+            _quoteRepository.Update(entity);
+        }
+        public void SetInvalid(Quote quote)
+        {
+            var entity = _quoteRepository.GetById(quote.ID);
+            VerifyCanSetInvalid(entity);
+            var validateStaff = _staffRepository.GetById(quote.ValidatedStaffID.Value);
+            VerifyCanSetInvalidStaff(validateStaff);
+            entity.ValidatedStaffID = quote.ValidatedStaffID;
+            entity.Notes = quote.Notes;
+            entity.UpdatedDate = DateTime.Now;
+            _quoteRepository.Update(entity);
+        }
+
+        public void UpdateInfo(Quote quote)
+        {
+            var entity = _quoteRepository.GetById(quote.ID);
+            VerifyCanUpdateQuoteStatus(entity);
+            var quoteStaff = _staffRepository.GetById(quote.CreatedStaffID);
+            VerifyCanUpdateQuoteStaff(quoteStaff);
+            entity.Tax = quote.Tax;
+            entity.Discount = quote.Discount;
+            entity.UpdatedDate = DateTime.Now;
+            _quoteRepository.Update(entity);
+        }
+        public void Update(Quote quote)
+        {
+            var entity = _quoteRepository.GetById(quote.ID);
+            entity = quote;
+            entity.UpdatedDate = DateTime.Now;
+            _quoteRepository.Update(entity);
         }
 
         public void Delete(Quote quote)
@@ -193,5 +138,64 @@ namespace APIProject.Service
             entity.IsDelete = true;
             _quoteRepository.Update(entity);
         }
+
+        public void SaveChanges()
+        {
+            _unitOfWork.Commit();
+        }
+
+        #region private verify
+        private void VerifyCanSetValid(Quote quote)
+        {
+            if(quote.Status != QuoteStatus.Validating)
+            {
+                throw new Exception(CustomError.QuoteStatusRequired
+                    + QuoteStatus.Validating);
+            }
+        }
+        private void VerifyCanSetValidStaff(Staff staff)
+        {
+            var staffRoleName = _roleRepository.GetById(staff.RoleID).Name;
+            if(staffRoleName != RoleName.Director)
+            {
+                throw new Exception(CustomError.StaffRoleRequired
+                    + RoleName.Director);
+            }
+        }
+        private void VerifyCanSetInvalid(Quote quote)
+        {
+            if (quote.Status != QuoteStatus.Validating)
+            {
+                throw new Exception(CustomError.QuoteStatusRequired
+                    + QuoteStatus.Validating);
+            }
+        }
+        private void VerifyCanSetInvalidStaff(Staff staff)
+        {
+            var staffRoleName = _roleRepository.GetById(staff.RoleID).Name;
+            if (staffRoleName != RoleName.Director)
+            {
+                throw new Exception(CustomError.StaffRoleRequired
+                    + RoleName.Director);
+            }
+        }
+        private void VerifyCanUpdateQuoteStatus(Quote quote)
+        {
+            if (quote.Status != QuoteStatus.Drafting)
+            {
+                throw new Exception(CustomError.QuoteStatusRequired
+                    + QuoteStatus.Drafting);
+            }
+        }
+        private void VerifyCanUpdateQuoteStaff(Staff staff)
+        {
+            var staffRoleName = _roleRepository.GetById(staff.RoleID).Name;
+            if (staffRoleName != RoleName.Sales)
+            {
+                throw new Exception(CustomError.StaffRoleRequired
+                    + RoleName.Sales);
+            }
+        }
+        #endregion
     }
 }

@@ -23,7 +23,6 @@ namespace APIProject.Model.Models
         public int? CustomerID { get; set; }
         //public int? StageID { get; set; }
 
-
         public int? ContactID { get; set; }
 
         public int? CreatedStaffID { get; set; }
@@ -41,9 +40,9 @@ namespace APIProject.Model.Models
         public string StageName { get; set; }
         public int Priority { get; set; }
         //public string StageDescription { get; set; }
-
+        [ForeignKey("ContactID")]
         public virtual Contact Contact { get; set; }
-
+        [ForeignKey("CustomerID")]
         public virtual Customer Customer { get; set; }
         [ForeignKey("CreatedStaffID")]
         public virtual Staff CreatedStaff { get; set; }
