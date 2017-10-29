@@ -24,7 +24,9 @@ namespace APIProject.Service
         bool CompleteActivity(Activity activity);
         bool CancelActivity(Activity activity);
         bool CheckIsOppActivity(int activityID);
+        Activity Get(int id);
         Activity Add(Activity activity);
+        void UpdateInfo(Activity activity);
         void MapOpportunity(Activity activity, Opportunity opportunity);
         void SaveChanges();
     }
@@ -37,7 +39,7 @@ namespace APIProject.Service
         private readonly IOpportunityRepository _opportunityRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        
+
 
         public ActivityService(IActivityRepository _activityRepository, IUnitOfWork _unitOfWork,
             IStaffRepository _staffRepository, ICustomerRepository _customerRepository,
@@ -54,9 +56,9 @@ namespace APIProject.Service
 
         private void CheckAndChangeOverdue(Activity activity)
         {
-            if(activity.Status == ActivityStatus.Open)
+            if (activity.Status == ActivityStatus.Open)
             {
-                if(DateTime.Compare(DateTime.Now, activity.TodoTime.Value) >= 0)
+                if (DateTime.Compare(DateTime.Now, activity.TodoTime.Value) >= 0)
                 {
                     activity.Status = ActivityStatus.Overdue;
                     _unitOfWork.Commit();
@@ -72,18 +74,18 @@ namespace APIProject.Service
             }
 
             var foundContact = _contactRepository.GetById(activity.ContactID.Value);
-            if(foundContact == null)
+            if (foundContact == null)
             {
                 return 0;
             }
             if (activity.OpportunityID.HasValue)
             {
                 var foundOpp = _opportunityRepository.GetById(activity.OpportunityID.Value);
-                if(foundOpp == null)
+                if (foundOpp == null)
                 {
                     return 0;
                 }
-                else if(foundOpp.ContactID != activity.ContactID || foundOpp.CreatedStaffID != activity.CreateStaffID)
+                else if (foundOpp.ContactID != activity.ContactID || foundOpp.CreatedStaffID != activity.CreateStaffID)
                 {
                     return 0;
                 }
@@ -102,10 +104,10 @@ namespace APIProject.Service
 
             }
             activity.CustomerID = foundContact.Customer.ID;
-            
+
             if (ActivityType.GetList().Contains(activity.Type))
             {
-                if(activity.Type == ActivityType.FromCustomer)
+                if (activity.Type == ActivityType.FromCustomer)
                 {
                     activity.Status = ActivityStatus.Recorded;
                 }
@@ -122,7 +124,7 @@ namespace APIProject.Service
             {
                 return 0;
             }
-            
+
             activity.CreatedDate = DateTime.Today.Date;
 
             _activityRepository.Add(activity);
@@ -132,12 +134,6 @@ namespace APIProject.Service
 
             return activity.ID;
         }
-
-
-
-        
-
-
         public List<string> GetActivityMethodNames()
         {
             return new List<string>
@@ -165,7 +161,7 @@ namespace APIProject.Service
         public IEnumerable<Activity> GetByOpprtunity(int opportunityID)
         {
             var foundOpportunity = _opportunityRepository.GetById(opportunityID);
-            if(foundOpportunity != null)
+            if (foundOpportunity != null)
             {
                 var activities = foundOpportunity.Activities;
                 if (activities.Any())
@@ -179,7 +175,7 @@ namespace APIProject.Service
         public IEnumerable<Activity> GetByCustomer(int customerID)
         {
             var foundCustomer = _customerRepository.GetById(customerID);
-            if(foundCustomer != null)
+            if (foundCustomer != null)
             {
                 var activities = foundCustomer.Activities;
                 if (activities.Any())
@@ -205,7 +201,7 @@ namespace APIProject.Service
         public bool SaveChangeActivity(Activity activity)
         {
             var foundActivity = _activityRepository.GetById(activity.ID);
-            if(foundActivity != null)
+            if (foundActivity != null)
             {
                 if (foundActivity.CreateStaffID == activity.CreateStaffID)
                 {
@@ -273,7 +269,18 @@ namespace APIProject.Service
             var foundActivity = _activityRepository.GetById(activityID);
             return foundActivity.OpportunityID.HasValue;
         }
-
+        public Activity Get(int id)
+        {
+            var entity = _activityRepository.GetById(id);
+            if(entity != null)
+            {
+                return entity;
+            }
+            else
+            {
+                throw new Exception(CustomError.ActivityNotFound);
+            }
+        }
         public Activity Add(Activity activity)
         {
             var entity = new Activity
@@ -301,7 +308,17 @@ namespace APIProject.Service
             _unitOfWork.Commit();
             return entity;
         }
-
+        public void UpdateInfo(Activity activity)
+        {
+            var entity = _activityRepository.GetById(activity.ID);
+            VerifyCanUpdateInfo(entity);
+            entity.Title = activity.Title;
+            entity.Description = activity.Description;
+            entity.Method = activity.Method;
+            entity.TodoTime = activity.TodoTime;
+            entity.Status = ActivityStatus.Open;
+            _activityRepository.Update(entity);
+        }
         public void MapOpportunity(Activity activity, Opportunity opportunity)
         {
             var actEntity = _activityRepository.GetById(activity.ID);
@@ -315,6 +332,22 @@ namespace APIProject.Service
         {
             _unitOfWork.Commit();
         }
+        #region private verify
+        private void VerifyCanUpdateInfo(Activity activity)
+        {
+            List<string> requiredStatus = new List<string>
+            {
+                ActivityStatus.Open,
+                ActivityStatus.Overdue
+            };
+            if (!requiredStatus.Contains(activity.Status))
+            {
+                throw new Exception(CustomError.ActivityStatusRequired
+                    + String.Join(", ", requiredStatus));
+            }
+        }
+        #endregion
+
 
     }
 }

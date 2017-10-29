@@ -17,8 +17,8 @@ namespace APIProject.Service
         void AddRange(int opportunityID, List<int> categoryIDs);
         void UpdateRange(int opportunityID, List<int> categoryIDs);
         void Delete(OpportunityCategoryMapping oppCategory);
-
         void SaveChanges();
+
     }
     public class OpportunityCategoryMappingService : IOpportunityCategoryMappingService
     {
@@ -120,6 +120,8 @@ namespace APIProject.Service
             _unitOfWork.Commit();
         }
 
+        #region private verify
+
         private void VerifyCategoriesRequest(List<int> categoryIDs)
         {
             var categoryEntityIDs = _salesCategoryRepository.GetAll()
@@ -130,8 +132,6 @@ namespace APIProject.Service
                 throw new Exception(CustomError.OppCategoriesNotFound);
             }
         }
-
-        #region private verify
         private void VerifyStageCanChangeCategories(Opportunity opportunity)
         {
             var requiredStages = new List<string>

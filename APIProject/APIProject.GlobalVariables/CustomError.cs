@@ -30,6 +30,8 @@ namespace APIProject.GlobalVariables
         public static string ActivityTodoNotPassCurrent = "Thời gian không quá hiện tại";
         public static string ActivityTodoMustPassCurrent = "Thời gian không được trước hiện tại";
         public static string TypeToCustomerNotHaveCategories = "Lịch hẹn tương lai chưa xác định được cơ hội bán hàng";
+        public static string ActivityStatusRequired = "Yêu cầu trạng thái lịch hẹn:";
+        public static string ActivityNotFound = "Không tìm thấy lịch hẹn";
 
         public static string DuplicateIDs = "ID không được trùng lặp";
 

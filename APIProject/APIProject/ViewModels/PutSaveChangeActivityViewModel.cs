@@ -35,4 +35,9 @@ namespace APIProject.ViewModels
             };
         }
     }
+    public class PutSaveChangeActivityResponseViewModel
+    {
+        public bool ActivityUpdated { get; set; }
+    }
+
 }

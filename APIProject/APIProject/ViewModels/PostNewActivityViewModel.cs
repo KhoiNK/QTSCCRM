@@ -25,7 +25,6 @@ namespace APIProject.ViewModels
         [Required]
         public DateTime TodoTime { get; set; }
         public List<int> CategoryIDs { get; set; }
-
         public Activity ToActivityModel()
         {
             Activity activity = new Activity
@@ -38,11 +37,15 @@ namespace APIProject.ViewModels
                 Method = this.Method,
                 TodoTime = this.TodoTime
             };
-
             return activity;
-           
         }
     }
-
+    public class PostNewActivityResponseViewModel
+    {
+        public bool ActivityCreated { get; set; }
+        public int ActivityID { get; set; }
+        public bool OpportunityCreated { get; set; }
+        public int? OpportunityID { get; set; }
+    }
     
 }

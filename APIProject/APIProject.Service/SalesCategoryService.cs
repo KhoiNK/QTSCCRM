@@ -1,5 +1,6 @@
 ﻿using APIProject.Data.Infrastructure;
 using APIProject.Data.Repositories;
+using APIProject.GlobalVariables;
 using APIProject.Model.Models;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,8 @@ namespace APIProject.Service
         IEnumerable<SalesCategory> GetByOpportunity(int opportunityID);
         IEnumerable<SalesCategory> GetByIssue(int issueID);
         SalesCategory Get(int id);
+
+        void VerifyCategories(List<int> categoryIDs);
     }
     public class SalesCategoryService : ISalesCategoryService
     {
@@ -73,5 +76,17 @@ namespace APIProject.Service
             }
             return null;
         }
+
+        public void VerifyCategories(List<int> categoryIDs)
+        {
+            var categoryEntityIDs = _salesCategoryRepository.GetAll()
+                .Where(c => c.IsDelete == false).Select(c => c.ID);
+            if (categoryEntityIDs.Intersect(categoryIDs).Count()
+                != categoryIDs.Count)
+            {
+                throw new Exception(CustomError.OppCategoriesNotFound);
+            }
+        }
+
     }
 }

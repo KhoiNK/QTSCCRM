@@ -17,18 +17,20 @@ namespace APIProject.Controllers
     {
         private readonly IActivityService _activityService;
         private readonly IOpportunityService _opportunityService;
+        private readonly IStaffService _staffService;
         private readonly IOpportunityCategoryMappingService _opportunityCategoryMappingService;
         private readonly ISalesCategoryService _salesCategoryService;
         private readonly IUploadNamingService _uploadNamingService;
 
         public ActivityController(IActivityService _activityService,
-            IOpportunityService _opportunityService,
+            IOpportunityService _opportunityService, IStaffService _staffService,
             IOpportunityCategoryMappingService _opportunityCategoryMappingService,
             IUploadNamingService _uploadNamingService,
             ISalesCategoryService _salesCategoryService)
         {
             this._activityService = _activityService;
             this._opportunityService = _opportunityService;
+            this._staffService = _staffService;
             this._opportunityCategoryMappingService = _opportunityCategoryMappingService;
             this._uploadNamingService = _uploadNamingService;
             this._salesCategoryService = _salesCategoryService;
@@ -53,6 +55,7 @@ namespace APIProject.Controllers
         }
 
         [Route("PostNewActivity")]
+        [ResponseType(typeof(PostNewActivityResponseViewModel))]
         public IHttpActionResult PostNewActivity(PostNewActivityViewModel request)
         {
             if (!ModelState.IsValid || request == null)
@@ -67,12 +70,10 @@ namespace APIProject.Controllers
                     bool checkCateIDValid = categoryIDList.Intersect(request.CategoryIDs).Count() == request.CategoryIDs.Count();
                     if (!checkCateIDValid)
                     {
-                        return BadRequest("Category IDs lỗi");
+                        return BadRequest(message: CustomError.OppCategoriesNotFound);
                     }
                 }
             }
-            Activity newActivity = request.ToActivityModel();
-
             #region validate activty
             List<string> RequiredTypes = new List<string>
             {
@@ -97,68 +98,94 @@ namespace APIProject.Controllers
             }
             if (request.Type == ActivityType.FromCustomer)
             {
-                if(DateTime.Compare(DateTime.Now,request.TodoTime) < 0)
+                if (DateTime.Compare(DateTime.Now, request.TodoTime) < 0)
                 {
                     return BadRequest(message: CustomError.ActivityTodoNotPassCurrent);
                 }
             }
             else
             {
-                if(DateTime.Compare(DateTime.Now,request.TodoTime) > 0)
+                if (DateTime.Compare(DateTime.Now, request.TodoTime) > 0)
                 {
                     return BadRequest(message: CustomError.ActivityTodoMustPassCurrent);
                 }
                 if (request.CategoryIDs != null)
                 {
-                    return BadRequest(message:CustomError.TypeToCustomerNotHaveCategories);
+                    return BadRequest(message: CustomError.TypeToCustomerNotHaveCategories);
                 }
             }
             #endregion
-            var insertedActivity = _activityService.Add(request.ToActivityModel());
-            
-            int? InsertedOpportunityID = null;
-            //generate opp condition
-            if (request.CategoryIDs != null)
+            try
             {
-               
-                Opportunity newOpp = new Opportunity
+                if (request.CategoryIDs != null)
                 {
-                    Title = request.Title,
-                    Description = request.Description,
-                    CreatedStaffID=request.StaffID,
-                    ContactID=request.ContactID,
-                };
-                //InsertedOpportunityID = _opportunityService.CreateOpportunity(newOpportunity);
-                var insertedOpp = _opportunityService.Add(newOpp);
-                //_opportunityCategoryMappingService.MapOpportunityCategories(InsertedOpportunityID.Value,
-                //    request.CategoryIDs);
-                _opportunityCategoryMappingService.AddRange(insertedOpp.ID, request.CategoryIDs);
-                _activityService.MapOpportunity(insertedActivity, insertedOpp);
+                    _salesCategoryService.VerifyCategories(request.CategoryIDs);
+                }
+                var response = new PostNewActivityResponseViewModel();
+                var insertedActivity = _activityService.Add(request.ToActivityModel());
+                response.ActivityCreated = true;
+                response.ActivityID = insertedActivity.ID;
+                if (request.CategoryIDs != null)
+                {
+                    var actOpp = new Opportunity
+                    {
+                        Title = request.Title,
+                        Description = request.Description,
+                        CreatedStaffID = request.StaffID,
+                        ContactID = request.ContactID,
+                    };
+                    var insertedOpp = _opportunityService.Add(actOpp);
+                    _opportunityCategoryMappingService.AddRange(insertedOpp.ID, request.CategoryIDs);
+                    _activityService.MapOpportunity(insertedActivity, insertedOpp);
+                    response.OpportunityCreated = true;
+                    response.OpportunityID = insertedOpp.ID;
+                }
                 _activityService.SaveChanges();
+                return Ok(response);
             }
-            //return Ok(insertedActivityID);
-            return Ok(new { InsertedOpportunityID, insertedActivity.ID });
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
-
         [Route("PutSaveChangeActivity")]
-        [ResponseType(typeof(Boolean))]
+        [ResponseType(typeof(PutSaveChangeActivityResponseViewModel))]
         public IHttpActionResult PutSaveChangeActivity(PutSaveChangeActivityViewModel request)
         {
             if (!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
             }
-            if (!ActivityMethod.GetList().Contains(request.Method))
+            List<string> RequiredMethods = new List<string>
             {
-                return BadRequest();
+                ActivityMethod.Direct,
+                ActivityMethod.Email,
+                ActivityMethod.Phone
+            };
+            if(DateTime.Compare(DateTime.Now, request.TodoTime) > 0)
+            {
+                return BadRequest(message: CustomError.ActivityTodoMustPassCurrent);
+            }
+            if (!RequiredMethods.Contains(request.Method))
+            {
+                return BadRequest(message: CustomError.ActivityMethodsRequired
+                    + String.Join(", ", RequiredMethods));
+            }
+            try
+            {
+                var response = new PutSaveChangeActivityResponseViewModel();
+                var foundActivity = _activityService.Get(request.ID);
+                var foundStaff = _staffService.Get(request.StaffID);
+                _activityService.UpdateInfo(request.ToActivityModel());
+                response.ActivityUpdated = true;
+                _activityService.SaveChanges();
+                return Ok(response);
+            }catch(Exception e)
+            {
+                return BadRequest(e.Message);
+
             }
 
-            bool Updated = _activityService.SaveChangeActivity(request.ToActivityModel());
-            if (Updated)
-            {
-                return Ok(new { Updated });
-            }
-            return BadRequest("Không thể cập nhật, kiểm tra lại json phù hợp business logic");
         }
 
         [Route("PutCompleteActivity")]
@@ -230,7 +257,7 @@ namespace APIProject.Controllers
             return Ok(new { Updated });
         }
 
-        
+
 
         [Route("GetActivityList")]
         public IHttpActionResult GetActivityList()
