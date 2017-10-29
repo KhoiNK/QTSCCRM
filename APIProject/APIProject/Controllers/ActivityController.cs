@@ -63,9 +63,6 @@ namespace APIProject.Controllers
             {
                 if (request.CategoryIDs != null)
                 {
-
-                    
-
                     List<int> categoryIDList = _salesCategoryService.GetAllCategories().Select(c => c.ID).ToList();
                     bool checkCateIDValid = categoryIDList.Intersect(request.CategoryIDs).Count() == request.CategoryIDs.Count();
                     if (!checkCateIDValid)
@@ -117,8 +114,7 @@ namespace APIProject.Controllers
                 }
             }
             #endregion
-
-            var insertedActivity = _activityService.Add(newActivity);
+            var insertedActivity = _activityService.Add(request.ToActivityModel());
             
             int? InsertedOpportunityID = null;
             //generate opp condition
@@ -234,35 +230,13 @@ namespace APIProject.Controllers
             return Ok(new { Updated });
         }
 
-        //[Route("PutFinishActivity")]
-        //public IHttpActionResult PutFinishActivity(PutFinishActivityViewModel request)
-        //{
-        //    if(!ModelState.IsValid || request == null)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-
-        //    return Ok(_activityService.FinishActivity(request.ToActivityModel()));
-        //}
+        
 
         [Route("GetActivityList")]
         public IHttpActionResult GetActivityList()
         {
             return Ok(_activityService.GetAllActivities().Select(c => new ActivityViewModel(c)));
         }
-
-        //[Route("GetActivityDetail")]
-        //[ResponseType(typeof(ActivityDetailViewModel))]
-        //public IHttpActionResult GetActivityDetail(int? id)
-        //{
-        //    if (id.HasValue)
-        //    {
-        //        return Ok(_activityService.GetAllActivities().Where(c => c.ID == id.Value)
-        //            .Select(c => new ActivityDetailViewModel(c)));
-        //    }
-        //    return BadRequest();
-        //}
 
         [Route("GetActivityDetails")]
         [ResponseType(typeof(ActivityDetailsViewModel))]
@@ -282,7 +256,6 @@ namespace APIProject.Controllers
             }
             return NotFound();
         }
-
 
         [Route("GetOpportunityActivities")]
         [ResponseType(typeof(ActivityDetailViewModel))]

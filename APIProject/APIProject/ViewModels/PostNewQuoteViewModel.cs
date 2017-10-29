@@ -21,8 +21,21 @@ namespace APIProject.ViewModels
         [Range(0, 100,
            ErrorMessage = "Giá trị của khuyến mãi phải từ {1} đến {2}.")]
         public double Discount { get; set; }
-
         
-
+        public Quote ToQuoteModel()
+        {
+            return new Quote
+            {
+                CreatedStaffID = this.StaffID,
+                OpportunityID = this.OpportunityID,
+                Tax = this.Tax,
+                Discount = this.Discount
+            };
+        }
+    }
+    public class PostNewQuoteResponseViewModel
+    {
+        public bool QuoteCreated { get; set; }
+        public int QuoteID { get; set; }
     }
 }

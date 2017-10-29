@@ -284,12 +284,20 @@ namespace APIProject.Service
                 Description = activity.Description,
                 Type = activity.Type,
                 Method = activity.Method,
-                TodoTime = activity.TodoTime
+                TodoTime = activity.TodoTime,
             };
+            if (activity.Type == ActivityType.FromCustomer)
+            {
+                entity.Status = ActivityStatus.Recorded;
+            }
+            else
+            {
+                entity.Status = ActivityStatus.Open;
+            }
             var customerID = _contactRepository.GetById(activity.ContactID.Value)
                 .CustomerID;
             entity.CustomerID = customerID;
-            _activityRepository.Update(entity);
+            _activityRepository.Add(entity);
             _unitOfWork.Commit();
             return entity;
         }

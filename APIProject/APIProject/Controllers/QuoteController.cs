@@ -70,6 +70,7 @@ namespace APIProject.Controllers
         }
 
         [Route("PostNewQuote")]
+        [ResponseType(typeof(PostNewQuoteResponseViewModel))]
         public IHttpActionResult PostNewQuote(PostNewQuoteViewModel request)
         {
             if (!ModelState.IsValid || request == null)
@@ -90,77 +91,23 @@ namespace APIProject.Controllers
 
             #endregion
 
-            #region check request
-            var foundStaff = _staffService.Get(request.StaffID);
-            if (foundStaff == null)
+            try
             {
-                return BadRequest(message: CustomError.StaffNotFound);
+                var response = new PostNewQuoteResponseViewModel();
+                var foundStaff = _staffService.Get(request.StaffID);
+                var foundOpp = _opportunityService.Get(request.OpportunityID);
+                var createdQuote = _quoteService.Add(request.ToQuoteModel(), request.SalesItemIDs);
+                _quoteService.SaveChanges();
+                response.QuoteCreated = true;
+                response.QuoteID = createdQuote.ID;
+                return Ok(response);
+
             }
-            if (foundStaff.Role.Name != RoleName.Sales)
+            catch (Exception e)
             {
-                return BadRequest(message: CustomError.StaffRoleRequired + RoleName.Sales);
+                return BadRequest(e.Message);
             }
 
-            var foundOpp = _opportunityService.Get(request.OpportunityID);
-            if (foundOpp == null)
-            {
-                return BadRequest(message: CustomError.OpportunityNotFound);
-            }
-            if (foundOpp.StageName != OpportunityStage.MakeQuote)
-            {
-                return BadRequest(message: CustomError.OppStageRequired + OpportunityStage.MakeQuote);
-            }
-            if (foundOpp.Quotes.Any())
-            {
-                var lastQuote = foundOpp.Quotes.OrderByDescending(c => c.CreatedDate)
-                    .Where(c => c.IsDelete == false).FirstOrDefault();
-                if (lastQuote != null)
-                {
-                    if (lastQuote.Status == QuoteStatus.Drafting
-                        || lastQuote.Status == QuoteStatus.Validating)
-                    {
-                        return BadRequest(message: CustomError.QuoteExisted);
-                    }
-                }
-            }
-
-            var salesItemIDs = _salesItemService.GetAll().Where(c => c.IsDelete == false).Select(c => c.ID);
-            if (salesItemIDs.Intersect(request.SalesItemIDs).Count() != request.SalesItemIDs.Count)
-            {
-                return BadRequest(CustomError.QuoteItemsNotFound);
-            }
-            #endregion
-
-            #region create new quote
-            Quote newQuote = new Quote
-            {
-                CreatedStaffID = request.StaffID,
-                OpportunityID = request.OpportunityID,
-                Tax = request.Tax,
-                Discount = request.Discount,
-                Status = QuoteStatus.Drafting
-            };
-
-            _quoteService.Add(newQuote);
-            _quoteService.SaveChanges();
-            #endregion
-
-            #region create and map quote items 
-            foreach (var salesItemID in request.SalesItemIDs)
-            {
-                var foundItem = _salesItemService.Get(salesItemID);
-                _quoteItemMappingService.Add(new QuoteItemMapping
-                {
-                    QuoteID = newQuote.ID,
-                    SalesItemID = foundItem.ID,
-                    SalesItemName = foundItem.Name,
-                    Price = foundItem.Price,
-                    Unit = foundItem.Unit
-                });
-            }
-            _quoteItemMappingService.SaveChanges();
-            #endregion
-            return Ok(new { QuoteID = newQuote.ID });
         }
 
         [Route("PutValidQuote")]
@@ -227,6 +174,7 @@ namespace APIProject.Controllers
         }
 
         [Route("PutUpdateQuote")]
+        [ResponseType(typeof(PutUpdateQuoteResponseViewModel))]
         public IHttpActionResult PutUpdateQuote(PutUpdateQuoteViewModel request)
         {
             if (!ModelState.IsValid || request == null)
@@ -264,6 +212,35 @@ namespace APIProject.Controllers
                 return BadRequest(e.Message);
             }
             
+        }
+
+        [Route("PutSendQuote")]
+        public IHttpActionResult PutSendQuote(PutSendQuoteViewModel request)
+        {
+            if (!ModelState.IsValid || request==null)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var response = new PutSendQuoteResponseViewModel();
+                var foundQuote = _quoteService.Get(request.ID);
+                var foundStaff = _staffService.Get(request.StaffID);
+                //insert email service
+
+                _quoteService.SetSend(request.ToQuoteModel());
+                response.QuoteSent = true;
+
+                var quoteOpp = _opportunityService.GetByQuote(request.ID);
+                _opportunityService.SetNextStage(quoteOpp);
+                response.OpportunityUpdated = true;
+
+                _opportunityService.SaveChanges();
+                return Ok(response);
+            }catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [Route("DeleteQuote")]

@@ -31,7 +31,6 @@ namespace APIProject.Model.Models
         public string Status { get; set; }
         public int? OpenStaffID { get; set; }
         public DateTime? OpenedDate { get; set; }
-
         public int? SolveStaffID { get; set; }
         public DateTime? SolveStartDate { get; set; }
         public DateTime? EstimateSolveEndDate { get; set; }

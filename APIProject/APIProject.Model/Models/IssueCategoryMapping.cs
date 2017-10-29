@@ -12,9 +12,7 @@
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         public int IssueID { get; set; }
-
         public int SalesCategoryID { get; set; }
-
         public bool IsDeleted { get; set; }
         [ForeignKey("IssueID")]
         public virtual Issue Issue { get; set; }

@@ -135,4 +135,25 @@ namespace APIProject.ViewModels
         public bool QuoteUpdated { get; set; }
         public bool OpportunityUpdated { get; set; }
     }
+
+    public class PutSendQuoteViewModel
+    {
+        [Required]
+        public int ID { get; set; }
+        [Required]
+        public int StaffID { get; set; }
+        public Quote ToQuoteModel()
+        {
+            return new Quote
+            {
+                ID = this.ID,
+                CreatedStaffID = this.StaffID
+            };
+        }
+    }
+    public class PutSendQuoteResponseViewModel
+    {
+        public bool QuoteSent { get; set; }
+        public bool OpportunityUpdated { get; set; }
+    }
 }
