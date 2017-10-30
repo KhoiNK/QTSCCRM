@@ -14,23 +14,21 @@ namespace APIProject.ViewModels
         [Required]
         public int StaffID { get; set; }
         [Required]
-        public int ContactID { get; set; }
+        public int OpportunityID { get; set; }
         [Required]
-        public int QuoteID { get; set; }
-        [Required]
-        public List<PostContractViewModel> Contracts { get; set; }
+        public List<PostContractViewModel> Categories { get; set; }
     }
     public class PostContractViewModel
     {
         [Required]
         public int SalesCagetogyID { get; set; }
         [Required]
-        public List<ContractItemViewModel> ContractItems { get; set; }
+        public List<ContractItemViewModel> QuoteItems { get; set; }
     }
     public struct ContractItemViewModel
     {
         [Required]
-        public int SalesItemID { get; set; }
+        public int QuoteItemID { get; set; }
         [Required]
         public int Quantity { get; set; }
         [Required]

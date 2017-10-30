@@ -48,6 +48,7 @@
     <Compile Include="ActivityService.cs" />
     <Compile Include="CategoryService.cs" />
     <Compile Include="ContactService.cs" />
+    <Compile Include="ContractItemService.cs" />
     <Compile Include="ContractService.cs" />
     <Compile Include="CustomerService.cs" />
     <Compile Include="EmailService.cs" />
