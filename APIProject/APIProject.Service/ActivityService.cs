@@ -13,22 +13,20 @@ namespace APIProject.Service
 
     public interface IActivityService
     {
-        int CreateNewActivity(Activity activity);
         IEnumerable<Activity> GetAllActivities();
         List<string> GetActivityTypeNames();
         List<string> GetActivityMethodNames();
         List<string> GetActivityStatusNames();
         IEnumerable<Activity> GetByOpprtunity(int opportunityID);
         IEnumerable<Activity> GetByCustomer(int customerID);
-        bool SaveChangeActivity(Activity activity);
-        bool CompleteActivity(Activity activity);
-        bool CancelActivity(Activity activity);
-        bool CheckIsOppActivity(int activityID);
         Activity Get(int id);
         Activity Add(Activity activity);
         void UpdateInfo(Activity activity);
+        void SetCancel(Activity activity);
+        void SetComplete(Activity activity);
         void MapOpportunity(Activity activity, Opportunity opportunity);
         void SaveChanges();
+        void VerifyCanCreateOpportunity(Activity activity);
     }
     public class ActivityService : IActivityService
     {
@@ -38,8 +36,6 @@ namespace APIProject.Service
         private readonly IContactRepository _contactRepository;
         private readonly IOpportunityRepository _opportunityRepository;
         private readonly IUnitOfWork _unitOfWork;
-
-
 
         public ActivityService(IActivityRepository _activityRepository, IUnitOfWork _unitOfWork,
             IStaffRepository _staffRepository, ICustomerRepository _customerRepository,
@@ -52,8 +48,6 @@ namespace APIProject.Service
             this._opportunityRepository = _opportunityRepository;
             this._unitOfWork = _unitOfWork;
         }
-
-
         private void CheckAndChangeOverdue(Activity activity)
         {
             if (activity.Status == ActivityStatus.Open)
@@ -65,75 +59,6 @@ namespace APIProject.Service
                 }
             }
         }
-        public int CreateNewActivity(Activity activity)
-        {
-            var foundStaff = _staffRepository.GetById(activity.CreateStaffID.Value);
-            if (foundStaff == null)
-            {
-                return 0;
-            }
-
-            var foundContact = _contactRepository.GetById(activity.ContactID.Value);
-            if (foundContact == null)
-            {
-                return 0;
-            }
-            if (activity.OpportunityID.HasValue)
-            {
-                var foundOpp = _opportunityRepository.GetById(activity.OpportunityID.Value);
-                if (foundOpp == null)
-                {
-                    return 0;
-                }
-                else if (foundOpp.ContactID != activity.ContactID || foundOpp.CreatedStaffID != activity.CreateStaffID)
-                {
-                    return 0;
-                }
-                else
-                {
-                    var lastOppActivity = _activityRepository.GetLastOppActivty(foundOpp.ID);
-                    if (lastOppActivity.Status == ActivityStatus.Open || lastOppActivity.Status == ActivityStatus.Overdue)
-                    {
-                        return 0;
-                    }
-                    else
-                    {
-                        activity.OfOpportunityStage = foundOpp.StageName;
-                    }
-                }
-
-            }
-            activity.CustomerID = foundContact.Customer.ID;
-
-            if (ActivityType.GetList().Contains(activity.Type))
-            {
-                if (activity.Type == ActivityType.FromCustomer)
-                {
-                    activity.Status = ActivityStatus.Recorded;
-                }
-                else
-                {
-                    activity.Status = ActivityStatus.Open;
-                }
-            }
-            else
-            {
-                return 0;
-            }
-            if (!ActivityMethod.GetList().Contains(activity.Method))
-            {
-                return 0;
-            }
-
-            activity.CreatedDate = DateTime.Today.Date;
-
-            _activityRepository.Add(activity);
-            _unitOfWork.Commit();
-
-            CheckAndChangeOverdue(activity);
-
-            return activity.ID;
-        }
         public List<string> GetActivityMethodNames()
         {
             return new List<string>
@@ -143,7 +68,6 @@ namespace APIProject.Service
                 ActivityMethod.Phone
             };
         }
-
         public List<string> GetActivityTypeNames()
         {
             return new List<string>
@@ -152,12 +76,10 @@ namespace APIProject.Service
                 ActivityType.ToCustomer
             };
         }
-
         public IEnumerable<Activity> GetAllActivities()
         {
             return _activityRepository.GetAll();
         }
-
         public IEnumerable<Activity> GetByOpprtunity(int opportunityID)
         {
             var foundOpportunity = _opportunityRepository.GetById(opportunityID);
@@ -171,7 +93,6 @@ namespace APIProject.Service
             }
             return null;
         }
-
         public IEnumerable<Activity> GetByCustomer(int customerID)
         {
             var foundCustomer = _customerRepository.GetById(customerID);
@@ -185,7 +106,6 @@ namespace APIProject.Service
             }
             return null;
         }
-
         public List<string> GetActivityStatusNames()
         {
             return new List<string>
@@ -197,82 +117,10 @@ namespace APIProject.Service
                 ActivityStatus.Recorded
             };
         }
-
-        public bool SaveChangeActivity(Activity activity)
-        {
-            var foundActivity = _activityRepository.GetById(activity.ID);
-            if (foundActivity != null)
-            {
-                if (foundActivity.CreateStaffID == activity.CreateStaffID)
-                {
-                    if (foundActivity.Status == ActivityStatus.Open ||
-                        foundActivity.Status == ActivityStatus.Overdue)
-                    {
-                        if (DateTime.Compare(DateTime.Now, activity.TodoTime.Value) <= 0)
-                        {
-                            foundActivity.Title = activity.Title;
-                            foundActivity.Description = activity.Description;
-                            foundActivity.Method = activity.Method;
-                            foundActivity.TodoTime = activity.TodoTime;
-                            foundActivity.Status = ActivityStatus.Open;
-                            _unitOfWork.Commit();
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-
-        public bool CompleteActivity(Activity activity)
-        {
-            var foundActivity = _activityRepository.GetById(activity.ID);
-            if (foundActivity != null)
-            {
-                if (foundActivity.CreateStaffID == activity.CreateStaffID)
-                {
-                    if (foundActivity.Status == ActivityStatus.Open || foundActivity.Status == ActivityStatus.Overdue)
-                    {
-                        foundActivity.Title = activity.Title;
-                        foundActivity.Description = activity.Description;
-                        foundActivity.Status = ActivityStatus.Completed;
-                        foundActivity.CompletedDate = DateTime.Today.Date;
-                        _unitOfWork.Commit();
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        public bool CancelActivity(Activity activity)
-        {
-            var foundActivity = _activityRepository.GetById(activity.ID);
-            if (foundActivity != null)
-            {
-                if (foundActivity.CreateStaffID == activity.CreateStaffID)
-                {
-                    if (foundActivity.Status == ActivityStatus.Open || foundActivity.Status == ActivityStatus.Overdue)
-                    {
-                        foundActivity.Status = ActivityStatus.Canceled;
-                        _unitOfWork.Commit();
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        public bool CheckIsOppActivity(int activityID)
-        {
-            var foundActivity = _activityRepository.GetById(activityID);
-            return foundActivity.OpportunityID.HasValue;
-        }
         public Activity Get(int id)
         {
             var entity = _activityRepository.GetById(id);
-            if(entity != null)
+            if (entity != null)
             {
                 return entity;
             }
@@ -319,6 +167,23 @@ namespace APIProject.Service
             entity.Status = ActivityStatus.Open;
             _activityRepository.Update(entity);
         }
+        public void SetCancel(Activity activity)
+        {
+            var entity = _activityRepository.GetById(activity.ID);
+            VerifyCanSetCancel(entity);
+            entity.Status = ActivityStatus.Canceled;
+            entity.UpdatedDate = DateTime.Now;
+            _activityRepository.Update(entity);
+        }
+        public void SetComplete(Activity activity)
+        {
+            var entity = _activityRepository.GetById(activity.ID);
+            VerifyCanSetComplete(entity);
+            entity.Status = ActivityStatus.Completed;
+            entity.CompletedDate = DateTime.Now;
+            entity.UpdatedDate = DateTime.Now;
+            _activityRepository.Update(entity);
+        }
         public void MapOpportunity(Activity activity, Opportunity opportunity)
         {
             var actEntity = _activityRepository.GetById(activity.ID);
@@ -327,10 +192,17 @@ namespace APIProject.Service
             actEntity.OfOpportunityStage = OppEntity.StageName;
             _activityRepository.Update(actEntity);
         }
-
         public void SaveChanges()
         {
             _unitOfWork.Commit();
+        }
+        public void VerifyCanCreateOpportunity(Activity activity)
+        {
+            var entity = _activityRepository.GetById(activity.ID);
+            if (entity.OpportunityID.HasValue)
+            {
+                throw new Exception(CustomError.ActivityNotForCreateOpportunity);
+            }
         }
         #region private verify
         private void VerifyCanUpdateInfo(Activity activity)
@@ -346,8 +218,33 @@ namespace APIProject.Service
                     + String.Join(", ", requiredStatus));
             }
         }
+        private void VerifyCanSetCancel(Activity activity)
+        {
+            List<string> requiredStatus = new List<string>
+            {
+                ActivityStatus.Open,
+                ActivityStatus.Overdue
+            };
+            if (!requiredStatus.Contains(activity.Status))
+            {
+                throw new Exception(CustomError.ActivityStatusRequired
+                    + String.Join(", ", requiredStatus));
+            }
+        }
+        private void VerifyCanSetComplete(Activity activity)
+        {
+            List<string> requiredStatus = new List<string>
+            {
+                ActivityStatus.Open,
+                ActivityStatus.Overdue
+            };
+            if (!requiredStatus.Contains(activity.Status))
+            {
+                throw new Exception(CustomError.ActivityStatusRequired
+                    + String.Join(", ", requiredStatus));
+            }
+        }
         #endregion
-
-
     }
+
 }

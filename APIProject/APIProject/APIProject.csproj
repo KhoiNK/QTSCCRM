@@ -260,6 +260,7 @@
     <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\ContactController.cs" />
+    <Compile Include="Controllers\ContractController.cs" />
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IssueController.cs" />
@@ -286,6 +287,7 @@
     <Compile Include="ViewModels\ActivityViewModel.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
     <Compile Include="ViewModels\ContactViewModel.cs" />
+    <Compile Include="ViewModels\ContractViewModel.cs" />
     <Compile Include="ViewModels\CustomB64ImageFileViewModel.cs" />
     <Compile Include="ViewModels\CustomBase64FileViewModel.cs" />
     <Compile Include="ViewModels\CustomerDetailsViewModel.cs" />
@@ -308,7 +310,6 @@
     <Compile Include="ViewModels\PostMarketingResultsViewModel.cs" />
     <Compile Include="ViewModels\PostNewActivityViewModel.cs" />
     <Compile Include="ViewModels\PostNewQuoteViewModel.cs" />
-    <Compile Include="ViewModels\PostOpenIssueViewModel.cs" />
     <Compile Include="ViewModels\PostOpportunityViewModel.cs" />
     <Compile Include="ViewModels\PostSalesItemViewModel.cs" />
     <Compile Include="ViewModels\PutAcceptMarketingPlanViewModel.cs" />

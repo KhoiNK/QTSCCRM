@@ -10,7 +10,6 @@ namespace APIProject.ViewModels
     {
         public int ID { get; set; }
         public string AvatarUrl { get; set; }
-
         public string Name { get; set; }
         public string Address { get; set; }
         public DateTime EstablishedDate { get; set; }

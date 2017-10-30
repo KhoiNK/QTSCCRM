@@ -94,7 +94,6 @@ namespace APIProject.Controllers
         [ResponseType(typeof(CustomerViewModel))]
         public IHttpActionResult GetCustomerList()
         {
-            //bool? onlyCustomer, int pageIndex, int pageSize
 
             var customers = _customerService.GetCustomerList();
             if (customers.Any())
@@ -117,7 +116,15 @@ namespace APIProject.Controllers
             //return Ok()
         }
 
-       
+        [Route("GetOfficialCustomers")]
+        [ResponseType(typeof(CustomerDetailViewModel))]
+        public IHttpActionResult GetOfficialCustomers()
+        {
+            var entities = _customerService.GetOfficial().ToList();
+            entities.ForEach(c => _uploadNamingService.ConcatCustomerAvatar(c));
+            return Ok(entities.Select(c => new CustomerDetailViewModel(c)));
+        }
+
         [Route("GetCustomerDetails")]
         [ResponseType(typeof(CustomerDetailViewModel))]
         public IHttpActionResult GetCustomerDetails(int ID)

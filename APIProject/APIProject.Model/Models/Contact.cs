@@ -7,7 +7,7 @@ namespace APIProject.Model.Models
     using System.Data.Entity.Spatial;
 
     [Table("Contact")]
-    public partial class Contact
+    public partial class Contact:BaseEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Contact()
@@ -18,8 +18,8 @@ namespace APIProject.Model.Models
             Opportunities = new HashSet<Opportunity>();
         }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //public int ID { get; set; }
 
         public int CustomerID { get; set; }
 

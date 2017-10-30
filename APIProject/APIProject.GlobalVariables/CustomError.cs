@@ -32,6 +32,7 @@ namespace APIProject.GlobalVariables
         public static string TypeToCustomerNotHaveCategories = "Lịch hẹn tương lai chưa xác định được cơ hội bán hàng";
         public static string ActivityStatusRequired = "Yêu cầu trạng thái lịch hẹn:";
         public static string ActivityNotFound = "Không tìm thấy lịch hẹn";
+        public static string ActivityNotForCreateOpportunity = "Lịch hẹn này không thể sinh ra cơ hội bán hàng";
 
         public static string DuplicateIDs = "ID không được trùng lặp";
 
@@ -51,7 +52,16 @@ namespace APIProject.GlobalVariables
 
         public static string InvalidSalesItems = "Danh sách mục báo giá không hợp lệ";
 
+        public static string InvalidSalesCategories = "Danh sách loại dịch vụ không hợp lệ";
 
+        public static string IssueSolveDateMustPassCurrent = "Ngày giải quyết không được trước thời điểm hiện tại";
+        public static string IssueCategoriesRequired = "Yêu cầu ít nhất 1 loại dịch vụ";
+        public static string IssueNotFound = "Không tìm thấy khiếu nại";
+        public static string IssueStatusRequired = "Yêu cầu trạng thái của khiếu nại:";
 
+        public static string ContractRequired = "Ít nhất 1 loại dịch vụ để làm hợp đồng";
+        public static string ContractItemRequired = "Ít nhất 1 hạng mục trong dịch vụ để làm hợp đồng";
+        public static string ContractItemStartDateMustPassCurrent = "Ngày bắt đầu sử dụng hạng mục không được trước thời điểm hiện tại";
+        public static string ContractItemStartDateMustNotPassEndDate = "Ngày bắt đầu sử dụng hạng mục không được sau ngày kết thúc hạng mục";
     }
 }

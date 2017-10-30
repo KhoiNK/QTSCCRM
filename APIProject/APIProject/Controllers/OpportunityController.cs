@@ -56,18 +56,7 @@ namespace APIProject.Controllers
             return Ok(opportunities.Select(c => new OpportunityViewModel(c)));
         }
 
-        [Route("GetOpportunity")]
-        [ResponseType(typeof(OpportunityDetailViewModel))]
-        public IHttpActionResult GetOpportunity(int id = 0)
-        {
-            if (id == 0)
-            {
-                return BadRequest();
-            }
-            return Ok(_opportunityService.GetAllOpportunities().Where(c => c.ID == id)
-                .Select(c => new OpportunityDetailViewModel(c)));
-        }
-
+        
         [Route("GetOpportunityDetails")]
         [ResponseType(typeof(OpportunityDetailsViewModel))]
         public IHttpActionResult GetOpportunityDetails(int id = 0)
@@ -86,26 +75,8 @@ namespace APIProject.Controllers
                 //.Select(c => new OpportunityDetailsViewModel(c)));
             }
             return NotFound();
-
         }
-
-        [Route("GetCustomerOpportunities")]
-        [ResponseType(typeof(OpportunityDetailViewModel))]
-        public IHttpActionResult GetCustomerOpportunities(int customerID = 0)
-        {
-            if (customerID == 0)
-            {
-                return BadRequest();
-            }
-            var foundOpportunities = _opportunityService.GetByCustomer(customerID);
-            if (foundOpportunities != null)
-            {
-                return Ok(foundOpportunities.Select(c => new OpportunityDetailViewModel(c)));
-            }
-
-            return NotFound();
-        }
-
+        
         [HttpPut]
         [Route("PutOpportunityInformation")]
         [ResponseType(typeof(PutOpportunityInformationResponseViewModel))]
@@ -210,10 +181,8 @@ namespace APIProject.Controllers
                 var foundOpportunity = _opportunityService.Get(request.ID);
                 _opportunityService.SetWon(request.ToOpportunityModel());
                 response.OpportunityUpdated = true;
-                //_opportunityService.SaveChanges();
 
 
-                //var foundCustomer = _customerService.Get(foundOpportunity.CustomerID);
                 var oppCustomer = _customerService.GetByOpportunity(request.ID);
                 if (oppCustomer.CustomerType == CustomerType.Lead)
                 {
@@ -263,6 +232,35 @@ namespace APIProject.Controllers
             }
             return Ok(returnResult);
         }
+
+        [Route("GetCustomerOpportunities")]
+        [ResponseType(typeof(OpportunityDetailViewModel))]
+        public IHttpActionResult GetCustomerOpportunities(int customerID = 0)
+        {
+            if (customerID == 0)
+            {
+                return BadRequest();
+            }
+            var foundOpportunities = _opportunityService.GetByCustomer(customerID);
+            if (foundOpportunities != null)
+            {
+                return Ok(foundOpportunities.Select(c => new OpportunityDetailViewModel(c)));
+            }
+
+            return NotFound();
+        }
+        [Route("GetOpportunity")]
+        [ResponseType(typeof(OpportunityDetailViewModel))]
+        public IHttpActionResult GetOpportunity(int id = 0)
+        {
+            if (id == 0)
+            {
+                return BadRequest();
+            }
+            return Ok(_opportunityService.GetAllOpportunities().Where(c => c.ID == id)
+                .Select(c => new OpportunityDetailViewModel(c)));
+        }
+
 
     }
 }

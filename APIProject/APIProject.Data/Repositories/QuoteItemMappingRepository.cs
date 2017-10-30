@@ -19,9 +19,16 @@ namespace APIProject.Data.Repositories
             return this.DbContext.QuoteItemMappings.Where(c => c.SalesItemID == salesItemID
             && c.IsDelete == false).SingleOrDefault();
         }
+        public IEnumerable<QuoteItemMapping> GetByQuoteID(int quoteID)
+        {
+            return this.DbContext.QuoteItemMappings.Where(c => c.QuoteID == quoteID
+            && c.IsDelete == false);
+        }
+
     }
     public interface IQuoteItemMappingRepository : IRepository<QuoteItemMapping>
     {
         QuoteItemMapping GetBySalesItemID(int salesItemID);
+        IEnumerable<QuoteItemMapping> GetByQuoteID(int quoteID);
     }
 }

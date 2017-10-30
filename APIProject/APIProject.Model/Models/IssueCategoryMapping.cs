@@ -7,13 +7,12 @@
     using System.Data.Entity.Spatial;
 
     [Table("IssueCategoryMapping")]
-    public partial class IssueCategoryMapping
+    public partial class IssueCategoryMapping:BaseEntity
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //public int ID { get; set; }
         public int IssueID { get; set; }
         public int SalesCategoryID { get; set; }
-        public bool IsDeleted { get; set; }
         [ForeignKey("IssueID")]
         public virtual Issue Issue { get; set; }
         [ForeignKey("SalesCategoryID")]

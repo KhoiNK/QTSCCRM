@@ -22,4 +22,8 @@ namespace APIProject.ViewModels
             };
         }
     }
+    public class PutCancelActivityResponseViewModel
+    {
+        public bool ActivityUpdated { get; set; }
+    }
 }

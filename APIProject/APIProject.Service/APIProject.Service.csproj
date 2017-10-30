@@ -48,8 +48,10 @@
     <Compile Include="ActivityService.cs" />
     <Compile Include="CategoryService.cs" />
     <Compile Include="ContactService.cs" />
+    <Compile Include="ContractService.cs" />
     <Compile Include="CustomerService.cs" />
     <Compile Include="EmailService.cs" />
+    <Compile Include="IssueCategoryMappingService.cs" />
     <Compile Include="IssueService.cs" />
     <Compile Include="MarketingPlanService.cs" />
     <Compile Include="MarketingResultService.cs" />

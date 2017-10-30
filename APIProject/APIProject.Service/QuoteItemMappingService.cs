@@ -23,6 +23,13 @@ namespace APIProject.Service
             this._unitOfWork = _unitOfWork;
         }
 
+        public IEnumerable<QuoteItemMapping> GetByQuote(int id)
+        {
+            var entities = _quoteItemMappingRepository.GetAll().Where(c => c.IsDelete == false
+            && c.QuoteID == id);
+            return entities;
+        }
+
         public void Add(QuoteItemMapping quoteItem)
         {
             quoteItem.CreatedDate = DateTime.Now;
@@ -94,6 +101,7 @@ namespace APIProject.Service
 
     public interface IQuoteItemMappingService
     {
+        IEnumerable<QuoteItemMapping> GetByQuote(int id);
         void Add(QuoteItemMapping quoteItem);
         void UpdateRange(int quoteID, List<int> itemIDs);
         void DeleteBySalesItemID(int salesItemID);

@@ -13,7 +13,7 @@ namespace APIProject.ViewModels
         public string Description { get; set; }
         public string Stage { get; set; }
         public string Status { get; set; }
-        public DateTime? EstimateSolveEndDate { get; set; }
+        public DateTime? SolveDate { get; set; }
         public DateTime? ClosedDate { get; set; }
 
 
@@ -22,9 +22,8 @@ namespace APIProject.ViewModels
             this.ID = dto.ID;
             this.Title = dto.Title;
             this.Description = dto.Description;
-            this.Stage = dto.Stage;
             this.Status = dto.Status;
-            this.EstimateSolveEndDate = dto.EstimateSolveEndDate;
+            this.SolveDate = dto.SolveDate;
             this.ClosedDate = dto.ClosedDate;
         }
     }

@@ -29,5 +29,20 @@ namespace APIProject.ViewModels
                 Description = this.Description
             };
         }
+        public Opportunity ToOpportunityModel()
+        {
+            return new Opportunity
+            {
+                Title=this.Title,
+                Description=this.Description,
+                CreatedStaffID=this.StaffID
+            };
+        }
+    }
+    public class PutCompleteActivityResponseViewModel
+    {
+        public bool ActivityUpdated { get; set; }
+        public bool OpportunityCreated { get; set; }
+        public int OpportunityID { get; set; }
     }
 }

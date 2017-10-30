@@ -58,6 +58,24 @@ namespace APIProject.ViewModels
             this.Unit = dto.Unit;
         }
     }
+    public class QuoteDetailsViewModel
+    {
+        public int ID { get; set; }
+        public double Tax { get; set; }
+        public double Discount { get; set; }
+        public string Status { get; set; }
+        public StaffDetailViewModel ValidatedStaff { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public DateTime? SentCustomerDate { get; set; }
+        public List<QuoteCategotyViewModel> Categories { get; set; }
+    }
+
+    public struct QuoteCategotyViewModel
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public List<QuoteItemViewModel> Items { get; set; }
+    }
 
     public class PutUpdateQuoteViewModel
     {

@@ -7,13 +7,13 @@ namespace APIProject.Model.Models
     using System.Data.Entity.Spatial;
 
     [Table("Activity")]
-    public partial class Activity
+    public partial class Activity:BaseEntity
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //public int ID { get; set; }
 
         public int? CreateStaffID { get; set; }
-        public DateTime? CreatedDate { get; set; }
+        //public DateTime? CreatedDate { get; set; }
 
         public int? OfStaffID { get; set; }
 

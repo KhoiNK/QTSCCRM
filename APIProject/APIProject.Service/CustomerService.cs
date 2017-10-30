@@ -135,13 +135,26 @@ namespace APIProject.Service
             }
             return null;
         }
+        
+        public Customer Get(int id)
+        {
+            return _customerRepository.GetById(id);
+        }
         public IEnumerable<Customer> GetAll()
         {
             return _customerRepository.GetAll();
         }
-        public Customer Get(int id)
+        public IEnumerable<Customer> GetOfficial()
         {
-            return _customerRepository.GetById(id);
+            List<string> requiredCustomerTypes = new List<string>
+            {
+                CustomerType.Official,
+                CustomerType.Inside,
+                CustomerType.Outside
+            };
+            var entities = _customerRepository.GetAll().Where(c => c.IsDelete == false
+            && requiredCustomerTypes.Contains(c.CustomerType));
+            return entities;
         }
         public Customer GetByOpportunity(int opportunityID)
         {
@@ -194,6 +207,7 @@ namespace APIProject.Service
         Customer GetByIssue(int issueID);
         Customer Get(int id);
         IEnumerable<Customer> GetAll();
+        IEnumerable<Customer> GetOfficial();
         Customer GetByOpportunity(int opportunityID);
         void Update(Customer customer);
         void ConvertToCustomer(Customer customer);

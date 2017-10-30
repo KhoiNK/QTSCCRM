@@ -14,10 +14,13 @@ namespace APIProject.Controllers
     public class SalesCategoryController : ApiController
     {
         private readonly ISalesCategoryService _salesCategoryService;
+        private readonly ISalesItemService _salesItemService;
 
-        public SalesCategoryController(ISalesCategoryService _salesCategoryService)
+        public SalesCategoryController(ISalesCategoryService _salesCategoryService,
+            ISalesItemService _salesItemService)
         {
             this._salesCategoryService = _salesCategoryService;
+            this._salesItemService = _salesItemService;
         }
 
         [Route("GetSalesCategories")]
@@ -30,12 +33,12 @@ namespace APIProject.Controllers
         [ResponseType(typeof(SalesCategoryViewModel))]
         public IHttpActionResult GetOpportunitySalesCategories(int opportunityID = 0)
         {
-            if(opportunityID == 0)
+            if (opportunityID == 0)
             {
                 return BadRequest();
             }
             var foundCategories = _salesCategoryService.GetByOpportunity(opportunityID);
-            if(foundCategories != null)
+            if (foundCategories != null)
             {
                 return Ok(foundCategories.Select(c => new SalesCategoryViewModel(c)));
             }
@@ -44,6 +47,32 @@ namespace APIProject.Controllers
                 return NotFound();
             }
         }
+
+        [Route("GetByOpportunity")]
+        [ResponseType(typeof(OpportunityCategoryViewModel))]
+        public IHttpActionResult GetByOpportunity(int opportunityID = 0)
+        {
+            if (opportunityID == 0)
+            {
+                return BadRequest();
+            }
+            var categories = _salesCategoryService.GetByOpportunity(opportunityID);
+            var responseList = new List<OpportunityCategoryViewModel>();
+            foreach (var category in categories)
+            {
+                var categoryItems = _salesItemService.GetByCategory(category.ID)
+                    .Select(c => new SalesItemViewModel(c));
+                var response = new OpportunityCategoryViewModel
+                {
+                    ID = category.ID,
+                    Name = category.Name,
+                    Items = categoryItems.ToList()
+                };
+                responseList.Add(response);
+            }
+            return Ok(responseList);
+        }
+
 
         [Route("GetIssueCategories")]
         [ResponseType(typeof(SalesCategoryViewModel))]

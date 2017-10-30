@@ -27,5 +27,11 @@ namespace APIProject.ViewModels
         }
     }
 
+    public class OpportunityCategoryViewModel
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public List<SalesItemViewModel> Items { get; set; }
+    }
     
 }

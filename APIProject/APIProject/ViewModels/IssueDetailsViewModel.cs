@@ -12,17 +12,28 @@ namespace APIProject.ViewModels
         public CustomerDetailViewModel CustomerDetail { get; set; }
         public ContactViewModel ContactDetail { get; set; }
         //public List<int> CategoryIDs { get; set; }
-        public List<string> CategoryNames { get; set; }
-        public IssueDetailsViewModel(Issue dto)
+        public List<IssueCategoryViewModel> Categories { get; set; }
+        public IssueDetailsViewModel(Issue issue, Contact contact, Customer customer,
+            List<SalesCategory> issueCategories)
         {
-            IssueDetail = new IssueDetailViewModel(dto);
-            CustomerDetail = new CustomerDetailViewModel(dto.Customer);
-            ContactDetail = new ContactViewModel(dto.Contact);
-            if (dto.IssueCategoryMappings.Any())
+            IssueDetail = new IssueDetailViewModel(issue);
+            CustomerDetail = new CustomerDetailViewModel(customer);
+            ContactDetail = new ContactViewModel(contact);
+            Categories = new List<IssueCategoryViewModel>();
+            foreach (var category in issueCategories)
             {
-                //CategoryIDs = dto.IssueCategoryMappings.Select(c => c.SalesCategoryID).ToList();
-                CategoryNames = dto.IssueCategoryMappings.Select(c => c.SalesCategory.Name).ToList();
+                Categories.Add(new IssueCategoryViewModel(category));
             }
+        }
+    }
+    public class IssueCategoryViewModel
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public IssueCategoryViewModel(SalesCategory dto)
+        {
+            ID = dto.ID;
+            Name = dto.Name;
         }
     }
 }

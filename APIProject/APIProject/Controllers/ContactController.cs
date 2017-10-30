@@ -113,16 +113,9 @@ namespace APIProject.Controllers
             {
                 return BadRequest();
             }
-            var foundContacts = _contactService.GetByCustomer(customerID);
-            if (foundContacts != null)
-            {
-                foreach (var contact in foundContacts)
-                {
-                    _uploadNamingService.ConcatContactAvatar(contact);
-                }
-                return Ok(foundContacts.Select(c => new ContactViewModel(c)));
-            }
-            return NotFound();
+            var foundContacts = _contactService.GetByCustomer(customerID).ToList();
+            foundContacts.ForEach(c => _uploadNamingService.ConcatContactAvatar(c));
+            return Ok(foundContacts.Select(c => new ContactViewModel(c)));
         }
 
         [Route("GetIssueContact")]

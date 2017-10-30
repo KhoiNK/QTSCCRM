@@ -53,8 +53,6 @@ namespace APIProject.Service
 
             return contact.ID;
         }
-
-        
         public bool EditContact(Contact contact)
         {
             Contact foundContact = _contactRepository.GetById(contact.ID);
@@ -72,7 +70,6 @@ namespace APIProject.Service
             _unitOfWork.Commit();
             return true;
         }
-
         public Contact GetContactByOpportunity(int opportunityID)
         {
             var foundOpportunity = _opportunityRepository.GetById(opportunityID);
@@ -82,7 +79,6 @@ namespace APIProject.Service
             }
             return null;
         }
-
         public Contact GetContactByActivity(int activityID)
         {
             var foundActivity = _activityRepository.GetById(activityID); 
@@ -92,23 +88,6 @@ namespace APIProject.Service
             }
             return null;
         }
-        public IEnumerable<Contact> GetByCustomer(int customerID)
-        {
-            var foundCustomer = _customerRepository.GetById(customerID);
-            if (foundCustomer != null)
-            {
-                var contacts = foundCustomer.Contacts;
-                if (contacts.Any())
-                {
-                    return contacts;
-                }
-            }
-
-            return null;
-        }
-
-        
-
         public Contact GetByIssue(int issueID)
         {
             var foundIssue = _issueRepository.GetById(issueID);//todo
@@ -118,7 +97,24 @@ namespace APIProject.Service
             }
             return null;
         }
-
+        public Contact Get(int id)
+        {
+            var entity = _contactRepository.GetById(id);
+            if (entity != null)
+            {
+                return entity;
+            }
+            else
+            {
+                throw new Exception(CustomError.ContactNotFound);
+            }
+        }
+        public IEnumerable<Contact> GetByCustomer(int customerID)
+        {
+            var entities = _contactRepository.GetAll().Where(
+                c => c.CustomerID == customerID&&c.IsDelete==false);
+            return entities;
+        }
 
     }
 
@@ -126,9 +122,11 @@ namespace APIProject.Service
     {
         int CreateContact(Contact contact);
         bool EditContact(Contact contact);
-        IEnumerable<Contact> GetByCustomer(int customerID);
         Contact GetByIssue(int issueID);
         Contact GetContactByActivity(int activityID);
         Contact GetContactByOpportunity(int opportunityID);
+        Contact Get(int id);
+        IEnumerable<Contact> GetByCustomer(int customerID);
+
     }
 }

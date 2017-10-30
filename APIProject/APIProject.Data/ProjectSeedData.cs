@@ -64,7 +64,6 @@ namespace APIProject.Data
                     {
                         IssueID = item.ID,
                         SalesCategoryID = count,
-                        IsDeleted=false
                     });
                 }
                 if (i < 6)
@@ -355,9 +354,7 @@ namespace APIProject.Data
                                 ContactID = contact.ID,
                                 Title = "Hư chỗ " + count,
                                 Description = "Chi tiết việc hư chỗ " + count,
-                                Stage = IssueStage.Open,
                                 Status = IssueStatus.Open,
-                                EstimateSolveEndDate = null
                             });
                             count++;
                             _list.Add(new Issue
@@ -367,9 +364,7 @@ namespace APIProject.Data
                                 ContactID = contact.ID,
                                 Title = "Hư chỗ " + count,
                                 Description = "Chi tiết việc hư chỗ " + count,
-                                Stage = IssueStage.Solving,
                                 Status = IssueStatus.Doing,
-                                EstimateSolveEndDate = DateTime.Now
                             });
                             count++;
                             _list.Add(new Issue
@@ -379,9 +374,7 @@ namespace APIProject.Data
                                 ContactID = contact.ID,
                                 Title = "Hư chỗ " + count,
                                 Description = "Chi tiết việc hư chỗ " + count,
-                                Stage = IssueStage.Solving,
                                 Status = IssueStatus.Overdue,
-                                EstimateSolveEndDate = DateTime.Now
                             });
                             count++;
                             _list.Add(new Issue
@@ -391,9 +384,7 @@ namespace APIProject.Data
                                 ContactID = contact.ID,
                                 Title = "Hư chỗ " + count,
                                 Description = "Chi tiết việc hư chỗ " + count,
-                                Stage = IssueStage.Closed,
                                 Status = IssueStatus.Done,
-                                EstimateSolveEndDate = DateTime.Now,
                                 ClosedDate = DateTime.Today.Date
                             });
                             count++;
@@ -404,9 +395,7 @@ namespace APIProject.Data
                                 ContactID = contact.ID,
                                 Title = "Hư chỗ " + count,
                                 Description = "Chi tiết việc hư chỗ " + count,
-                                Stage = IssueStage.Closed,
                                 Status = IssueStatus.Failed,
-                                EstimateSolveEndDate = DateTime.Now,
                                 ClosedDate = DateTime.Today.Date
                             });
 
@@ -679,10 +668,11 @@ namespace APIProject.Data
             List<Opportunity> list = new List<Opportunity>();
             List<string> stages = new List<string>
             {
-                OpportunityStage.MakeQuote,
-                OpportunityStage.ValidateQuote,
-                OpportunityStage.SendQuote,
-                OpportunityStage.Negotiation,
+                OpportunityStage.Consider
+                //OpportunityStage.MakeQuote,
+                //OpportunityStage.ValidateQuote,
+                //OpportunityStage.SendQuote,
+                //OpportunityStage.Negotiation,
             };
             int count = 1;
             foreach (string stage in stages)

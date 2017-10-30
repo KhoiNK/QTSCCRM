@@ -166,12 +166,17 @@ namespace APIProject.Service
         {
             var entity = new Opportunity
             {
+                Title=opp.Title,
+                Description=opp.Description,
                 StageName = OpportunityStage.Consider,
                 ConsiderStart = DateTime.Today,
                 CreatedDate = DateTime.Now,
+                ContactID=opp.ContactID,
                 CreatedStaffID = opp.CreatedStaffID,
                 UpdatedStaffID = opp.CreatedStaffID
             };
+            var ContactCus = _contactRepository.GetById(opp.ContactID.Value);
+            entity.CustomerID = ContactCus.ID;
             _opportunityRepository.Add(entity);
             _unitOfWork.Commit();
             return entity;

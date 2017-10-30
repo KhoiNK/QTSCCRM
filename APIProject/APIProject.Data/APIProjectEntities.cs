@@ -31,6 +31,7 @@ namespace APIProject.Data
         public virtual DbSet<QuoteItemMapping> QuoteItemMappings { get; set; }
         public virtual DbSet<Quote> Quotes { get; set; }
         public virtual DbSet<Contract> Contracts { get; set; }
+        public virtual DbSet<ContractItem> ContractItems { get; set; }
         public virtual DbSet<AppConfig> AppConfigs { get; set; }
         //public virtual DbSet<Stage> Stages { get; set; }
 
@@ -69,25 +70,25 @@ namespace APIProject.Data
                 .WithOptional(e => e.Staff)
                 .HasForeignKey(e => e.CreateStaffID);
 
-            modelBuilder.Entity<Staff>()
-                .HasMany(e => e.Issues1)
-                .WithOptional(e => e.OpenStaff)
-                .HasForeignKey(e => e.OpenStaffID);
+            //modelBuilder.Entity<Staff>()
+            //    .HasMany(e => e.Issues1)
+            //    .WithOptional(e => e.OpenStaff)
+            //    .HasForeignKey(e => e.OpenStaffID);
 
-            modelBuilder.Entity<Staff>()
-                .HasMany(e => e.Issues2)
-                .WithOptional(e => e.SolveStaff)
-                .HasForeignKey(e => e.SolveStaffID);
+            //modelBuilder.Entity<Staff>()
+            //    .HasMany(e => e.Issues2)
+            //    .WithOptional(e => e.SolveStaff)
+            //    .HasForeignKey(e => e.SolveStaffID);
 
-            modelBuilder.Entity<Staff>()
-                .HasMany(e => e.Issues3)
-                .WithOptional(e => e.AcceptStaff)
-                .HasForeignKey(e => e.AcceptStaffID);
+            //modelBuilder.Entity<Staff>()
+            //    .HasMany(e => e.Issues3)
+            //    .WithOptional(e => e.AcceptStaff)
+            //    .HasForeignKey(e => e.AcceptStaffID);
 
-            modelBuilder.Entity<Staff>()
-                .HasMany(e => e.Issues4)
-                .WithOptional(e => e.ModifiedStaff)
-                .HasForeignKey(e => e.ModifiedStaffID);
+            //modelBuilder.Entity<Staff>()
+            //    .HasMany(e => e.Issues4)
+            //    .WithOptional(e => e.ModifiedStaff)
+            //    .HasForeignKey(e => e.ModifiedStaffID);
 
             modelBuilder.Entity<Staff>()
                 .HasMany(e => e.MarketingPlans)

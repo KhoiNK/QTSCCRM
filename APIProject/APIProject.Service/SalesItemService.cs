@@ -11,20 +11,23 @@ namespace APIProject.Service
 {
     public interface ISalesItemService
     {
-        IEnumerable<SalesItem> GetByCategory(int categoryID);
         int CreateNewItem(SalesItem salesItem);
         IEnumerable<SalesItem> GetAll();
         SalesItem Get(int id);
+        IEnumerable<SalesItem> GetByCategory(int categoryID);
     }
     public class SalesItemService: ISalesItemService
     {
         private readonly ISalesItemRepository _salesItemRepository;
+        private readonly IQuoteItemMappingRepository _quoteItemMappingRepository;
         private readonly ISalesCategoryRepository _salesCategoryRepository ;
         private readonly IUnitOfWork _unitOfWork;
 
         public SalesItemService(ISalesItemRepository _salesItemRepository, IUnitOfWork _unitOfWork,
-            ISalesCategoryRepository _salesCategoryRepository)
+            ISalesCategoryRepository _salesCategoryRepository,
+            IQuoteItemMappingRepository _quoteItemMappingRepository)
         {
+            this._quoteItemMappingRepository = _quoteItemMappingRepository;
             this._salesCategoryRepository = _salesCategoryRepository;
             this._salesItemRepository = _salesItemRepository;
             this._unitOfWork = _unitOfWork;
@@ -55,17 +58,11 @@ namespace APIProject.Service
 
         public IEnumerable<SalesItem> GetByCategory(int categoryID)
         {
-            var foundCategory = _salesCategoryRepository.GetById(categoryID);
-            if (foundCategory != null)
-            {
-                var foundItems = foundCategory.SalesItems;
-                if (foundItems.Any())
-                {
-                    return foundItems;
-                }
-            }
-            return null;
+            var entities = _salesItemRepository.GetAll()
+                .Where(c => c.IsDelete == false && c.SalesCategoryID == categoryID);
+            return entities;
         }
+
 
     }
 }

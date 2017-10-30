@@ -53,7 +53,29 @@ namespace APIProject.Controllers
         {
             return Ok(_activityService.GetActivityMethodNames());
         }
+        [Route("GetActivityList")]
+        public IHttpActionResult GetActivityList()
+        {
+            return Ok(_activityService.GetAllActivities().Select(c => new ActivityViewModel(c)));
+        }
+        [Route("GetActivityDetails")]
+        [ResponseType(typeof(ActivityDetailsViewModel))]
+        public IHttpActionResult GetActivityDetail(int id = 0)
+        {
+            if (id == 0)
+            {
+                return BadRequest();
+            }
 
+            var foundActivity = _activityService.GetAllActivities().Where(c => c.ID == id).SingleOrDefault();
+            if (foundActivity != null)
+            {
+                _uploadNamingService.ConcatContactAvatar(foundActivity.Contact);
+                _uploadNamingService.ConcatCustomerAvatar(foundActivity.Customer);
+                return Ok(new ActivityDetailsViewModel(foundActivity));
+            }
+            return NotFound();
+        }
         [Route("PostNewActivity")]
         [ResponseType(typeof(PostNewActivityResponseViewModel))]
         public IHttpActionResult PostNewActivity(PostNewActivityViewModel request)
@@ -120,6 +142,7 @@ namespace APIProject.Controllers
                 if (request.CategoryIDs != null)
                 {
                     _salesCategoryService.VerifyCategories(request.CategoryIDs);
+                    //get range
                 }
                 var response = new PostNewActivityResponseViewModel();
                 var insertedActivity = _activityService.Add(request.ToActivityModel());
@@ -137,6 +160,7 @@ namespace APIProject.Controllers
                     var insertedOpp = _opportunityService.Add(actOpp);
                     _opportunityCategoryMappingService.AddRange(insertedOpp.ID, request.CategoryIDs);
                     _activityService.MapOpportunity(insertedActivity, insertedOpp);
+
                     response.OpportunityCreated = true;
                     response.OpportunityID = insertedOpp.ID;
                 }
@@ -187,101 +211,67 @@ namespace APIProject.Controllers
             }
 
         }
-
         [Route("PutCompleteActivity")]
-        [ResponseType(typeof(int))]
+        [ResponseType(typeof(PutCompleteActivityResponseViewModel))]
         public IHttpActionResult PutCompleteActivity(PutCompleteActivityViewModel request)
         {
             if (!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
             }
-            if (request.CategoryIDs != null)
+            try
             {
-                List<int> categoryIDList = _salesCategoryService.GetAllCategories().Select(c => c.ID).ToList();
-                bool checkCateIDValid = categoryIDList.Intersect(request.CategoryIDs).Count() == request.CategoryIDs.Count();
-                if (!checkCateIDValid)
+                var foundActivity = _activityService.Get(request.ID);
+                var foundStaff = _staffService.Get(request.StaffID);
+                
+                var response = new PutCompleteActivityResponseViewModel();
+                _activityService.SetComplete(request.ToActivityModel());
+                response.ActivityUpdated = true;
+                if (request.CategoryIDs != null)
                 {
-                    return BadRequest("Category IDs sai");
+                    _salesCategoryService.VerifyCategories(request.CategoryIDs);
+                    _activityService.VerifyCanCreateOpportunity(request.ToActivityModel());
+
+                    var newOpp = request.ToOpportunityModel();
+                    newOpp.ContactID = foundActivity.ContactID;
+
+                    var insertedOpp = _opportunityService.Add(newOpp);
+                    _opportunityCategoryMappingService.AddRange(insertedOpp.ID, request.CategoryIDs);
+                    _activityService.MapOpportunity(request.ToActivityModel(), insertedOpp);
+                    response.OpportunityCreated = true;
+                    response.OpportunityID = insertedOpp.ID;
                 }
-
-                bool IsOppActivity = _activityService.CheckIsOppActivity(request.ID);
-                if (IsOppActivity)
-                {
-                    return BadRequest("Hoạt động của 1 cơ hội bán hàng không thể sinh ra cơ hội bán hàng khác");
-                }
+                _activityService.SaveChanges();
+                return Ok(response);
             }
-
-            bool Updated = _activityService.CompleteActivity(request.ToActivityModel());
-            if (!Updated)
+            catch(Exception e)
             {
-                return BadRequest("Không thể cập nhật, kiểm tra json phù hợp business logic");
+                return BadRequest(e.Message);
             }
-            int? InsertedOpportunityID = null;
-            if (request.CategoryIDs != null)
-            {
-                Activity _updatedActivity = _activityService.GetAllActivities().Where(c => c.ID == request.ID).SingleOrDefault();
-                Opportunity newOpportunity = new Opportunity
-                {
-                    ContactID = _updatedActivity.ContactID.Value,
-                    CreatedStaffID = _updatedActivity.CreateStaffID,
-                    Title = _updatedActivity.Title,
-                    Description = _updatedActivity.Description
-                };
-
-                InsertedOpportunityID = _opportunityService.CreateOpportunity(newOpportunity);
-                _opportunityCategoryMappingService.MapOpportunityCategories(InsertedOpportunityID.Value,
-                   request.CategoryIDs);
-                bool mapOpportunityActivity = _opportunityService.MapOpportunityActivity(InsertedOpportunityID.Value, _updatedActivity.ID);
-                //newActivity.OpportunityID = insertedOpportunity.ID;
-                //return Ok(InsertedOpportunityID);
-            }
-
-            return base.Ok(new { Updated, InsertedOpportunityID });
         }
 
         [Route("PutCancelActivity")]
-        [ResponseType(typeof(bool))]
+        [ResponseType(typeof(PutCancelActivityResponseViewModel))]
         public IHttpActionResult PutCancelActivity(PutCancelActivityViewModel request)
         {
             if (!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
             }
-
-            bool Updated = _activityService.CancelActivity(request.ToActivityModel());
-            if (!Updated)
+            try
             {
-                return BadRequest("Không thể cập nhật, kiểm tra json phù hợp business logic");
+                var response = new PutCancelActivityResponseViewModel();
+                var foundActivity = _activityService.Get(request.ID);
+                var foundStaff = _staffService.Get(request.StaffID);
+                _activityService.SetCancel(request.ToActivityModel());
+                response.ActivityUpdated = true;
+                _activityService.SaveChanges();
+                return Ok(response);
             }
-            return Ok(new { Updated });
-        }
-
-
-
-        [Route("GetActivityList")]
-        public IHttpActionResult GetActivityList()
-        {
-            return Ok(_activityService.GetAllActivities().Select(c => new ActivityViewModel(c)));
-        }
-
-        [Route("GetActivityDetails")]
-        [ResponseType(typeof(ActivityDetailsViewModel))]
-        public IHttpActionResult GetActivityDetail(int id = 0)
-        {
-            if (id == 0)
+            catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-
-            var foundActivity = _activityService.GetAllActivities().Where(c => c.ID == id).SingleOrDefault();
-            if (foundActivity != null)
-            {
-                _uploadNamingService.ConcatContactAvatar(foundActivity.Contact);
-                _uploadNamingService.ConcatCustomerAvatar(foundActivity.Customer);
-                return Ok(new ActivityDetailsViewModel(foundActivity));
-            }
-            return NotFound();
         }
 
         [Route("GetOpportunityActivities")]

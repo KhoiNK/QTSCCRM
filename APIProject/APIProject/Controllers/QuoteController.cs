@@ -20,12 +20,19 @@ namespace APIProject.Controllers
         private readonly IStaffService _staffService;
         private readonly ISalesItemService _salesItemService;
         private readonly IQuoteItemMappingService _quoteItemMappingService;
+        private readonly ISalesCategoryService _salesCategoryService;
+        private readonly IUploadNamingService _uploadNamingService;
 
         public QuoteController(IQuoteService _quoteService, IOpportunityService _opportunityService,
             IStaffService _staffService, ISalesItemService _salesItemService,
-            IQuoteItemMappingService _quoteItemMappingService)
+            IQuoteItemMappingService _quoteItemMappingService,
+            ISalesCategoryService _salesCategoryService,
+            IUploadNamingService _uploadNamingService
+            )
         {
+            this._uploadNamingService = _uploadNamingService;
             this._quoteService = _quoteService;
+            this._salesCategoryService = _salesCategoryService;
             this._opportunityService = _opportunityService;
             this._staffService = _staffService;
             this._salesItemService = _salesItemService;
@@ -67,6 +74,54 @@ namespace APIProject.Controllers
 
             return Ok(new QuoteViewModel(foundQuote));
 
+        }
+
+        [Route("GetQuote")]
+        [ResponseType(typeof(QuoteDetailsViewModel))]
+        public IHttpActionResult GetQuote(int id = 0)
+        {
+            if (id == 0)
+            {
+                return BadRequest();
+            }
+            try
+            {
+                var foundQuote = _quoteService.Get(id);
+                var quoteItems = _quoteItemMappingService.GetByQuote(foundQuote.ID);
+                var oppCategories = _salesCategoryService.GetByOpportunity(foundQuote.OpportunityID);
+                var response = new QuoteDetailsViewModel();
+                response.ID = foundQuote.ID;
+                response.Tax = foundQuote.Tax;
+                response.Discount = foundQuote.Discount;
+                response.Status = foundQuote.Status;
+                response.UpdatedDate = foundQuote.UpdatedDate;
+                response.SentCustomerDate = foundQuote.SentCustomerDate;
+                if (foundQuote.ValidatedStaffID.HasValue)
+                {
+                    var validateStaff = _staffService.Get(foundQuote.ValidatedStaffID.Value);
+                    _uploadNamingService.ConcatStaffAvatar(validateStaff);
+                    response.ValidatedStaff = new StaffDetailViewModel(validateStaff);
+                }
+                response.Categories = new List<QuoteCategotyViewModel>();
+                foreach (var category in oppCategories)
+                {
+                    var categoryItemIDs = _salesItemService.GetByCategory(category.ID).Select(c => c.ID);
+                    var intersectQuoteItems = quoteItems.Where(c => categoryItemIDs.Contains(c.SalesItemID))
+                        .Select(c => new QuoteItemViewModel(c));
+
+                    response.Categories.Add(new QuoteCategotyViewModel
+                    {
+                        ID = category.ID,
+                        Name = category.Name,
+                        Items = intersectQuoteItems.ToList()
+                    });
+                }
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [Route("PostNewQuote")]
@@ -211,13 +266,13 @@ namespace APIProject.Controllers
             {
                 return BadRequest(e.Message);
             }
-            
+
         }
 
         [Route("PutSendQuote")]
         public IHttpActionResult PutSendQuote(PutSendQuoteViewModel request)
         {
-            if (!ModelState.IsValid || request==null)
+            if (!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
             }
@@ -237,7 +292,8 @@ namespace APIProject.Controllers
 
                 _opportunityService.SaveChanges();
                 return Ok(response);
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
