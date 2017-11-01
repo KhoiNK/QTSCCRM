@@ -13,6 +13,18 @@ namespace APIProject.ViewModels
         public List<IssueDetailViewModel> Issues { get; set; }
         public List<OpportunityDetailViewModel> Opportunities { get; set; }
         public List<ActivityDetailViewModel> Activities { get; set; }
+        public CustomerDetailsViewModel(Customer customerDto,
+            List<Contact> contactDtos,
+            List<Issue> issueDtos,
+            List<Opportunity> opporDtos,
+            List<Activity> activityDtos)
+        {
+            CustomerDetail = new CustomerDetailViewModel(customerDto);
+            Contacts = contactDtos.Select(c => new ContactViewModel(c)).ToList();
+            Issues = issueDtos.Select(c => new IssueDetailViewModel(c)).ToList();
+            Opportunities = opporDtos.Select(c => new OpportunityDetailViewModel(c)).ToList();
+            Activities = activityDtos.Select(c => new ActivityDetailViewModel(c)).ToList();
+        }
         public CustomerDetailsViewModel(Customer dto)
         {
             CustomerDetail = new CustomerDetailViewModel(dto);

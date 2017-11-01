@@ -52,7 +52,7 @@ namespace APIProject.ViewModels
 
         public QuoteItemViewModel(QuoteItemMapping dto)
         {
-            this.ID = dto.SalesItemID;
+            this.ID = dto.ID;
             this.Name = dto.SalesItemName;
             this.Price = dto.Price.Value;
             this.Unit = dto.Unit;

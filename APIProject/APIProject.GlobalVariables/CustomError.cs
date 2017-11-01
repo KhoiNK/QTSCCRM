@@ -59,6 +59,7 @@ namespace APIProject.GlobalVariables
         public static string IssueNotFound = "Không tìm thấy khiếu nại";
         public static string IssueStatusRequired = "Yêu cầu trạng thái của khiếu nại:";
 
+        public static string ContractNotFound = "Không tìm thấy hợp đồng";
         public static string ContractRequired = "Ít nhất 1 loại dịch vụ để làm hợp đồng";
         public static string ContractItemRequired = "Ít nhất 1 hạng mục trong dịch vụ để làm hợp đồng";
         public static string ContractItemStartDateMustPassCurrent = "Ngày bắt đầu sử dụng hạng mục không được trước thời điểm hiện tại";

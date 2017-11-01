@@ -68,9 +68,12 @@ namespace APIProject.Service
         }
         public void ConcatStaffAvatar(Staff staff)
         {
-            staff.AvatarSrc = _appConfigRepository.GetHost() + "/"
-                    + FileDirectory.StaffAvatarFolder + "/"
-                    + staff.AvatarSrc;
+            if (staff.AvatarSrc != null)
+            {
+                staff.AvatarSrc = _appConfigRepository.GetHost() + "/"
+                        + FileDirectory.StaffAvatarFolder + "/"
+                        + staff.AvatarSrc;
+            }
         }
 
     }

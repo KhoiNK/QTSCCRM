@@ -33,4 +33,11 @@ namespace APIProject.ViewModels
             return _customer;
         }
     }
+
+    public class PostLeadCustomerResponseViewModel
+    {
+        public bool CustomerAvatarUpdated { get; set; }
+        public bool CustomerCreated { get; set; }
+        public int CustomerID { get; set; }
+    }
 }

@@ -86,7 +86,8 @@ namespace APIProject.Controllers
             }
             try
             {
-                var foundQuote = _quoteService.Get(id);
+                var foundOpp = _opportunityService.Get(id);
+                var foundQuote = _quoteService.GetByOpportunity(foundOpp.ID);
                 var quoteItems = _quoteItemMappingService.GetByQuote(foundQuote.ID);
                 var oppCategories = _salesCategoryService.GetByOpportunity(foundQuote.OpportunityID);
                 var response = new QuoteDetailsViewModel();

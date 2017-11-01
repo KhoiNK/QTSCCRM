@@ -104,17 +104,9 @@ namespace APIProject.Service
 
         public IEnumerable<Issue> GetByCustomer(int customerID)
         {
-            var foundCustomer = _customerRepository.GetById(customerID);
-            if (foundCustomer != null)
-            {
-                var issues = foundCustomer.Issues;
-                if (issues.Any())
-                {
-                    return issues;
-                }
-            }
-
-            return null;
+            var entities = _issueRepository.GetAll()
+                .Where(c => c.CustomerID == customerID && c.IsDelete == false);
+            return entities;
         }
 
         public List<string> GetStages()

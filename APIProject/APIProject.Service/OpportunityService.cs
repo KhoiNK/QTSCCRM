@@ -123,17 +123,9 @@ namespace APIProject.Service
 
         public IEnumerable<Opportunity> GetByCustomer(int customerID)
         {
-            var foundCustomer = _customerRepository.GetById(customerID);
-            if (foundCustomer != null)
-            {
-                var opportunities = foundCustomer.Opportunities;
-                if (opportunities.Any())
-                {
-                    return opportunities;
-                }
-            }
-
-            return null;
+            var entities = _opportunityRepository.GetAll()
+                .Where(c => c.CustomerID == customerID && c.IsDelete == false);
+            return entities;
         }
 
         public Opportunity GetByID(int id)

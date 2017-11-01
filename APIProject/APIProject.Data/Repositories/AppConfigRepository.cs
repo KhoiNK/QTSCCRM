@@ -11,6 +11,8 @@ namespace APIProject.Data.Repositories
     public interface IAppConfigRepository: IRepository<AppConfig>
     {
         string GetHost();
+        string GetContractCode();
+        string GetContractItemCode();
     }
     public class AppConfigRepository : RepositoryBase<AppConfig>, IAppConfigRepository
     {
@@ -21,6 +23,16 @@ namespace APIProject.Data.Repositories
         public string GetHost()
         {
             AppConfig hostName = this.DbContext.AppConfigs.Where(x => x.Name == "Host").SingleOrDefault();
+            return hostName.Value;
+        }
+        public string GetContractCode()
+        {
+            AppConfig hostName = this.DbContext.AppConfigs.Where(x => x.Name == "ContractCode").SingleOrDefault();
+            return hostName.Value;
+        }
+        public string GetContractItemCode()
+        {
+            AppConfig hostName = this.DbContext.AppConfigs.Where(x => x.Name == "ContractCode").SingleOrDefault();
             return hostName.Value;
         }
     }

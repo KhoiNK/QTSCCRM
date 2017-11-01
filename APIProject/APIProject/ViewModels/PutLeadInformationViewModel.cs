@@ -7,6 +7,11 @@ using System.Web;
 
 namespace APIProject.ViewModels
 {
+    public class PutCustomerViewModel
+    {
+        public bool CustomerUpdated { get; set; }
+        public bool CustomerImageUpdated { get; set; }
+    }
     public class PutLeadInformationViewModel
     {
         [Required]

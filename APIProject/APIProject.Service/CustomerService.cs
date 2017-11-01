@@ -43,73 +43,30 @@ namespace APIProject.Service
             return customer.ID;
         }
 
-        public bool EditCustomer(Customer customer)
+        public void UpdateType(Customer customer)
         {
-            Customer foundCustomer = _customerRepository.GetById(customer.ID);
-            if (foundCustomer == null)
-            {
-                throw new Exception("Customer not found");
-            }
-
-            if (foundCustomer.CustomerType == CustomerType.Lead)
-            {
-                throw new Exception("Lead can't change customer type");
-            }
-            if (!CustomerType.GetList().Contains(customer.CustomerType))
-            {
-                throw new Exception("Wrong customer type format");
-            }
-
-            foundCustomer.CustomerType = customer.CustomerType;
-
-            _unitOfWork.Commit();
-
-            return true;
+            var entity = _customerRepository.GetById(customer.ID);
+            VerifyCanUpdateType(entity);
+            entity.CustomerType = customer.CustomerType;
+            _customerRepository.Update(entity);
         }
 
-        public bool EditLead(Customer customer)
+        public void UpdateInfo(Customer customer)
         {
-            Customer foundCustomer = _customerRepository.GetById(customer.ID);
-            if (foundCustomer == null)
-            {
-                throw new Exception("Customer not found");
-            }
-
-            if (foundCustomer.CustomerType != CustomerType.Lead)
-            {
-                throw new Exception("Only lead can update information");
-            }
-
-            foundCustomer.Name = customer.Name;
-            foundCustomer.Address = customer.Address;
-            foundCustomer.TaxCode = customer.TaxCode;
-            foundCustomer.EstablishedDate = customer.EstablishedDate;
-            foundCustomer.AvatarSrc = customer.AvatarSrc;
-
-
-            _unitOfWork.Commit();
-            return true;
+            var entity = _customerRepository.GetById(customer.ID);
+            VerifyCanUpdateInfo(entity);
+            entity.Name = customer.Name;
+            entity.Address = customer.Address;
+            entity.TaxCode = customer.TaxCode;
+            entity.EstablishedDate = customer.EstablishedDate;
+            entity.AvatarSrc = customer.AvatarSrc;
+            _customerRepository.Update(entity);
         }
 
         public IEnumerable<Customer> GetCustomerList()
         {
-            return _customerRepository.GetAll();
-
+            return _customerRepository.GetAll().Where(c=>c.IsDelete==false);
         }
-
-        private void ConcatImgUri(Customer customer)
-        {
-            if (customer.AvatarSrc != null)
-            {
-                customer.AvatarSrc = _appConfigRepository.GetHost() + "/"
-                    + FileDirectory.CustomerAvatarFolder + "/"
-                    + customer.AvatarSrc;
-            }
-        }
-
-
-
-        
 
         public Customer GetByActivity(int activityID)
         {
@@ -163,6 +120,24 @@ namespace APIProject.Service
             var oppCus = _customerRepository.GetById(customerID.Value);
             return oppCus;
         }
+        public Customer Add(Customer customer)
+        {
+            var entity = new Customer
+            {
+                Name = customer.Name,
+                Address = customer.Address,
+                EstablishedDate = customer.EstablishedDate,
+                TaxCode = customer.TaxCode,
+                AvatarSrc = customer.AvatarSrc,
+                CustomerType = CustomerType.Lead,
+                CreatedDate = DateTime.Now,
+                UpdatedDate = DateTime.Now
+            };
+            _customerRepository.Add(entity);
+            _unitOfWork.Commit();
+            return entity;
+        }
+
         public void Update(Customer customer)
         {
             var entity = _customerRepository.GetById(customer.ID);
@@ -193,14 +168,34 @@ namespace APIProject.Service
                     + CustomerType.Lead);
             }
         }
+        private void VerifyCanUpdateInfo(Customer customer)
+        {
+            if(customer.CustomerType!= CustomerType.Lead)
+            {
+                throw new Exception(CustomError.CustomerTypeRequired
+                    + CustomerType.Lead);
+            }
+        }
+        private void VerifyCanUpdateType(Customer customer)
+        {
+            List<string> requiredType = new List<string>
+            {
+                CustomerType.Official,
+                CustomerType.Inside,
+                CustomerType.Outside
+            };
+            if (!requiredType.Contains(customer.CustomerType))
+            {
+                throw new Exception(CustomError.CustomerTypeRequired
+                    + String.Join(", ", requiredType));
+            }
+        }
 #endregion
     }
 
     public interface ICustomerService
     {
         int CreateNewLead(Customer customer);
-        bool EditCustomer(Customer customer);
-        bool EditLead(Customer customer);
         Customer GetByActivity(int activityID);
         IEnumerable<Customer> GetCustomerList();
         List<string> GetCustomerTypes();
@@ -209,6 +204,9 @@ namespace APIProject.Service
         IEnumerable<Customer> GetAll();
         IEnumerable<Customer> GetOfficial();
         Customer GetByOpportunity(int opportunityID);
+        Customer Add(Customer customer);
+        void UpdateInfo(Customer customer);
+        void UpdateType(Customer customer);
         void Update(Customer customer);
         void ConvertToCustomer(Customer customer);
         void SaveChanges();

@@ -18,51 +18,80 @@ namespace APIProject.Controllers
     {
         private readonly ICustomerService _customerService;
         private readonly IUploadNamingService _uploadNamingService;
+        private readonly IContactService _contactService;
+        private readonly IIssueService _issueService;
+        private readonly IOpportunityService _opportunityService;
+        private readonly IActivityService _activityService;
 
-        public CustomerController(ICustomerService _customerService, IUploadNamingService _uploadNamingService)
+        public CustomerController(ICustomerService _customerService,
+            IIssueService _issueService,
+            IActivityService _activityService,
+            IContactService _contactService,
+            IOpportunityService _opportunityService,
+            IUploadNamingService _uploadNamingService)
         {
+            this._issueService = _issueService;
+            this._activityService = _activityService;
             this._customerService = _customerService;
+            this._opportunityService = _opportunityService;
             this._uploadNamingService = _uploadNamingService;
+            this._contactService = _contactService;
         }
 
         [Route("PostLeadCustomer")]
+        [ResponseType(typeof(PostLeadCustomerResponseViewModel))]
         public IHttpActionResult PostLeadCustomer(PostLeadCustomerViewModel request)
         {
             if (!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
             }
-
+            var response = new PostLeadCustomerResponseViewModel();
             if (request.Avatar != null)
             {
                 string avatarExtension = Path.GetExtension(request.Avatar.Name).ToLower();
                 request.Avatar.Name = _uploadNamingService.GetCustomerAvatarNaming() + avatarExtension;
                 SaveFileHelper saveFileHelper = new SaveFileHelper();
                 saveFileHelper.SaveCustomerImage(request.Avatar.Name, request.Avatar.Base64Content);
-
+                response.CustomerAvatarUpdated = true;
             }
-
-            return Ok(_customerService.CreateNewLead(request.ToCustomerModel()));
+            try
+            {
+                var insertedCustomer = _customerService.Add(request.ToCustomerModel());
+                response.CustomerCreated = true;
+                response.CustomerID = insertedCustomer.ID;
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [Route("PutLeadInformation")]
+        [ResponseType(typeof(PutCustomerViewModel))]
         public IHttpActionResult PutLeadInformation(PutLeadInformationViewModel request)
         {
             if (!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
             }
-
+            var response = new PutCustomerViewModel();
             if (request.Avatar != null)
             {
                 string avatarExtension = Path.GetExtension(request.Avatar.Name).ToLower();
                 request.Avatar.Name = _uploadNamingService.GetCustomerAvatarNaming() + avatarExtension;
                 SaveFileHelper saveFileHelper = new SaveFileHelper();
                 saveFileHelper.SaveCustomerImage(request.Avatar.Name, request.Avatar.Base64Content);
+                response.CustomerImageUpdated = true;
             }
             try
             {
-                return Ok(_customerService.EditLead(request.ToCustomerModel()));
+                var foundCustomer = _customerService.Get(request.CustomerID);
+                _customerService.UpdateInfo(request.ToCustomerModel());
+                _customerService.SaveChanges();
+                response.CustomerUpdated = true;
+                return Ok(response);
             }
             catch (Exception exceptionFromService)
             {
@@ -71,17 +100,21 @@ namespace APIProject.Controllers
         }
 
         [Route("PutCustomerInformation")]
+        [ResponseType(typeof(PutCustomerViewModel))]
         public IHttpActionResult PutCustomerInformation(PutCustomerInformationViewModel request)
         {
             if (!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
             }
-
+            var response = new PutCustomerViewModel();
             try
             {
-                _customerService.EditCustomer(request.ToCustomerModel());
-                return Ok("Updated");
+                var foundCustomer = _customerService.Get(request.CustomerID);
+                _customerService.UpdateType(request.ToCustomerModel());
+                response.CustomerUpdated = true;
+                _customerService.SaveChanges();
+                return Ok(response);
 
             }
             catch (Exception exceptionFromService)
@@ -95,25 +128,9 @@ namespace APIProject.Controllers
         public IHttpActionResult GetCustomerList()
         {
 
-            var customers = _customerService.GetCustomerList();
-            if (customers.Any())
-            {
-                foreach (var customer in customers)
-                {
-                    _uploadNamingService.ConcatCustomerAvatar(customer);
-                }
-                return Ok(customers.Select(c => new CustomerViewModel(c)));
-            }
-            return NotFound();
-
-            //var customers = _customerService.GetAll().Where(c=>c.IsDelete==false);
-            //if (onlyCustomer.Value)
-            //{
-            //    customers = customers.Where(c => c.CustomerType != CustomerType.Lead);
-            //}
-            // //results.ToList().ForEach(c => _uploadNamingService.ConcatCustomerAvatar(c));
-            // customers.ToList()
-            //return Ok()
+            var customers = _customerService.GetAll().ToList();
+            customers.ForEach(c => _uploadNamingService.ConcatCustomerAvatar(c));
+            return Ok(customers.Select(c => new CustomerViewModel(c)));
         }
 
         [Route("GetOfficialCustomers")]
@@ -126,20 +143,35 @@ namespace APIProject.Controllers
         }
 
         [Route("GetCustomerDetails")]
-        [ResponseType(typeof(CustomerDetailViewModel))]
-        public IHttpActionResult GetCustomerDetails(int ID)
+        [ResponseType(typeof(CustomerDetailsViewModel))]
+        public IHttpActionResult GetCustomerDetails(int ID = 0)
         {
-            var foundCustomer = _customerService.GetCustomerList().Where(c => c.ID == ID).SingleOrDefault();
-            if (foundCustomer != null)
+            if (ID == 0)
             {
-                _uploadNamingService.ConcatCustomerAvatar(foundCustomer);
-                foreach(var contact in foundCustomer.Contacts)
-                {
-                    _uploadNamingService.ConcatContactAvatar(contact);
-                }
-                return Ok(new CustomerDetailsViewModel(foundCustomer));
+                return BadRequest();
             }
-            return NotFound();
+            try
+            {
+                var foundCustomer = _customerService.Get(ID);
+                _uploadNamingService.ConcatCustomerAvatar(foundCustomer);
+                var customerContacts = _contactService.GetByCustomer(ID).ToList();
+                customerContacts.ForEach(c => _uploadNamingService.ConcatContactAvatar(c));
+                var customerIssues = _issueService.GetByCustomer(ID).ToList();
+                var customerOppors = _opportunityService.GetByCustomer(ID).ToList();
+                var customerActivities = _activityService.GetByCustomer(ID).ToList();
+                var response = new CustomerDetailsViewModel(
+                    foundCustomer,
+                    customerContacts,
+                    customerIssues,
+                    customerOppors,
+                    customerActivities);
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+
         }
 
         [Route("GetOpportunityCustomer")]
@@ -216,7 +248,7 @@ namespace APIProject.Controllers
         [ResponseType(typeof(CustomerDetailViewModel))]
         public IHttpActionResult GetCustomerDetail(int ID)
         {
-            var foundCustomer = _customerService.GetCustomerList().Where(c => c.ID == ID).SingleOrDefault();
+            var foundCustomer = _customerService.GetAll().Where(c => c.ID == ID).SingleOrDefault();
             if (foundCustomer != null)
             {
                 _uploadNamingService.ConcatCustomerAvatar(foundCustomer);

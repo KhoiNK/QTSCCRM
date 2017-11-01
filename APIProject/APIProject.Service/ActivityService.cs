@@ -95,16 +95,9 @@ namespace APIProject.Service
         }
         public IEnumerable<Activity> GetByCustomer(int customerID)
         {
-            var foundCustomer = _customerRepository.GetById(customerID);
-            if (foundCustomer != null)
-            {
-                var activities = foundCustomer.Activities;
-                if (activities.Any())
-                {
-                    return activities;
-                }
-            }
-            return null;
+            var entities = _activityRepository.GetAll()
+                .Where(c => c.CustomerID == customerID && c.IsDelete == false);
+            return entities;
         }
         public List<string> GetActivityStatusNames()
         {

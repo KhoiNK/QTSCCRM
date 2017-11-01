@@ -14,7 +14,7 @@ namespace APIProject.ViewModels
         public string Email { get; set; }
         public int RoleID { get; set; }
         public string RoleName { get; set; }
-        public string Avatar { get; set; }
+        public string AvatarUrl { get; set; }
 
         public StaffDetailViewModel(Staff dto)
         {
@@ -24,7 +24,7 @@ namespace APIProject.ViewModels
             this.Email = dto.Email;
             this.RoleName = dto.Role.Name;
             this.RoleID = dto.RoleID;
-            this.Avatar = dto.AvatarSrc;
+            this.AvatarUrl = dto.AvatarSrc;
         }
     }
 }
