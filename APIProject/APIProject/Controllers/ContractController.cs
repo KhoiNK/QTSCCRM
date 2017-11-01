@@ -123,7 +123,8 @@ namespace APIProject.Controllers
                             Name = quoteItemMapping.SalesItemName,
                             Price = quoteItemMapping.Price.Value,
                             Unit = quoteItemMapping.Unit,
-                            Quantity = quoteItem.Quantity
+                            Quantity = quoteItem.Quantity,
+                            Status = ContractItemStatus.Preparing
                         };
                         contractItems.Add(contractItem);
                     }

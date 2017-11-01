@@ -15,26 +15,26 @@ namespace APIProject.ViewModels
         public CustomerDetailViewModel CustomerDetail { get; set; }
         public ContactViewModel ContactDetail { get; set; }
         public List<int> CategoryIDs { get; set; }
-        public OpportunityDetailsViewModel(Opportunity dto)
+        public OpportunityDetailsViewModel(Opportunity oppDto,
+            List<Activity> activityDtos,
+            Quote quoteDto,
+            Staff staffDto,
+            Customer cusDto,
+            Contact contactDto,
+            List<SalesCategory> categoryDtos
+            )
         {
-            OpportunityDetail = new OpportunityDetailViewModel(dto);
-            var activities = dto.Activities;
-            HistoryActivities = new List<ActivityDetailViewModel>();
-            foreach (var activity in activities)
-            {
-                HistoryActivities.Add(new ActivityDetailViewModel(activity));
-            }
+            OpportunityDetail = new OpportunityDetailViewModel(oppDto);
+            HistoryActivities = activityDtos.Select(c => new ActivityDetailViewModel(c)).ToList();
             //var lastQuote = dto.Quotes.Where(c => c.IsDeleted == false).SingleOrDefault();
-            var lastQuote = dto.Quotes.Where(c => c.IsDelete == false).OrderByDescending(c => c.ID).FirstOrDefault();
-            if (lastQuote != null)
+            if (quoteDto != null)
             {
-                QuoteDetail = new QuoteViewModel(lastQuote);
+                QuoteDetail = new QuoteViewModel(quoteDto);
             }
-            StaffDetail = new StaffDetailViewModel(dto.CreatedStaff);
-            CustomerDetail = new CustomerDetailViewModel(dto.Customer);
-            ContactDetail = new ContactViewModel(dto.Contact);
-            CategoryIDs = dto.OpportunityCategoryMappings.Where(c=>c.IsDelete==false).Select(c => c.SalesCategoryID).ToList();
-
+            StaffDetail = new StaffDetailViewModel(staffDto);
+            CustomerDetail = new CustomerDetailViewModel(cusDto);
+            ContactDetail = new ContactViewModel(contactDto);
+            CategoryIDs = categoryDtos.Select(c => c.ID).ToList();
         }
     }
 }

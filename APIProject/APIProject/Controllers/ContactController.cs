@@ -16,53 +16,90 @@ namespace APIProject.Controllers
     public class ContactController : ApiController
     {
         private readonly IContactService _contactService;
+        private readonly ICustomerService _customerService;
         private readonly IUploadNamingService _uploadNamingService;
 
         public ContactController(IContactService _contactService,
+            ICustomerService _customerService,
             IUploadNamingService _uploadNamingService)
         {
+            this._customerService = _customerService;
             this._contactService = _contactService;
             this._uploadNamingService = _uploadNamingService;
         }
 
+        [Route("GetCustomerContacts")]
+        [ResponseType(typeof(ContactViewModel))]
+        public IHttpActionResult GetCustomerContacts(int customerID = 0)
+        {
+            if (customerID == 0)
+            {
+                return BadRequest();
+            }
+            var foundContacts = _contactService.GetByCustomer(customerID).ToList();
+            foundContacts.ForEach(c => _uploadNamingService.ConcatContactAvatar(c));
+            return Ok(foundContacts.Select(c => new ContactViewModel(c)));
+        }
+
         [Route("PostNewContact")]
+        [ResponseType(typeof(PostContactResponseViewModel))]
         public IHttpActionResult PostNewContact(PostContactViewModel request)
         {
             if(!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
             }
-            if(request.Avatar != null)
+            var response = new PostContactResponseViewModel();
+            if (request.Avatar != null)
             {
                 string avatarExtension = Path.GetExtension(request.Avatar.Name).ToLower();
                 request.Avatar.Name = _uploadNamingService.GetContactAvatarNaming() + avatarExtension;
                 SaveFileHelper saveFileHelper = new SaveFileHelper();
                 saveFileHelper.SaveContactImage(request.Avatar.Name, request.Avatar.Base64Content);
+                response.ContactAvatarUpdated = true;
             }
-            int insertedContactID =  _contactService.CreateContact(request.ToContactModel());
-            return Ok(insertedContactID);
+            try
+            {
+                var foundCustomer = _customerService.Get(request.CustomerID);
+                var insertedContact = _contactService.Add(request.ToContactModel());
+                response.ContactCreated = true;
+                response.ContactID = insertedContact.ID;
+                return Ok(response);
+
+            }catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [Route("PutContactInformation")]
+        [ResponseType(typeof(PutContactResponseViewModel))]
         public IHttpActionResult PutContactInformation(PutContactInformationViewModel request)
         {
             if(!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
             }
-
+            var response = new PutContactResponseViewModel();
             if(request.Avatar != null)
             {
                 string avatarExtension = Path.GetExtension(request.Avatar.Name).ToLower();
                 request.Avatar.Name = _uploadNamingService.GetContactAvatarNaming() + avatarExtension;
                 SaveFileHelper saveFileHelper = new SaveFileHelper();
                 saveFileHelper.SaveContactImage(request.Avatar.Name, request.Avatar.Base64Content);
-
+                response.ContactAvatarUpdated = true;
             }
-
-            bool isEdited = _contactService.EditContact(request.ToContactModel());
-
-            return Ok(isEdited);
+            try
+            {
+                var foundContact = _contactService.Get(request.ID);
+                _contactService.UpdateInfo(request.ToContactModel());
+                response.ContactUpdated = true;
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [Route("GetOpportunityContact")]
@@ -105,18 +142,7 @@ namespace APIProject.Controllers
             }
         }
 
-        [Route("GetCustomerContacts")]
-        [ResponseType(typeof(ContactViewModel))]
-        public IHttpActionResult GetCustomerContacts(int customerID = 0)
-        {
-            if(customerID == 0)
-            {
-                return BadRequest();
-            }
-            var foundContacts = _contactService.GetByCustomer(customerID).ToList();
-            foundContacts.ForEach(c => _uploadNamingService.ConcatContactAvatar(c));
-            return Ok(foundContacts.Select(c => new ContactViewModel(c)));
-        }
+        
 
         [Route("GetIssueContact")]
         [ResponseType(typeof(ContactViewModel))]

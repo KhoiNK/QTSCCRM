@@ -17,9 +17,9 @@ namespace APIProject.Service
         List<string> GetActivityTypeNames();
         List<string> GetActivityMethodNames();
         List<string> GetActivityStatusNames();
-        IEnumerable<Activity> GetByOpprtunity(int opportunityID);
         IEnumerable<Activity> GetByCustomer(int customerID);
         Activity Get(int id);
+        IEnumerable<Activity> GetByOpprtunity(int opportunityID);
         Activity Add(Activity activity);
         void UpdateInfo(Activity activity);
         void SetCancel(Activity activity);
@@ -82,16 +82,9 @@ namespace APIProject.Service
         }
         public IEnumerable<Activity> GetByOpprtunity(int opportunityID)
         {
-            var foundOpportunity = _opportunityRepository.GetById(opportunityID);
-            if (foundOpportunity != null)
-            {
-                var activities = foundOpportunity.Activities;
-                if (activities.Any())
-                {
-                    return foundOpportunity.Activities;
-                }
-            }
-            return null;
+            var entities = _activityRepository.GetAll()
+                .Where(c => c.OpportunityID == opportunityID && c.IsDelete == false);
+            return entities;
         }
         public IEnumerable<Activity> GetByCustomer(int customerID)
         {

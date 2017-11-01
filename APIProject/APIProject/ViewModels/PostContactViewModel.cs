@@ -7,6 +7,12 @@ using System.Web;
 
 namespace APIProject.ViewModels
 {
+    public class PostContactResponseViewModel
+    {
+        public bool ContactCreated { get; set; }
+        public int ContactID { get; set; }
+        public bool ContactAvatarUpdated { get; set; }
+    }
     public class PostContactViewModel
     {
         [Required]

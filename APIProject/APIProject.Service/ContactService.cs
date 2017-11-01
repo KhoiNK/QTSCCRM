@@ -38,37 +38,32 @@ namespace APIProject.Service
             this._unitOfWork = _unitOfWork;
         }
 
-        public int CreateContact(Contact contact)
+        public Contact Add(Contact contact)
         {
-            Customer foundCustomer = _customerRepository.GetById(contact.CustomerID);
-            if (foundCustomer == null)
+            var entity = new Contact
             {
-                return 0;
-            }
-
-            _contactRepository.Add(contact);
-            
-
+                CustomerID=contact.CustomerID,
+                Name=contact.Name,
+                Position=contact.Position,
+                Email=contact.Email,
+                Phone=contact.Phone,
+                AvatarSrc=contact.AvatarSrc,
+                CreatedDate=DateTime.Now,
+                UpdatedDate=DateTime.Now
+            };
+            _contactRepository.Add(entity);
             _unitOfWork.Commit();
-
-            return contact.ID;
+            return entity;
         }
-        public bool EditContact(Contact contact)
+        public void UpdateInfo(Contact contact)
         {
-            Contact foundContact = _contactRepository.GetById(contact.ID);
-            if (foundContact == null)
-            {
-                return false;
-            }
-
-            foundContact.Name = contact.Name;
-            foundContact.Position = contact.Position;
-            foundContact.Phone = contact.Phone;
-            foundContact.Email = contact.Email;
-            foundContact.AvatarSrc = contact.AvatarSrc;
-
-            _unitOfWork.Commit();
-            return true;
+            var entity = _contactRepository.GetById(contact.ID);
+            entity.Position = contact.Position;
+            entity.Phone = contact.Phone;
+            entity.Email = contact.Email;
+            entity.AvatarSrc = contact.AvatarSrc;
+            entity.UpdatedDate = DateTime.Now;
+            _contactRepository.Update(entity);
         }
         public Contact GetContactByOpportunity(int opportunityID)
         {
@@ -120,12 +115,12 @@ namespace APIProject.Service
 
     public interface IContactService
     {
-        int CreateContact(Contact contact);
-        bool EditContact(Contact contact);
         Contact GetByIssue(int issueID);
         Contact GetContactByActivity(int activityID);
         Contact GetContactByOpportunity(int opportunityID);
         Contact Get(int id);
+        Contact Add(Contact contact);
+        void UpdateInfo(Contact contact);
         IEnumerable<Contact> GetByCustomer(int customerID);
 
     }

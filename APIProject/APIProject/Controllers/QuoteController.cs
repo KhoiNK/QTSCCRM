@@ -1,12 +1,15 @@
 ﻿using APIProject.GlobalVariables;
+using APIProject.Helper;
 using APIProject.Model.Models;
 using APIProject.Service;
 using APIProject.ViewModels;
+using Spire.Pdf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 
@@ -19,6 +22,7 @@ namespace APIProject.Controllers
         private readonly IOpportunityService _opportunityService;
         private readonly IStaffService _staffService;
         private readonly ISalesItemService _salesItemService;
+        private readonly IContactService _contactService;
         private readonly IQuoteItemMappingService _quoteItemMappingService;
         private readonly ISalesCategoryService _salesCategoryService;
         private readonly IUploadNamingService _uploadNamingService;
@@ -26,12 +30,14 @@ namespace APIProject.Controllers
         public QuoteController(IQuoteService _quoteService, IOpportunityService _opportunityService,
             IStaffService _staffService, ISalesItemService _salesItemService,
             IQuoteItemMappingService _quoteItemMappingService,
+            IContactService _contactService,
             ISalesCategoryService _salesCategoryService,
             IUploadNamingService _uploadNamingService
             )
         {
             this._uploadNamingService = _uploadNamingService;
             this._quoteService = _quoteService;
+            this._contactService = _contactService;
             this._salesCategoryService = _salesCategoryService;
             this._opportunityService = _opportunityService;
             this._staffService = _staffService;
@@ -282,12 +288,25 @@ namespace APIProject.Controllers
                 var response = new PutSendQuoteResponseViewModel();
                 var foundQuote = _quoteService.Get(request.ID);
                 var foundStaff = _staffService.Get(request.StaffID);
+                var quoteOpp = _opportunityService.GetByQuote(request.ID);
+                var oppContact = _contactService.Get(quoteOpp.ContactID.Value);
                 //insert email service
+                var quoteItems = _quoteItemMappingService.GetByQuote(request.ID);
+                var pdfData = new List<string>();
+                //initial header
+                string dataHeader = "Hạng mục;Giá thành;Đơn vị tính";
+                pdfData.Add(dataHeader);
+                foreach (var item in quoteItems)
+                {
+                    string itemLine = item.SalesItemName + ";"
+                        + string.Format("{0:n0}", item.Price) + ";" + item.Unit;
+                    pdfData.Add(itemLine);
+                }
+
 
                 _quoteService.SetSend(request.ToQuoteModel());
                 response.QuoteSent = true;
 
-                var quoteOpp = _opportunityService.GetByQuote(request.ID);
                 _opportunityService.SetNextStage(quoteOpp);
                 response.OpportunityUpdated = true;
 
@@ -300,6 +319,53 @@ namespace APIProject.Controllers
             }
         }
 
+        [Route("PutSendQuote2")]
+        public IHttpActionResult PutSendQuote2(PutSendQuoteViewModel request)
+        {
+            if (!ModelState.IsValid || request == null)
+            {
+                return BadRequest(ModelState);
+            }
+            var response = new PutSendQuoteResponseViewModel();
+            var foundQuote = _quoteService.Get(request.ID);
+            var foundStaff = _staffService.Get(request.StaffID);
+            var quoteOpp = _opportunityService.GetByQuote(request.ID);
+            var oppContact = _contactService.Get(quoteOpp.ContactID.Value);
+            //insert email service
+            var quoteItems = _quoteItemMappingService.GetByQuote(request.ID);
+            var pdfData = new List<string>();
+            //initial header
+            string dataHeader = "Hạng mục;Giá thành;Đơn vị tính";
+            pdfData.Add(dataHeader);
+            foreach (var item in quoteItems)
+            {
+                string itemLine = item.SalesItemName + ";"
+                    + string.Format("{0:n0}", item.Price) + ";" + item.Unit;
+                pdfData.Add(itemLine);
+            }
+
+
+            _quoteService.SetSend(request.ToQuoteModel());
+            response.QuoteSent = true;
+
+            _opportunityService.SetNextStage(quoteOpp);
+            response.OpportunityUpdated = true;
+
+            _opportunityService.SaveChanges();
+            return Ok(response);
+
+        }
+        //[Route("GetTestFile")]
+        //public IHttpActionResult GetTestFile()
+        //{
+        //    PdfHelper pdfHelper = new PdfHelper();
+        //    //PdfDocument doc = pdfHelper.CreateQuotePdf("OYeah",1,1);
+        //    string fileRoot = HttpContext.Current.Server.MapPath("~/Resources/CustomerAvatarFiles/");
+
+        //    doc.SaveToFile(fileRoot + "abc.pdf");
+        //    doc.Close();
+        //    return Ok();
+        //}
         [Route("DeleteQuote")]
         public IHttpActionResult DeleteQuote(int id = 0)
         {
@@ -325,6 +391,8 @@ namespace APIProject.Controllers
 
             return Ok();
         }
+
+
 
     }
 }

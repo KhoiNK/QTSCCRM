@@ -12,7 +12,6 @@ namespace APIProject.Service
 {
     public interface IOpportunityService
     {
-        IEnumerable<Opportunity> GetAllOpportunities();
         IEnumerable<Opportunity> GetByCustomer(int customerID);
         Dictionary<string, string> GetStageDescription();
         int CreateOpportunity(Opportunity newOpportunity);
@@ -20,6 +19,7 @@ namespace APIProject.Service
         Opportunity GetByID(int id);
         void EditInfo(Opportunity opportunity);
         Opportunity Get(int id);
+        IEnumerable<Opportunity> GetAll();
         Opportunity GetByQuote(int quoteID);
         Opportunity Add(Opportunity opp);
         void UpdateInfo(Opportunity opportunity);
@@ -116,9 +116,9 @@ namespace APIProject.Service
         }
 
 
-        public IEnumerable<Opportunity> GetAllOpportunities()
+        public IEnumerable<Opportunity> GetAll()
         {
-            return _opportunityRepository.GetAll();
+            return _opportunityRepository.GetAll().Where(c=>c.IsDelete==false);
         }
 
         public IEnumerable<Opportunity> GetByCustomer(int customerID)
@@ -163,6 +163,7 @@ namespace APIProject.Service
                 StageName = OpportunityStage.Consider,
                 ConsiderStart = DateTime.Today,
                 CreatedDate = DateTime.Now,
+                UpdatedDate=DateTime.Now,
                 ContactID=opp.ContactID,
                 CreatedStaffID = opp.CreatedStaffID,
                 UpdatedStaffID = opp.CreatedStaffID

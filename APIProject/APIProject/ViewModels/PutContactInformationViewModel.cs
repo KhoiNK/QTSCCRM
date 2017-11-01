@@ -7,14 +7,15 @@ using System.Web;
 
 namespace APIProject.ViewModels
 {
+    public class PutContactResponseViewModel
+    {
+        public bool ContactUpdated { get; set; }
+        public bool ContactAvatarUpdated { get; set; }
+    }
     public class PutContactInformationViewModel
     {
         [Required]
         public int ID { get; set; }
-        //[Required]
-        //public int CustomerID { get; set; }
-        [Required]
-        public string Name { get; set; }
         [Required]
         public string Position { get; set; }
         [Required]
@@ -28,8 +29,6 @@ namespace APIProject.ViewModels
             Contact _contact = new Contact
             {
                 ID = this.ID,
-                //CustomerID = this.CustomerID,
-                Name = this.Name,
                 Position = this.Position,
                 Email = this.Email,
                 Phone = this.Phone

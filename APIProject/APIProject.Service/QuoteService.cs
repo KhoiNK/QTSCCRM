@@ -70,14 +70,7 @@ namespace APIProject.Service
         {
             var entity = _quoteRepository.GetAll().Where(c => c.OpportunityID == opportunityID &&
               c.IsDelete == false).SingleOrDefault();
-            if (entity != null)
-            {
-                return entity;
-            }
-            else
-            {
-                return null;
-            }
+            return entity;
         }
 
         public Quote Add(Quote quote, List<int> itemIDs)

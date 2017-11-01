@@ -21,6 +21,8 @@ namespace APIProject.Controllers
         private readonly ICustomerService _customerService;
         private readonly IUploadNamingService _uploadNamingService;
         private readonly IStaffService _staffService;
+        private readonly IContactService _contactService;
+        private readonly IActivityService _activityService;
         private readonly IQuoteService _quoteService;
         private readonly ISalesCategoryService _salesCategoryService;
         private readonly IOpportunityCategoryMappingService _opportunityCategoryMappingService;
@@ -28,12 +30,16 @@ namespace APIProject.Controllers
         public OpportunityController(IOpportunityService _opportunityService,
             IUploadNamingService _uploadNamingService,
             ICustomerService _customerService,
+            IContactService _contactService,
+            IActivityService _activityService,
             IStaffService _staffService,
             ISalesCategoryService _salesCategoryService,
             IQuoteService _quoteService,
             IOpportunityCategoryMappingService _opportunityCategoryMappingService)
         {
+            this._contactService = _contactService;
             this._quoteService = _quoteService;
+            this._activityService = _activityService;
             this._staffService = _staffService;
             this._customerService = _customerService;
             this._opportunityService = _opportunityService;
@@ -46,17 +52,27 @@ namespace APIProject.Controllers
         [ResponseType(typeof(OpportunityViewModel))]
         public IHttpActionResult GetOpportunities()
         {
-            //return Ok(_opportunityService.GetAllOpportunities().Select(c => new OpportunityViewModel(c)));
-            var opportunities = _opportunityService.GetAllOpportunities();
-            var customers = opportunities.GroupBy(o => o.Customer).Select(c => c.Key);
-            foreach (var customer in customers)
+            var opportunities = _opportunityService.GetAll().ToList();
+            opportunities.GroupBy(o => o.Customer).Select(c => c.Key)
+                .ToList().ForEach(c => _uploadNamingService.ConcatCustomerAvatar(c));
+            var responseList = new List<OpportunityViewModel>();
+            foreach (var opp in opportunities)
             {
-                _uploadNamingService.ConcatCustomerAvatar(customer);
+                var oppCus = _customerService.Get(opp.CustomerID.Value);
+                var oppStaff = _staffService.Get(opp.CreatedStaffID.Value);
+                _uploadNamingService.ConcatCustomerAvatar(oppCus);
+                //var oppActivities = _activityService.GetByOpprtunity(opp.ID);
+                var oppLastActivity = _activityService.GetByOpprtunity(opp.ID)
+                    .Where(c => c.Status == ActivityStatus.Open ||
+                    c.Status == ActivityStatus.Overdue).FirstOrDefault();
+                responseList.Add(new OpportunityViewModel(opp,
+                    oppCus,
+                    oppLastActivity,
+                    oppStaff));
             }
-            return Ok(opportunities.Select(c => new OpportunityViewModel(c)));
+            return Ok(responseList);
         }
 
-        
         [Route("GetOpportunityDetails")]
         [ResponseType(typeof(OpportunityDetailsViewModel))]
         public IHttpActionResult GetOpportunityDetails(int id = 0)
@@ -65,18 +81,32 @@ namespace APIProject.Controllers
             {
                 return BadRequest();
             }
-            var foundOpp = _opportunityService.GetByID(id);
-            if (foundOpp != null)
+            try
             {
-                _uploadNamingService.ConcatContactAvatar(foundOpp.Contact);
-                _uploadNamingService.ConcatCustomerAvatar(foundOpp.Customer);
-                return Ok(new OpportunityDetailsViewModel(foundOpp));
-                //return Ok(_opportunityService.GetAllOpportunities().Where(c => c.ID == id)
-                //.Select(c => new OpportunityDetailsViewModel(c)));
+                var foundOpp = _opportunityService.Get(id);
+                var oppCus = _customerService.Get(foundOpp.CustomerID.Value);
+                var oppContact = _contactService.Get(foundOpp.ContactID.Value);
+                var oppStaff = _staffService.Get(foundOpp.CreatedStaffID.Value);
+                var oppActivities = _activityService.GetByOpprtunity(foundOpp.ID);
+                var oppQuote = _quoteService.GetByOpportunity(foundOpp.ID);
+                var oppCategories = _salesCategoryService.GetByOpportunity(foundOpp.ID);
+                _uploadNamingService.ConcatContactAvatar(oppContact);
+                _uploadNamingService.ConcatCustomerAvatar(oppCus);
+                var response = new OpportunityDetailsViewModel(foundOpp,
+                    oppActivities.ToList(),
+                    oppQuote,
+                    oppStaff,
+                    oppCus,
+                    oppContact,
+                    oppCategories.ToList());
+                return Ok(response);
             }
-            return NotFound();
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
-        
+
         [HttpPut]
         [Route("PutOpportunityInformation")]
         [ResponseType(typeof(PutOpportunityInformationResponseViewModel))]
@@ -106,7 +136,7 @@ namespace APIProject.Controllers
                 var response = new PutOpportunityInformationResponseViewModel();
                 var foundOpp = _opportunityService.Get(request.ID);
                 var foundStaff = _staffService.Get(request.StaffID);
-                
+
                 _opportunityService.UpdateInfo(request.ToOpportunityModel());
                 response.BasicInfoUpdated = true;
 
@@ -117,7 +147,6 @@ namespace APIProject.Controllers
                 }
 
                 _opportunityService.SaveChanges();
-                //_opportunityCategoryMappingService.SaveChanges();
                 return Ok(response);
             }
             catch (Exception e)
@@ -143,7 +172,7 @@ namespace APIProject.Controllers
                 foundOpp = _opportunityService.SetNextStage(request.ToOpportunityModel());
                 response.OpportunityUpdated = true;
 
-                if(foundOpp.StageName == OpportunityStage.ValidateQuote)
+                if (foundOpp.StageName == OpportunityStage.ValidateQuote)
                 {
                     var oppQuote = _quoteService.GetByOpportunity(foundOpp.ID);
                     _quoteService.SetValidatingStatus(oppQuote);
@@ -192,7 +221,8 @@ namespace APIProject.Controllers
                 _customerService.SaveChanges();
 
                 return Ok(response);
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
@@ -257,7 +287,7 @@ namespace APIProject.Controllers
             {
                 return BadRequest();
             }
-            return Ok(_opportunityService.GetAllOpportunities().Where(c => c.ID == id)
+            return Ok(_opportunityService.GetAll().Where(c => c.ID == id)
                 .Select(c => new OpportunityDetailViewModel(c)));
         }
 

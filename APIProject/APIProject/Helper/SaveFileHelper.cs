@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Spire.Pdf;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -63,6 +64,19 @@ namespace APIProject.Helper
             {
                 return false;
             }
+        }
+
+        public string SavePdfQuoteFile(PdfDocument doc, string fileName)
+        {
+            string fileRoot = HttpContext.Current.Server.MapPath("~/Resources/QuoteFiles");
+            if (!Directory.Exists(fileRoot))
+            {
+                Directory.CreateDirectory(fileRoot);
+            }
+            string filePath = Path.Combine(fileRoot, fileName);
+            doc.SaveToFile(filePath);
+            doc.Close();
+            return filePath;
         }
     }
 }

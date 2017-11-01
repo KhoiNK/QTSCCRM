@@ -23,6 +23,8 @@ namespace APIProject.Data
             List<Role> roleList = GetRoles();
             roleList.ForEach(c => context.Roles.Add(c));
             context.AppConfigs.Add(GetHostName());
+            context.AppConfigs.Add(GetContractItemCode());
+            context.AppConfigs.Add(GetContractCode());
             context.Commit();
 
             List<Contact> contactList = GetContacts(customerList);
@@ -42,7 +44,7 @@ namespace APIProject.Data
             List<Opportunity> opportunityList = GetOpportunities();
             opportunityList.ForEach(c => context.Opportunities.Add(c));
             context.Commit();
-            //GetOppActivities(opportunityList).ForEach(c => context.Activities.Add(c));
+            GetOppActivities(opportunityList).ForEach(c => context.Activities.Add(c));
             List<Quote> quoteList = GetQuotes();
             quoteList.ForEach(c => context.Quotes.Add(c));
             context.Commit();
@@ -190,6 +192,24 @@ namespace APIProject.Data
             {
                 Name = "Host",
                 Value = "http://crmcp.azurewebsites.net"
+            };
+        }
+
+        private static AppConfig GetContractCode()
+        {
+            return new AppConfig
+            {
+                Name = "ContractCode",
+                Value = "HD"
+            };
+        }
+
+        private static AppConfig GetContractItemCode()
+        {
+            return new AppConfig
+            {
+                Name = "ContractItemCode",
+                Value = "CT"
             };
         }
 

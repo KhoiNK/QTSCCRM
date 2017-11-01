@@ -17,7 +17,22 @@ namespace APIProject.ViewModels
         public string StageName { get; set; }
         public DateTime? NextActivityTime { get; set; }
         public string Owner { get; set; }
-
+        public OpportunityViewModel(Opportunity oppDto,
+            Customer customerDto,
+            Activity activityDto,
+            Staff staffDto)
+        {
+            this.ID = oppDto.ID;
+            this.CustomerAvatarUrl = customerDto.AvatarSrc;
+            this.CustomerName = customerDto.Name;
+            this.Title = oppDto.Title;
+            this.StageName = oppDto.StageName;
+            if (activityDto != null)
+            {
+                NextActivityTime = activityDto.TodoTime.Value;
+            }
+            Owner = staffDto.Name;
+        }
         public OpportunityViewModel(Opportunity dto)
         {
             this.ID = dto.ID;
