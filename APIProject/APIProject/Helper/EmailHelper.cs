@@ -17,7 +17,10 @@ namespace APIProject.Helper
              "Báo giá",
              "Kính gửi " + contactName
                    );
-            message.Attachments.Add(new Attachment(attachFileSrc));
+            if (attachFileSrc != null)
+            {
+                message.Attachments.Add(new Attachment(attachFileSrc));
+            }
             NetworkCredential credent = new NetworkCredential(
              "qtsccrmemailsender@gmail.com",
              "kenejnzwmzwboknd"

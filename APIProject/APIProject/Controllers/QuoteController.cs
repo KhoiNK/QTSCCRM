@@ -294,15 +294,17 @@ namespace APIProject.Controllers
                 var quoteItems = _quoteItemMappingService.GetByQuote(request.ID);
                 var pdfData = new List<string>();
                 //initial header
-                string dataHeader = "Hạng mục;Giá thành;Đơn vị tính";
-                pdfData.Add(dataHeader);
-                foreach (var item in quoteItems)
-                {
-                    string itemLine = item.SalesItemName + ";"
-                        + string.Format("{0:n0}", item.Price) + ";" + item.Unit;
-                    pdfData.Add(itemLine);
-                }
+                //string dataHeader = "Hạng mục;Giá thành;Đơn vị tính";
+                //pdfData.Add(dataHeader);
+                //foreach (var item in quoteItems)
+                //{
+                //    string itemLine = item.SalesItemName + ";"
+                //        + string.Format("{0:n0}", item.Price) + ";" + item.Unit;
+                //    pdfData.Add(itemLine);
+                //}
 
+                EmailHelper emailHelper = new EmailHelper();
+                emailHelper.SendQuote(oppContact.Email, oppContact.Name, null);
 
                 _quoteService.SetSend(request.ToQuoteModel());
                 response.QuoteSent = true;
@@ -343,7 +345,14 @@ namespace APIProject.Controllers
                     + string.Format("{0:n0}", item.Price) + ";" + item.Unit;
                 pdfData.Add(itemLine);
             }
-
+            PdfHelper pdfHelper = new PdfHelper();
+            PdfDocument doc = pdfHelper.CreateQuotePdf("Báo giá", pdfData, foundQuote.Tax, foundQuote.Discount);
+            var quoteFileName =_uploadNamingService.GetQuoteNaming();
+            SaveFileHelper saveFileHelper = new SaveFileHelper();
+            var filepath = saveFileHelper.SavePdfQuoteFile(doc, quoteFileName);
+            doc.Close();
+            EmailHelper emailHelper = new EmailHelper();
+            emailHelper.SendQuote(oppContact.Email, oppContact.Name, filepath);
 
             _quoteService.SetSend(request.ToQuoteModel());
             response.QuoteSent = true;
