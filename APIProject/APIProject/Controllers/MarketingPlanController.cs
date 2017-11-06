@@ -19,20 +19,24 @@ namespace APIProject.Controllers
     public class MarketingPlanController : ApiController
     {
         private readonly IMarketingPlanService _marketingPlanService;
+        private readonly IStaffService _staffService;
 
-        public MarketingPlanController(IMarketingPlanService _marketingPlanService)
+        public MarketingPlanController(IMarketingPlanService _marketingPlanService,
+            IStaffService _staffService)
         {
+            this._staffService = _staffService;
             this._marketingPlanService = _marketingPlanService;
         }
 
         //[Authorize(Roles = "Admin,Employee")]
         [Route("GetMarketingPlanList")]
         [ResponseType(typeof(MarketingPlanViewModel))]
-        public async Task<IHttpActionResult> GetMarketingPlanList()
+        public async Task<IHttpActionResult> GetMarketingPlanList(int page=1, int pageSize =10)
         {
             var task = Task.Factory.StartNew(() =>
             {
-                var list = _marketingPlanService.GetMarketingPlans().Select(c => new MarketingPlanViewModel(c));
+                var list = _marketingPlanService.GetMarketingPlans().Skip(pageSize * (page - 1)).Take(pageSize)
+                .Select(c => new MarketingPlanViewModel(c));
                 return list;
             });
             return Ok(await task);
@@ -66,91 +70,107 @@ namespace APIProject.Controllers
                 return BadRequest(ModelState);
             }
 
-
-            //check attach file here
-            string budgetB64 = null;
-            string eventB64 = null;
-            string taskB64 = null;
-            string licenseB64 = null;
-            if (request.BudgetFile != null)
-            {
-                budgetB64 = request.BudgetFile.Base64Content;
-            }
-            if (request.EventScheduleFile != null)
-            {
-                eventB64 = request.EventScheduleFile.Base64Content;
-            }
-            if (request.TaskAssignFile != null)
-            {
-                taskB64 = request.TaskAssignFile.Base64Content;
-            }
-            if (request.LicenseFile != null)
-            {
-                licenseB64 = request.LicenseFile.Base64Content;
-            }
-
+            var addedPlan = _marketingPlanService.Add(request.ToMarketingPlanModel());
+            _marketingPlanService.SaveChanges();
             //insert plan and get plan id
-            int requestID = _marketingPlanService.CreateNewPlan(request.ToMarketingPlanModel(), request.IsFinished,
-                budgetB64, taskB64, eventB64, licenseB64);
-
-            return Ok(requestID);
+            return Ok(new { PlanID = addedPlan.ID });
         }
-
-
-        [Route("PutDraftingMarketingPlan")]
-        public IHttpActionResult PutDraftingMarketingPlan([FromBody]PutDraftingMarketingPlanViewModel request)
+        [Route("PostEditMarketingPlan")]
+        public IHttpActionResult PostEditMarketingPlan(PutEditMarketingPlanViewModel request)
         {
-            if (!ModelState.IsValid)
+            if(!ModelState.IsValid||request == null)
             {
                 return BadRequest(ModelState);
             }
-
-            string budgetB64 = null;
-            string eventB64 = null;
-            string taskB64 = null;
-            string licenseB64 = null;
-            if (request.BudgetFile != null)
+            try
             {
-                budgetB64 = request.BudgetFile.Base64Content;
+                var foundPlan = _marketingPlanService.Get(request.ID);
+                var foundStaff = _staffService.Get(request.StaffID);
+                _marketingPlanService.UpdateInfo(request.ToMarketingPlanModel());
+                _marketingPlanService.SaveChanges();
+                return Ok(new { MarketingPlanUpdated = true });
             }
-            if (request.EventScheduleFile != null)
+            catch (Exception e)
             {
-                eventB64 = request.EventScheduleFile.Base64Content;
+                return BadRequest(e.Message);
             }
-            if (request.TaskAssignFile != null)
-            {
-                taskB64 = request.TaskAssignFile.Base64Content;
-            }
-            if (request.LicenseFile != null)
-            {
-                licenseB64 = request.LicenseFile.Base64Content;
-            }
-
-            return Ok(_marketingPlanService.UpdatePlan(request.ToMarketingPlanModel(), request.IsFinished,
-                budgetB64, taskB64, eventB64, licenseB64));
-
         }
 
-        [Route("PutValidateMarketingPlan")]
-        public IHttpActionResult PutValidateMarketingPlan([FromBody]PutValidateMarketingPlanViewModel request)
+        [Route("PostFinishMarketingPlan")]
+        public IHttpActionResult PostFinishMarketingPlan(PutFinishMarketingPlanViewModel request)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
             }
-
-            return Ok(_marketingPlanService.ValidatePlan(request.ToMarketingPlanModel(), request.Validate));
-        }
-
-        [Route("PutAcceptMarketingPlan")]
-        public IHttpActionResult PutAcceptMarketingPlan([FromBody]PutAcceptMarketingPlanViewModel request)
-        {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                var foundPlan = _marketingPlanService.Get(request.ID);
+                var foundStaff = _staffService.Get(request.StaffID);
+                _marketingPlanService.Finish(request.ToMarketingPlanModel());
+                _marketingPlanService.SaveChanges();
+                return Ok(new { MarketingPlanUpdated = true });
+            }catch(Exception e)
+            {
+                return BadRequest(e.Message);
             }
-            return Ok(_marketingPlanService.AcceptPlan(request.ToMarketingPlanModel(), request.Accept));
         }
+
+
+        //[Route("PutDraftingMarketingPlan")]
+        //public IHttpActionResult PutDraftingMarketingPlan([FromBody]PutDraftingMarketingPlanViewModel request)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+        //    string budgetB64 = null;
+        //    string eventB64 = null;
+        //    string taskB64 = null;
+        //    string licenseB64 = null;
+        //    if (request.BudgetFile != null)
+        //    {
+        //        budgetB64 = request.BudgetFile.Base64Content;
+        //    }
+        //    if (request.EventScheduleFile != null)
+        //    {
+        //        eventB64 = request.EventScheduleFile.Base64Content;
+        //    }
+        //    if (request.TaskAssignFile != null)
+        //    {
+        //        taskB64 = request.TaskAssignFile.Base64Content;
+        //    }
+        //    if (request.LicenseFile != null)
+        //    {
+        //        licenseB64 = request.LicenseFile.Base64Content;
+        //    }
+
+        //    return Ok(_marketingPlanService.UpdatePlan(request.ToMarketingPlanModel(), request.IsFinished,
+        //        budgetB64, taskB64, eventB64, licenseB64));
+
+        //}
+
+        //[Route("PutValidateMarketingPlan")]
+        //public IHttpActionResult PutValidateMarketingPlan([FromBody]PutValidateMarketingPlanViewModel request)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+        //    return Ok(_marketingPlanService.ValidatePlan(request.ToMarketingPlanModel(), request.Validate));
+        //}
+
+        //[Route("PutAcceptMarketingPlan")]
+        //public IHttpActionResult PutAcceptMarketingPlan([FromBody]PutAcceptMarketingPlanViewModel request)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+        //    return Ok(_marketingPlanService.AcceptPlan(request.ToMarketingPlanModel(), request.Accept));
+        //}
 
         [Route("DeleteMarketingPlan")]
         public IHttpActionResult DeleteMarketingPlan()
@@ -158,5 +178,58 @@ namespace APIProject.Controllers
             return Ok();
         }
 
+        //[Route("PostMarketingResult")]
+        //public async Task<IHttpActionResult> PostMarketingResultAsync([FromUri] int marketingID)
+        //{
+        //    if (!Request.Content.IsMimeMultipartContent())
+        //    {
+        //        Request.CreateResponse(HttpStatusCode.UnsupportedMediaType, "Sai định dạng");
+        //    }
+        //    var fileRoot = HttpContext.Current.Server.MapPath("~/Resources/MarketingResultFiles");
+        //    if (!Directory.Exists(fileRoot))
+        //    {
+        //        Directory.CreateDirectory(fileRoot);
+        //    }
+
+        //    //var provider = new MultipartFormDataContent(fileRoot);
+        //    //var filesReadToProvider = await Request.Content.ReadAsMultipartAsync();
+
+        //    var provider = new MultipartFormDataStreamProvider(fileRoot);
+        //    var result = await Request.Content.ReadAsMultipartAsync(provider);
+
+        //    //foreach (var stream in filesReadToProvider.Contents)
+        //    //{
+        //    //    var fileBytes = await stream.ReadAsByteArrayAsync();
+        //    //}
+
+        //    var foundMarketing = _marketingPlanService.Get(marketingID);
+
+        //    //Upload files
+        //    int quotationCount = 0;
+        //    int quotationItemCount = 0;
+
+        //    foreach (MultipartFileData fileData in result.FileData)
+        //    {
+        //        if (string.IsNullOrEmpty(fileData.Headers.ContentDisposition.FileName))
+        //        {
+        //            return BadRequest("Không đúng định dạng");
+        //        }
+        //        string fileName = fileData.Headers.ContentDisposition.FileName;
+
+        //        if (fileName.StartsWith("\"") && fileName.EndsWith("\""))
+        //        {
+        //            fileName = fileName.Trim('"');
+        //        }
+        //        if (fileName.Contains(@"/") || fileName.Contains(@"\"))
+        //        {
+        //            fileName = Path.GetFileName(fileName);
+        //        }
+        //        // Must be match with FileNameRFQ in PR
+        //        var fullPath = Path.Combine(fileRoot, fileName);
+        //        //File.Copy(fileData.LocalFileName, fullPath, true);
+        //        var quotation = this.ReadQuotationFromExcel(fileData.LocalFileName, requisition, out quotationItemCount);
+
+        //    }
+        //}
     }
 }

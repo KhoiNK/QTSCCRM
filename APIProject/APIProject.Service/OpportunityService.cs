@@ -71,7 +71,6 @@ namespace APIProject.Service
             }
             newOpportunity.StageName = OpportunityStage.Consider;
             newOpportunity.ConsiderStart = DateTime.Now;
-            newOpportunity.Priority = Priority.Low;
             _unitOfWork.Commit();
             return newOpportunity.ID;
         }
@@ -118,7 +117,7 @@ namespace APIProject.Service
 
         public IEnumerable<Opportunity> GetAll()
         {
-            return _opportunityRepository.GetAll().Where(c=>c.IsDelete==false);
+            return _opportunityRepository.GetAll().Where(c => c.IsDelete == false);
         }
 
         public IEnumerable<Opportunity> GetByCustomer(int customerID)
@@ -158,13 +157,13 @@ namespace APIProject.Service
         {
             var entity = new Opportunity
             {
-                Title=opp.Title,
-                Description=opp.Description,
+                Title = opp.Title,
+                Description = opp.Description,
                 StageName = OpportunityStage.Consider,
                 ConsiderStart = DateTime.Today,
                 CreatedDate = DateTime.Now,
-                UpdatedDate=DateTime.Now,
-                ContactID=opp.ContactID,
+                UpdatedDate = DateTime.Now,
+                ContactID = opp.ContactID,
                 CreatedStaffID = opp.CreatedStaffID,
                 UpdatedStaffID = opp.CreatedStaffID
             };
@@ -189,6 +188,7 @@ namespace APIProject.Service
         public Opportunity SetNextStage(Opportunity opp)
         {
             var entity = _opportunityRepository.GetById(opp.ID);
+            
             VerifyCanSetNextStage(entity);
             #region move stage 
             if (entity.StageName == OpportunityStage.Consider)
@@ -297,6 +297,13 @@ namespace APIProject.Service
                 {
                     throw new Exception(CustomError.CreateQuoteRequired);
                 }
+                else
+                {
+                    if(quoteEntity.Status == QuoteStatus.NotValid)
+                    {
+                        throw new Exception(CustomError.CreateQuoteRequired);
+                    }
+                }
             }
             if (opp.StageName == OpportunityStage.ValidateQuote)
             {
@@ -314,6 +321,8 @@ namespace APIProject.Service
                 }
             }
         }
+        
+
         private void VerifyCanSetWonStage(Opportunity opp)
         {
             if (opp.StageName != OpportunityStage.Negotiation)

@@ -16,7 +16,7 @@ namespace APIProject.Model.Models
             IssueCategoryMappings = new HashSet<IssueCategoryMapping>();
             OpportunityCategoryMappings = new HashSet<OpportunityCategoryMapping>();
 
-            SalesCategory1 = new HashSet<SalesCategory>();
+            //SalesCategory1 = new HashSet<SalesCategory>();
             SalesItems = new HashSet<SalesItem>();
         }
 
@@ -24,15 +24,15 @@ namespace APIProject.Model.Models
         //public int ID { get; set; }
         public string Name { get; set; }
 
-        public int? OfCategoryID { get; set; }
+        //public int? OfCategoryID { get; set; }
 
         //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         //public virtual ICollection<Issue> Issues { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<SalesCategory> SalesCategory1 { get; set; }
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        //public virtual ICollection<SalesCategory> SalesCategory1 { get; set; }
 
-        public virtual SalesCategory SalesCategory2 { get; set; }
+        //public virtual SalesCategory SalesCategory2 { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SalesItem> SalesItems { get; set; }

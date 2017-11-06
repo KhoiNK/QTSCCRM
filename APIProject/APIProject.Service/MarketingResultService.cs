@@ -98,29 +98,15 @@ namespace APIProject.Service
                 return false;
             }
             //verify stage
-            if (foundPlan.Stage != RunningName && foundPlan.Stage != ReportingName)
-            {
-                return false;
-            }
             //verify stage and is finished
             if (isFinished)
             {
-                if (foundPlan.Stage == RunningName)
-                {
-                    return false;
-                }
             }
 
 
             //start adding result code here
             InsertResultsAndLeads(list);
             SendMessageToResults(list);
-            foundPlan.ModifiedStaffID = staffID;
-            foundPlan.LastModifiedDate = DateTime.Today.Date;
-            if (isFinished)
-            {
-                foundPlan.Stage = FinishedName;
-            }
             _unitOfWork.Commit();
 
             //start sending email code here
@@ -167,7 +153,6 @@ namespace APIProject.Service
                         {
                             Name = resultItem.CustomerName,
                             Address = resultItem.CustomerAddress,
-                            IsLead = true
                         };
                         _customerRepository.Add(_customer);
                         _unitOfWork.Commit();

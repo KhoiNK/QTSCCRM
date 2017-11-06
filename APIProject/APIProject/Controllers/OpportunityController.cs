@@ -50,11 +50,12 @@ namespace APIProject.Controllers
 
         [Route("GetOpportunities")]
         [ResponseType(typeof(OpportunityViewModel))]
-        public IHttpActionResult GetOpportunities()
+        public IHttpActionResult GetOpportunities(int page = 1,int pageSize =10)
         {
-            var opportunities = _opportunityService.GetAll().ToList();
-            opportunities.GroupBy(o => o.Customer).Select(c => c.Key)
-                .ToList().ForEach(c => _uploadNamingService.ConcatCustomerAvatar(c));
+            var opportunities = _opportunityService.GetAll().Skip(pageSize * (page - 1)).Take(pageSize)
+                .ToList();
+            //opportunities.GroupBy(o => o.Customer).Select(c => c.Key)
+            //    .ToList().ForEach(c => _uploadNamingService.ConcatCustomerAvatar(c));
             var responseList = new List<OpportunityViewModel>();
             foreach (var opp in opportunities)
             {

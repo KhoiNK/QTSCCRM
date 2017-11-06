@@ -35,7 +35,8 @@ namespace APIProject.ViewModels
                 Description = this.Description,
                 Type = this.Type,
                 Method = this.Method,
-                TodoTime = this.TodoTime
+                TodoTime = this.TodoTime,
+                OpportunityID=this.OpportunityID
             };
             return activity;
         }

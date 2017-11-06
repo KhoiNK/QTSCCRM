@@ -12,7 +12,7 @@ namespace APIProject.ViewModels
         public int ID { get; set; }
         public string ContractCode { get; set; }
         public string CustomerName { get; set; }
-        public string SalesCategoryName { get; set; }
+        public string Name { get; set; }
         public string Status { get; set; }
     }
     public class PostContractsResponseViewModel
@@ -29,16 +29,9 @@ namespace APIProject.ViewModels
         [Required]
         public int OpportunityID { get; set; }
         [Required]
-        public List<PostContractViewModel> Categories { get; set; }
+        public List<PostContractViewModel> Contracts { get; set; }
     }
     public class PostContractViewModel
-    {
-        [Required]
-        public int SalesCagetogyID { get; set; }
-        [Required]
-        public List<PostContractItemViewModel> QuoteItems { get; set; }
-    }
-    public struct PostContractItemViewModel
     {
         [Required]
         public int QuoteItemID { get; set; }
@@ -54,52 +47,43 @@ namespace APIProject.ViewModels
     {
         public int ID { get; set; }
         public string ContractCode { get; set; }
-        public string CategoryName { get; set; }
-        public string Status { get; set; }
-        public List<ContractItemDetailViewModel> ContractItems { get; set; }
         public CustomerDetailViewModel CustomerDetail { get; set; }
         public ContactViewModel ContactDetail { get; set; }
         public StaffDetailViewModel StaffDetail { get; set; }
+        public string Name { get; set; }
+        public int Price { get; set; }
+        public string Unit { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public string Status { get; set; }
 
         public ContractDetailsViewModel(Contract contractDto,
-            SalesCategory salesCategoryDto,
-            List<ContractItem> contractItemDtos,
             Customer customerDto,
             Contact contactDto,
             Staff staffDto)
         {
             ID = contractDto.ID;
             ContractCode = contractDto.ContractCode;
-            CategoryName = salesCategoryDto.Name;
             Status = contractDto.Status;
-            ContractItems = contractItemDtos.Select(c => new ContractItemDetailViewModel(c)).ToList();
-            CustomerDetail = new CustomerDetailViewModel(customerDto);
-            ContactDetail = new ContactViewModel(contactDto);
-            StaffDetail = new StaffDetailViewModel(staffDto);
+            StartDate = contractDto.StartDate;
+            EndDate = contractDto.EndDate;
+            Name = contractDto.Name;
+            Price = contractDto.Price;
+            Unit = contractDto.Unit;
+            if (customerDto != null)
+            {
+                CustomerDetail = new CustomerDetailViewModel(customerDto);
+            }
+            if (contactDto != null)
+            {
+                ContactDetail = new ContactViewModel(contactDto);
+            }
+            if (staffDto != null)
+            {
+                StaffDetail = new StaffDetailViewModel(staffDto);
+            }
         }
     }
 
-    public class ContractItemDetailViewModel
-    {
-        public int ID { get; set; }
-        public string ItemCode { get; set; }
-        public string Name { get; set; }
-        public int Quantity { get; set; }
-        public int Price { get; set; }
-        public string Unit { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-
-        public ContractItemDetailViewModel(ContractItem dto)
-        {
-            ID = dto.ID;
-            ItemCode = dto.ItemCode;
-            Name = dto.Name;
-            Quantity = dto.Quantity;
-            Price = dto.Price;
-            Unit = dto.Unit;
-            StartDate = dto.StartDate;
-            EndDate = dto.EndDate;
-        }
-    }
+    
 }

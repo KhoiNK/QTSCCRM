@@ -18,6 +18,7 @@ namespace APIProject.Service
         string GetStaffAvatarNaming();
         void ConcatStaffAvatar(Staff staff);
         string GetQuoteNaming();
+        string GetContractNaming();
 
     }
 
@@ -83,6 +84,13 @@ namespace APIProject.Service
             DateTime date = DateTime.Now;
             return Guid.NewGuid().ToString() + "_" + date.Year + date.Month + date.Day + date.Hour + date.Minute + date.Second;
         }
+
+        public string GetContractNaming()
+        {
+            var contractCode = _appConfigRepository.GetContractCode();
+            return contractCode;
+        }
+
 
 
     }

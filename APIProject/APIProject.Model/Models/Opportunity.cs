@@ -38,7 +38,6 @@ namespace APIProject.Model.Models
         public DateTime? ClosedDate { get; set; }
         //public DateTime? UpdatedDate { get; set; }
         public string StageName { get; set; }
-        public int Priority { get; set; }
         //public string StageDescription { get; set; }
         [ForeignKey("ContactID")]
         public virtual Contact Contact { get; set; }

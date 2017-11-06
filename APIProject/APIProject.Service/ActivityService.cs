@@ -125,8 +125,15 @@ namespace APIProject.Service
                 Description = activity.Description,
                 Type = activity.Type,
                 Method = activity.Method,
-                TodoTime = activity.TodoTime,
+                TodoTime = activity.TodoTime
             };
+            if (activity.OpportunityID.HasValue)
+            {
+                var oppEntity = _opportunityRepository.GetById(activity.OpportunityID.Value);
+                VerifyCanAddToOpportunity(oppEntity);
+                entity.OpportunityID = oppEntity.ID;
+                entity.OfOpportunityStage = oppEntity.StageName;
+            }
             if (activity.Type == ActivityType.FromCustomer)
             {
                 entity.Status = ActivityStatus.Recorded;
@@ -228,6 +235,20 @@ namespace APIProject.Service
             {
                 throw new Exception(CustomError.ActivityStatusRequired
                     + String.Join(", ", requiredStatus));
+            }
+        }
+        private void VerifyCanAddToOpportunity(Opportunity opportunity)
+        {
+            var doingActivityStatus = new List<string>
+            {
+                ActivityStatus.Open,
+                ActivityStatus.Overdue
+            };
+            var latestActivityEntity = _activityRepository.GetAll().Where(c => c.IsDelete == false &&
+            doingActivityStatus.Contains(c.Status)).FirstOrDefault();
+            if (latestActivityEntity != null)
+            {
+                throw new Exception(CustomError.ActivityOnlyOneAtATime);
             }
         }
         #endregion

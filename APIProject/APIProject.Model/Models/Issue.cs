@@ -22,7 +22,7 @@ namespace APIProject.Model.Models
         public int? CreateStaffID { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public string Stage { get; set; }
+        //public string Stage { get; set; }
         public string Status { get; set; }
         //public int? OpenStaffID { get; set; }
         //public DateTime? OpenedDate { get; set; }

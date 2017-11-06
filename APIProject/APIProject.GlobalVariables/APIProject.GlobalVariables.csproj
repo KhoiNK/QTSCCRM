@@ -53,6 +53,7 @@
     <Compile Include="FileExtension.cs" />
     <Compile Include="IssueStage.cs" />
     <Compile Include="IssueStatus.cs" />
+    <Compile Include="MarketingStatus.cs" />
     <Compile Include="OpportunityStage.cs" />
     <Compile Include="Priority.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

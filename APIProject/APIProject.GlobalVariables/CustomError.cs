@@ -33,6 +33,7 @@ namespace APIProject.GlobalVariables
         public static string ActivityStatusRequired = "Yêu cầu trạng thái lịch hẹn:";
         public static string ActivityNotFound = "Không tìm thấy lịch hẹn";
         public static string ActivityNotForCreateOpportunity = "Lịch hẹn này không thể sinh ra cơ hội bán hàng";
+        public static string ActivityOnlyOneAtATime = "Đang có một lịch hẹn";
 
         public static string DuplicateIDs = "ID không được trùng lặp";
 
@@ -64,5 +65,7 @@ namespace APIProject.GlobalVariables
         public static string ContractItemRequired = "Ít nhất 1 hạng mục trong dịch vụ để làm hợp đồng";
         public static string ContractItemStartDateMustPassCurrent = "Ngày bắt đầu sử dụng hạng mục không được trước thời điểm hiện tại";
         public static string ContractItemStartDateMustNotPassEndDate = "Ngày bắt đầu sử dụng hạng mục không được sau ngày kết thúc hạng mục";
+
+        public static string MarketingPlanStatusRequired = "Yêu cầu chiến dịch đang ở trạng thái:";
     }
 }

@@ -15,6 +15,7 @@ namespace APIProject.Service
         Contract Get(int contractID);
         IEnumerable<Contract> GetAll();
         Contract Add(Contract contract);
+        void SaveChanges();
     }
     public class ContractService : IContractService
     {
@@ -58,11 +59,15 @@ namespace APIProject.Service
             //    UpdatedDate = DateTime.Now,
             //    ContractCode = Guid.NewGuid().ToString()
             //};
-            int contractCodeNumber = _contractRepository.GetAll().Count() + 1;
-            contract.ContractCode = _appConfigRepository.GetContractCode() + contractCodeNumber.ToString("00000");
+            //int contractCodeNumber = _contractRepository.GetAll().Count() + 1;
+            //contract.ContractCode = _appConfigRepository.GetContractCode() + contractCodeNumber.ToString("00000");
             _contractRepository.Add(contract);
-            _unitOfWork.Commit();
             return contract;
+        }
+
+        public void SaveChanges()
+        {
+            _unitOfWork.Commit();
         }
 
     }

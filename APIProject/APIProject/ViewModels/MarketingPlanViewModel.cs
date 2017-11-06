@@ -13,11 +13,8 @@ namespace APIProject.ViewModels
         //public int Budget { get; set; }
         //public string Description { get; set; }
         public DateTime CreatedDate { get; set; }
-        public string Stage { get; set; }
         public DateTime StartDate { get; set; }
         //public DateTime EndDate { get; set; }
-        public DateTime LastModifiedDate { get; set; }
-        public string LastModifiedStaffName { get; set; }
         public string Status { get; set; }
 
 
@@ -25,11 +22,8 @@ namespace APIProject.ViewModels
         {
             ID = plan.ID;
             Title = plan.Title;
-            CreatedDate = plan.CreatedDate;
-            Stage = plan.Stage;
+            CreatedDate = plan.CreatedDate.Value;
             StartDate = plan.StartDate;
-            LastModifiedDate = plan.LastModifiedDate;
-            LastModifiedStaffName = plan.ModifiedStaff.Name;
             Status = plan.Status;
         }
     }

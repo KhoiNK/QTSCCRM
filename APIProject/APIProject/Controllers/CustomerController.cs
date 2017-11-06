@@ -125,10 +125,11 @@ namespace APIProject.Controllers
 
         [Route("GetCustomerList")]
         [ResponseType(typeof(CustomerViewModel))]
-        public IHttpActionResult GetCustomerList()
+        public IHttpActionResult GetCustomerList(int page=1,int pageSize=10)
         {
 
-            var customers = _customerService.GetAll().ToList();
+            var customers = _customerService.GetAll().Skip(pageSize * (page - 1)).Take(pageSize)
+                .ToList();
             customers.ForEach(c => _uploadNamingService.ConcatCustomerAvatar(c));
             return Ok(customers.Select(c => new CustomerViewModel(c)));
         }

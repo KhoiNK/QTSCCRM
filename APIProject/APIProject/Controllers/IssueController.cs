@@ -42,9 +42,9 @@ namespace APIProject.Controllers
         
         [Route("GetIssues")]
         [ResponseType(typeof(IssueViewModel))]
-        public IHttpActionResult GetIssues()
+        public IHttpActionResult GetIssues(int page=1, int pageSize=10)
         {
-            var list = _issueService.GetAll();
+            var list = _issueService.GetAll().Skip(pageSize * (page - 1)).Take(pageSize);
             return Ok(list.Select(c => new IssueViewModel(c)));
         }
 

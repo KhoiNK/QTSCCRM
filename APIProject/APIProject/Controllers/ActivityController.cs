@@ -54,9 +54,29 @@ namespace APIProject.Controllers
             return Ok(_activityService.GetActivityMethodNames());
         }
         [Route("GetActivityList")]
-        public IHttpActionResult GetActivityList()
+        public IHttpActionResult GetActivityList(int page=1,int pageSize=10)
         {
-            return Ok(_activityService.GetAllActivities().Select(c => new ActivityViewModel(c)));
+            return Ok(_activityService.GetAllActivities().Skip(pageSize*(page-1)).Take(pageSize)
+                .Select(c => new ActivityViewModel(c)));
+        }
+
+        [Route("GetActivity")]
+        [ResponseType(typeof(ActivityDetailViewModel))]
+        public IHttpActionResult GetActivity(int id = 0)
+        {
+            if (id == 0)
+            {
+                return BadRequest();
+            }
+
+            var foundActivity = _activityService.GetAllActivities().Where(c => c.ID == id).SingleOrDefault();
+            if (foundActivity != null)
+            {
+                _uploadNamingService.ConcatContactAvatar(foundActivity.Contact);
+                _uploadNamingService.ConcatCustomerAvatar(foundActivity.Customer);
+                return Ok(new ActivityDetailViewModel(foundActivity));
+            }
+            return NotFound();
         }
         [Route("GetActivityDetails")]
         [ResponseType(typeof(ActivityDetailsViewModel))]

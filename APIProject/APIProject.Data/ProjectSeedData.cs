@@ -40,7 +40,7 @@ namespace APIProject.Data
             issueList.ForEach(c => context.Issues.Add(c));
             context.Commit();
 
-            GetIssueCategories(issueList).ForEach(c => context.IssueCategoryMappings.Add(c));
+            //GetIssueCategories(issueList).ForEach(c => context.IssueCategoryMappings.Add(c));
             List<Opportunity> opportunityList = GetOpportunities();
             opportunityList.ForEach(c => context.Opportunities.Add(c));
             context.Commit();
@@ -136,10 +136,6 @@ namespace APIProject.Data
                 },
                 new Role
                 {
-                    Name = RoleName.Officer
-                },
-                new Role
-                {
                     Name = RoleName.Sales
                 },
                 new Role
@@ -222,55 +218,40 @@ namespace APIProject.Data
                     CreateStaffID = 1,
                     CreatedDate = DateTime.Today.Date,
                     Title = "Quang cao",
-                    Stage = "Drafting",
                     StartDate = DateTime.Today.Date,
                     EndDate = DateTime.Today.Date,
-                    ModifiedStaffID = 1,
-                    LastModifiedDate = DateTime.Today.Date
                 },
                 new MarketingPlan
                 {
                     CreateStaffID = 2,
                     CreatedDate = DateTime.Today.Date,
                     Title = "Quang cao ban son",
-                    Stage = "Validating",
                     StartDate = DateTime.Today.Date,
                     EndDate = DateTime.Today.Date,
-                    ModifiedStaffID = 2,
-                    LastModifiedDate = DateTime.Today.Date
                 },
                 new MarketingPlan
                 {
                     CreateStaffID = 3,
                     CreatedDate = DateTime.Today.Date,
                     Title = "Quang cao ban son",
-                    Stage = "Approving",
                     StartDate = DateTime.Today.Date,
                     EndDate = DateTime.Today.Date,
-                    ModifiedStaffID = 3,
-                    LastModifiedDate = DateTime.Today.Date
                 },
                 new MarketingPlan
                 {
                     CreateStaffID = 4,
                     CreatedDate = DateTime.Today.Date,
                     Title = "Quang cao ban son",
-                    Stage = "Preparing",
                     StartDate = DateTime.Today.Date,
                     EndDate = DateTime.Today.Date,
-                    ModifiedStaffID = 4,
-                    LastModifiedDate = DateTime.Today.Date
                 },
                 new MarketingPlan
                 {
                     CreateStaffID = 5,
                     CreatedDate = DateTime.Today.Date,
                     Title = "Quang cao ban son",
-                    Stage = "Running",
                     StartDate = DateTime.Today.Date,
                     EndDate = DateTime.Today.Date,
-                    ModifiedStaffID = 5,
-                    LastModifiedDate = DateTime.Today.Date
                 },
             };
         }
@@ -434,27 +415,11 @@ namespace APIProject.Data
             {
                 new SalesCategory
                 {
-                    Name = "Hội trường, phòng họp",
+                    Name = "Dịch vụ viễn thông",
                 },
                 new SalesCategory
                 {
-                    Name = "ATM",
-                },
-                new SalesCategory
-                {
-                    Name = "Bãi đậu xe",
-                },
-                new SalesCategory
-                {
-                    Name = "Ký túc xá",
-                },
-                new SalesCategory
-                {
-                    Name = "Pano quảng cáo",
-                },
-                new SalesCategory
-                {
-                    Name = "Quay phim - quảng cáo",
+                    Name = "Dịch vụ thuê văn phòng",
                 }
             };
         }
@@ -464,222 +429,41 @@ namespace APIProject.Data
             return new List<SalesItem>
             {
                 new SalesItem
-                        {
-                            SalesCategoryID=6,
-                            Name = "Vị trí A",
-                            Price = 500000,
-                            Unit = "ngày"
-                        },
-                        new SalesItem
-                        {
-                            SalesCategoryID=6,
-                            Name = "Vị trí B",
-                            Price = 500000,
-                            Unit = "ngày"
-                        },
-                        new SalesItem
-                        {
-                            SalesCategoryID=6,
-                            Name = "Vị trí C",
-                            Price = 500000,
-                            Unit = "ngày"
-                        },
-                        new SalesItem
-                        {
-                            SalesCategoryID=6,
-                            Name = "Vị trí D",
-                            Price = 500000,
-                            Unit = "ngày"
-                        },
-                        new SalesItem
-                        {
-                            SalesCategoryID=6,
-                            Name = "Vị trí E",
-                            Price = 500000,
-                            Unit = "ngày"
-                        },
+                {
+                    SalesCategoryID=2,
+                    Name = "Văn phòng hạng A",
+                    Price = 50000000,
+                    Unit="Tháng"
+                },
                 new SalesItem
-                        {
-                            SalesCategoryID=5,
-                            Name = "Vị trí A",
-                            Price = 150000,
-                            Unit = "pano/tháng"
-                        },
-                        new SalesItem
-                        {
-                            SalesCategoryID=5,
-                            Name = "Vị trí B",
-                            Price = 150000,
-                            Unit = "pano/tháng"
-                        },
-                        new SalesItem
-                        {
-                            SalesCategoryID=5,
-                            Name = "Vị trí C",
-                            Price = 150000,
-                            Unit = "pano/tháng"
-                        },
-                        new SalesItem
-                        {
-                            SalesCategoryID=5,
-                            Name = "Vị trí D",
-                            Price = 150000,
-                            Unit = "pano/tháng"
-                        },
-                        new SalesItem
-                        {
-                            SalesCategoryID=5,
-                            Name = "Vị trí E",
-                            Price = 150000,
-                            Unit = "pano/tháng"
-                        },
+                {
+                    SalesCategoryID=2,
+                    Name = "Văn phòng hạng B",
+                    Price = 40000000,
+                    Unit="Tháng"
+                },
                 new SalesItem
-                        {
-                            SalesCategoryID=4,
-                            Name = "Vị trí A",
-                            Price = 3000000,
-                            Unit = "phòng/tháng"
-                        },
-                        new SalesItem
-                        {
-                            SalesCategoryID=4,
-                            Name = "Vị trí B",
-                            Price = 3000000,
-                            Unit = "phòng/tháng"
-                        },
-                        new SalesItem
-                        {
-                            SalesCategoryID=4,
-                            Name = "Vị trí C",
-                            Price = 3000000,
-                            Unit = "phòng/tháng"
-                        },
-                        new SalesItem
-                        {
-                            SalesCategoryID=4,
-                            Name = "Vị trí D",
-                            Price = 3000000,
-                            Unit = "phòng/tháng"
-                        },
-                        new SalesItem
-                        {
-                            SalesCategoryID=4,
-                            Name = "Vị trí E",
-                            Price = 3000000,
-                            Unit = "phòng/tháng"
-                        },
+                {
+                    SalesCategoryID=2,
+                    Name = "Văn phòng hạng ",
+                    Price = 30000000,
+                    Unit="Tháng"
+                },
                 new SalesItem
-                        {
-
+                {
                     SalesCategoryID=1,
-                            Name = "Hội trường A",
-                            Price = 1000000,
-                            Unit = "Phòng"
-                        },
-                        new SalesItem
-                        {
+                    Name = "Data center",
+                    Price = 10000000,
+                    Unit="Tháng"
+                },
+                new SalesItem
+                {
                     SalesCategoryID=1,
-                            Name = "Hội trường B",
-                            Price = 1000000,
-                            Unit = "Phòng"
+                    Name = "Kết nối internet",
+                    Price = 10000000,
+                    Unit="Tháng"
+                }
 
-                        },
-                        new SalesItem
-                        {
-                    SalesCategoryID=1,
-                            Name = "Hội trường C",
-                            Price = 1000000,
-                            Unit = "Phòng"
-
-                        },
-                        new SalesItem
-                        {
-                    SalesCategoryID=1,
-                            Name = "Hội trường D",
-                            Price = 1000000,
-                            Unit = "Phòng"
-
-                        },
-                        new SalesItem
-                        {
-                    SalesCategoryID=1,
-                            Name = "Hội trường E",
-                            Price = 1000000,
-                            Unit = "Phòng"
-
-                        },
-
-                        new SalesItem
-                        {
-                    SalesCategoryID=2,
-
-                            Name = "Vị trí A",
-                            Price = 1000000,
-                            Unit = "máy/tháng"
-                        },
-                        new SalesItem
-                        {
-                    SalesCategoryID=2,
-                            Name = "Vị trí B",
-                            Price = 1000000,
-                            Unit = "máy/tháng"
-                        },
-                        new SalesItem
-                        {
-                    SalesCategoryID=2,
-                            Name = "Vị trí C",
-                            Price = 1000000,
-                            Unit = "máy/tháng"
-                        },
-                        new SalesItem
-                        {
-                    SalesCategoryID=2,
-                            Name = "Vị trí D",
-                            Price = 1000000,
-                            Unit = "máy/tháng"
-                        },
-                        new SalesItem
-                        {
-                    SalesCategoryID=2,
-                            Name = "Vị trí E",
-                            Price = 1000000,
-                            Unit = "máy/tháng"
-                        },
-                        new SalesItem
-                        {
-                    SalesCategoryID=3,
-                            Name = "Vị trí A",
-                            Price = 150000,
-                            Unit = "xe/tháng"
-                        },
-                        new SalesItem
-                        {
-                    SalesCategoryID=3,
-                            Name = "Vị trí B",
-                            Price = 150000,
-                            Unit = "xe/tháng"
-                        },
-                        new SalesItem
-                        {
-                    SalesCategoryID=3,
-                            Name = "Vị trí C",
-                            Price = 150000,
-                            Unit = "xe/tháng"
-                        },
-                        new SalesItem
-                        {
-                    SalesCategoryID=3,
-                            Name = "Vị trí D",
-                            Price = 150000,
-                            Unit = "xe/tháng"
-                        },
-                        new SalesItem
-                        {
-                    SalesCategoryID=3,
-                            Name = "Vị trí E",
-                            Price = 150000,
-                            Unit = "xe/tháng"
-                        }
             };
         }
 

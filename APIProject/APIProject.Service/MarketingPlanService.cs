@@ -1,5 +1,6 @@
 ﻿using APIProject.Data.Infrastructure;
 using APIProject.Data.Repositories;
+using APIProject.GlobalVariables;
 using APIProject.Model.Models;
 using System;
 using System.Collections.Generic;
@@ -17,9 +18,11 @@ namespace APIProject.Service
         IEnumerable<MarketingPlan> GetMarketingPlans();
         MarketingPlan GetMarketingPlan(int id);
         int CreateNewPlan(MarketingPlan marketingPlan, bool isFinished, string budgetB64, string taskAssignB64, string eventB64, string licenseB64);
-        bool UpdatePlan(MarketingPlan marketingPlan, bool isFinished, string budgetB64, string taskAssignB64, string eventB64, string licenseB64);
-        bool ValidatePlan(MarketingPlan marketingPlan, bool validate);
-        bool AcceptPlan(MarketingPlan marketingPlan, bool accept);
+        MarketingPlan Get(int marketingID);
+        MarketingPlan Add(MarketingPlan marketingPlan);
+        void Finish(MarketingPlan marketingPlan);
+        void UpdateInfo(MarketingPlan marketingPlan);
+        void SaveChanges();
     }
 
 
@@ -51,51 +54,15 @@ namespace APIProject.Service
         public int CreateNewPlan(MarketingPlan marketingPlan, bool isFinished, string budgetB64, string taskAssignB64, string eventB64, string licenseB64)
         {
             _marketingPlanRepository.Add(marketingPlan);
-            marketingPlan.CreateStaffID = marketingPlan.ModifiedStaffID;
-            marketingPlan.LastModifiedDate = DateTime.Today.Date;
-            marketingPlan.CreatedDate = marketingPlan.LastModifiedDate;
 
 
-            if (isFinished)
-            {
-                marketingPlan.Stage = ValidatingName;
-            }
-            else
-            {
-                marketingPlan.Stage = DraftingName;
-            }
+            
 
             _unitOfWork.Commit();
 
 
-            string fileName;
 
-            if (budgetB64 != null)
-            {
-                //todo here
-                fileName = GetFileName(marketingPlan.ID, true, false, false, false);
-                marketingPlan.BudgetFileSrc = WriteMarketingFiles(fileName, budgetB64);
-
-            }
-            if (taskAssignB64 != null)
-            {
-                //todo
-                fileName = GetFileName(marketingPlan.ID, false, false, true, false);
-                marketingPlan.TaskAssignSrc = WriteMarketingFiles(fileName, taskAssignB64);
-            }
-            if (eventB64 != null)
-            {
-                //todo
-                fileName = GetFileName(marketingPlan.ID, false, true, false, false);
-                marketingPlan.EventScheduleFileSrc = WriteMarketingFiles(fileName, eventB64);
-
-            }
-            if (licenseB64 != null)
-            {
-                //todo
-                fileName = GetFileName(marketingPlan.ID, false, false, false, true);
-                marketingPlan.LicenseFileSrc = WriteMarketingFiles(fileName, licenseB64);
-            }
+            
 
             _unitOfWork.Commit();
             return marketingPlan.ID;
@@ -154,99 +121,11 @@ namespace APIProject.Service
             return _marketingPlanRepository.GetById(id);
         }
 
-        public bool UpdatePlan(MarketingPlan marketingPlan, bool isFinished, string budgetB64, string taskAssignB64, string eventB64, string licenseB64)
-        {
-            MarketingPlan plan = _marketingPlanRepository.GetById(marketingPlan.ID);
-            if (plan != null)
-            {
-                Staff foundStaff = _staffRepository.GetById(marketingPlan.ModifiedStaffID.Value);
-                if (foundStaff != null)
-                {
-                    if (plan.Stage == DraftingName)
-                    {
-                        plan.ModifiedStaffID = marketingPlan.ModifiedStaffID;
-                        plan.LastModifiedDate = DateTime.Today.Date;
-                        plan.Title = marketingPlan.Title;
-                        plan.Budget = marketingPlan.Budget;
-                        plan.Description = marketingPlan.Description;
-                        plan.StartDate = marketingPlan.StartDate;
-                        plan.EndDate = marketingPlan.EndDate;
-
-                        if (isFinished)
-                        {
-                            MoveToNextStage(plan);
-                        }
-
-                        string fileName;
-
-                        if (budgetB64 != null)
-                        {
-                            //todo here
-                            fileName = GetFileName(marketingPlan.ID, true, false, false, false);
-                            plan.BudgetFileSrc = WriteMarketingFiles(fileName, budgetB64);
-
-                        }
-                        if (taskAssignB64 != null)
-                        {
-                            //todo
-                            fileName = GetFileName(marketingPlan.ID, false, false, true, false);
-                            plan.TaskAssignSrc = WriteMarketingFiles(fileName, taskAssignB64);
-                        }
-                        if (eventB64 != null)
-                        {
-                            //todo
-                            fileName = GetFileName(marketingPlan.ID, false, true, false, false);
-                            plan.EventScheduleFileSrc = WriteMarketingFiles(fileName, eventB64);
-
-                        }
-                        if (licenseB64 != null)
-                        {
-                            //todo
-                            fileName = GetFileName(marketingPlan.ID, false, false, false, true);
-                            plan.LicenseFileSrc = WriteMarketingFiles(fileName, licenseB64);
-                        }
-
-                        _unitOfWork.Commit();
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
 
         private void MoveToNextStage(MarketingPlan plan)
         {
             plan.Status = null;
-            if (plan.Stage == DraftingName)
-            {
-                plan.Stage = ValidatingName;
-                plan.AcceptStaffID = null;
-                plan.ValidateStaffID = null;
-                plan.ValidateNotes = null;
-                plan.AcceptNotes = null;
-            }
-            else if (plan.Stage == ValidatingName)
-            {
-                plan.Stage = AcceptingName;
-                plan.ValidateStaffID = plan.ModifiedStaffID;
-            }
-            else if (plan.Stage == AcceptingName)
-            {
-                plan.Stage = PreparingName;
-                plan.AcceptStaffID = plan.ModifiedStaffID;
-            }
-            else if (plan.Stage == PreparingName)
-            {
-                plan.Stage = RunningName;
-            }
-            else if (plan.Stage == RunningName)
-            {
-                plan.Stage = ReportingName;
-            }
-            else if (plan.Stage == ReportingName)
-            {
-                plan.Stage = FinishedName;
-            }
+            
         }
 
         private void BackgroundMoveStage(int? planId = null)
@@ -257,105 +136,84 @@ namespace APIProject.Service
                 var plan = planList.Where(c => c.ID == planId.Value).SingleOrDefault();
                 if (plan != null)
                 {
-                    if (plan.Stage == PreparingName)
-                    {
-                        if (DateTime.Compare(plan.StartDate, DateTime.Today.Date) <= 0)
-                        {
-                            MoveToNextStage(plan);
-                        }
-                    }
-                    if (plan.Stage == RunningName)
-                    {
-                        if (DateTime.Compare(plan.EndDate, DateTime.Today.Date) < 0)
-                        {
-                            MoveToNextStage(plan);
-                        }
-                    }
+                    
                 }
             }
             else
             {
                 foreach (var planItem in planList)
                 {
-                    if (planItem.Stage == PreparingName)
-                    {
-                        if (DateTime.Compare(planItem.StartDate, DateTime.Today.Date) <= 0)
-                        {
-                            MoveToNextStage(planItem);
-                        }
-                    }
-                    if (planItem.Stage == RunningName)
-                    {
-                        if (DateTime.Compare(planItem.EndDate, DateTime.Today.Date) < 0)
-                        {
-                            MoveToNextStage(planItem);
-                        }
-                    }
+                    
                 }
             }
             _unitOfWork.Commit();
         }
-        public bool ValidatePlan(MarketingPlan marketingPlan, bool validate)
+
+        public MarketingPlan Get(int marketingID)
         {
-            MarketingPlan plan = _marketingPlanRepository.GetById(marketingPlan.ID);
-            if (plan != null)
+            var entity = _marketingPlanRepository.GetById(marketingID);
+            if(entity != null)
             {
-                Staff foundStaff = _staffRepository.GetById(marketingPlan.ModifiedStaffID.Value);
-                if (foundStaff != null)
-                {
-                    if (plan.Stage == ValidatingName)
-                    {
-                        plan.ModifiedStaffID = marketingPlan.ModifiedStaffID;
-                        plan.ValidateNotes = marketingPlan.ValidateNotes;
-                        if (validate)
-                        {
-                            MoveToNextStage(plan);
-                        }
-                        else
-                        {
-                            plan.Stage = DraftingName;
-                            plan.Status = ValidateFailedName;
-                        }
-
-                        _unitOfWork.Commit();
-                        return true;
-                    }
-                }
+                return entity;
             }
-
-            return false;
+            else
+            {
+                throw new Exception("Không tìm thấy chiến dịch");
+            }
         }
 
-        public bool AcceptPlan(MarketingPlan marketingPlan, bool accept)
+        public MarketingPlan Add(MarketingPlan marketingPlan)
         {
-            MarketingPlan plan = _marketingPlanRepository.GetById(marketingPlan.ID);
-            if (plan != null)
-            {
-                Staff foundStaff = _staffRepository.GetById(marketingPlan.ModifiedStaffID.Value);
-                if (foundStaff != null)
-                {
-                    if (plan.Stage == AcceptingName)
-                    {
-                        plan.ModifiedStaffID = marketingPlan.ModifiedStaffID;
-                        plan.AcceptNotes = marketingPlan.AcceptNotes;
-                        if (accept)
-                        {
-                            MoveToNextStage(plan);
-                        }
-                        else
-                        {
-                            plan.Stage = DraftingName;
-                            plan.Status = AcceptFailedName;
-                        }
-
-                        _unitOfWork.Commit();
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            marketingPlan.CreatedDate = DateTime.Now;
+            marketingPlan.Status = MarketingStatus.Drafting;
+            _marketingPlanRepository.Add(marketingPlan);
+            return marketingPlan;
         }
+
+        public void Finish(MarketingPlan marketingPlan)
+        {
+            var entity = _marketingPlanRepository.GetById(marketingPlan.ID);
+            VerifyCanFinish(entity);
+            entity.UpdatedDate = DateTime.Now;
+            entity.Status = MarketingStatus.Finished;
+            _marketingPlanRepository.Update(entity);
+        }
+
+
+        public void UpdateInfo(MarketingPlan marketingPlan)
+        {
+            var entity = _marketingPlanRepository.GetById(marketingPlan.ID);
+            VerifyCanUpdateInfo(entity);
+            entity.UpdatedDate = DateTime.Now;
+            entity.Title = marketingPlan.Title;
+            entity.Description = marketingPlan.Description;
+            _marketingPlanRepository.Update(entity);
+        }
+
+        public void SaveChanges()
+        {
+            _unitOfWork.Commit();
+        }
+
+        #region private verify
+        private void VerifyCanUpdateInfo(MarketingPlan plan)
+        {
+            if(plan.Status!= MarketingStatus.Drafting)
+            {
+                throw new Exception(CustomError.MarketingPlanStatusRequired
+                    + MarketingStatus.Drafting);
+            }
+        }
+        private void VerifyCanFinish(MarketingPlan plan)
+        {
+            if (plan.Status != MarketingStatus.Reporting)
+            {
+                throw new Exception(CustomError.MarketingPlanStatusRequired
+                    + MarketingStatus.Reporting);
+            }
+        }
+#endregion
+
     }
 
 

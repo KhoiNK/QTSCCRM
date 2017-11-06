@@ -92,27 +92,31 @@ namespace APIProject.Service
         {
             VerifyCategoriesRequest(categoryIDs);
             var oppEntity = _opportunityService.GetByID(opportunityID);
-            VerifyStageCanChangeCategories(oppEntity);
-            var oldCategoryIDs = _opportunityCategoryMappingRepository.GetByOpportunity(opportunityID)
-                .Where(c => c.IsDelete == false).Select(c => c.SalesCategoryID);
-            var intersectIDs = oldCategoryIDs.Intersect(categoryIDs);
-            var insertIDs = categoryIDs.Except(intersectIDs);
-            var deleteIDs = oldCategoryIDs.Except(intersectIDs);
+            var oppCategoryIDs = _opportunityCategoryMappingRepository.GetByOpportunity(opportunityID).Select(c=>c.SalesCategoryID);
+            if (oppCategoryIDs.Count() != categoryIDs.Count)
+            {
+                VerifyStageCanChangeCategories(oppEntity);
+                var oldCategoryIDs = _opportunityCategoryMappingRepository.GetByOpportunity(opportunityID)
+                    .Where(c => c.IsDelete == false).Select(c => c.SalesCategoryID);
+                var intersectIDs = oldCategoryIDs.Intersect(categoryIDs);
+                var insertIDs = categoryIDs.Except(intersectIDs);
+                var deleteIDs = oldCategoryIDs.Except(intersectIDs);
 
-            foreach (var insertID in insertIDs)
-            {
-                Add(new OpportunityCategoryMapping
+                foreach (var insertID in insertIDs)
                 {
-                    OpportunityID = opportunityID,
-                    SalesCategoryID = insertID
-                });
-            }
-            var deleteEntities = oppEntity.OpportunityCategoryMappings
-                .Where(c => c.IsDelete == false &&
-                deleteIDs.Contains(c.SalesCategoryID));
-            foreach (var deleteEntity in deleteEntities)
-            {
-                Delete(deleteEntity);
+                    Add(new OpportunityCategoryMapping
+                    {
+                        OpportunityID = opportunityID,
+                        SalesCategoryID = insertID
+                    });
+                }
+                var deleteEntities = oppEntity.OpportunityCategoryMappings
+                    .Where(c => c.IsDelete == false &&
+                    deleteIDs.Contains(c.SalesCategoryID));
+                foreach (var deleteEntity in deleteEntities)
+                {
+                    Delete(deleteEntity);
+                }
             }
         }
         public void SaveChanges()

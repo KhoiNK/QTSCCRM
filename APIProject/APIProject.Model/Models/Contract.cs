@@ -13,8 +13,14 @@ namespace APIProject.Model.Models
         public int CustomerID { get; set; }
         public int ContactID { get; set; }
         public int CreatedStaffID { get; set; }
-        public int SalesCategoryID { get; set; }
         public string ContractCode { get; set; }
+        //public int SalesCategoryID { get; set; }
+        public int SalesItemID { get; set; }
+        public string Name { get; set; }
+        public int Price { get; set; }
+        public string Unit { get; set; }
+        public DateTime StartDate { get; set; } 
+        public DateTime EndDate { get; set; }
         public string Status { get; set; }
     }
 }

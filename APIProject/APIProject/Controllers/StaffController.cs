@@ -63,9 +63,9 @@ namespace APIProject.Controllers
 
         [Route("GetStaffs")]
         [ResponseType(typeof(StaffDetailViewModel))]
-        public IHttpActionResult GetStaffs()
+        public IHttpActionResult GetStaffs(int page = 1, int pageSize=10)
         {
-            var staffs = _staffService.GetAllStaffs();
+            var staffs = _staffService.GetAllStaffs().Skip(pageSize * (page - 1)).Take(pageSize);
             return Ok(staffs.Select(c => new StaffDetailViewModel(c)));
         }
 
@@ -76,7 +76,7 @@ namespace APIProject.Controllers
             var foundStaff = _staffService.GetByUserName(User.Identity.Name);
             _uploadNamingService.ConcatStaffAvatar(foundStaff);
             return Ok(new StaffDetailViewModel(foundStaff));
-
         }
+
     }
 }

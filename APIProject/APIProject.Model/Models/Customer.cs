@@ -27,7 +27,7 @@ namespace APIProject.Model.Models
         public string Address { get; set; }
         public DateTime EstablishedDate { get; set; }
         public string TaxCode { get; set; }
-        public bool IsLead { get; set; }
+        //public bool IsLead { get; set; }
         public DateTime? ConvertedDate { get; set; }
         public string CustomerType { get; set; }
 

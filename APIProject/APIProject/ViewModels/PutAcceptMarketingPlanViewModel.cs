@@ -18,8 +18,6 @@ namespace APIProject.ViewModels
             return new MarketingPlan
             {
                 ID = this.ID,
-                ModifiedStaffID = this.StaffID,
-                AcceptNotes = this.AcceptNotes,
             };
         }
     }

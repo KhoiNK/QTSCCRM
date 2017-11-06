@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Web;
 
 namespace APIProject.Helper
@@ -77,6 +78,15 @@ namespace APIProject.Helper
             doc.SaveToFile(filePath);
             doc.Close();
             return filePath;
+        }
+        public void SaveMarketingResult()
+        {
+            string fileRoot = HttpContext.Current.Server.MapPath("~/Resources/MarketingResultFiles");
+            if (!Directory.Exists(fileRoot))
+            {
+                Directory.CreateDirectory(fileRoot);
+            }
+            var provider = new MultipartFormDataContent(fileRoot);
         }
     }
 }

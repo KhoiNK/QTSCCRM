@@ -303,8 +303,8 @@ namespace APIProject.Controllers
                 //    pdfData.Add(itemLine);
                 //}
 
-                EmailHelper emailHelper = new EmailHelper();
-                emailHelper.SendQuote(oppContact.Email, oppContact.Name, null);
+                //EmailHelper emailHelper = new EmailHelper();
+                //emailHelper.SendQuote(oppContact.Email, oppContact.Name, null);
 
                 _quoteService.SetSend(request.ToQuoteModel());
                 response.QuoteSent = true;
@@ -347,7 +347,7 @@ namespace APIProject.Controllers
             }
             PdfHelper pdfHelper = new PdfHelper();
             PdfDocument doc = pdfHelper.CreateQuotePdf("Báo giá", pdfData, foundQuote.Tax, foundQuote.Discount);
-            var quoteFileName =_uploadNamingService.GetQuoteNaming();
+            var quoteFileName =_uploadNamingService.GetQuoteNaming()+".pdf";
             SaveFileHelper saveFileHelper = new SaveFileHelper();
             var filepath = saveFileHelper.SavePdfQuoteFile(doc, quoteFileName);
             doc.Close();

@@ -8,8 +8,8 @@ namespace APIProject.GlobalVariables
 {
     public static class ActivityType
     {
-        public static string FromCustomer = "Từ khách hàng";
-        public static string ToCustomer = "Đến khách hàng";
+        public static string FromCustomer = "Ghi nhận";
+        public static string ToCustomer = "Tạo mới";
 
         public static List<string> GetList()
         {

@@ -11,6 +11,7 @@ namespace APIProject.Service
     public interface IRoleService
     {
         Role GetByID(int roleID);
+        IEnumerable<Role> GetAll();
     }
     public class RoleService : IRoleService
     {
@@ -24,5 +25,11 @@ namespace APIProject.Service
         {
             return _roleRepository.GetById(roleID);
         }
+        public IEnumerable<Role> GetAll()
+        {
+            var entities = _roleRepository.GetAll();
+            return entities;
+        }
+
     }
 }
