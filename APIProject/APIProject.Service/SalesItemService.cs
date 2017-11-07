@@ -12,6 +12,7 @@ namespace APIProject.Service
     public interface ISalesItemService
     {
         int CreateNewItem(SalesItem salesItem);
+        void UpdateInfo(SalesItem salesItem);
         IEnumerable<SalesItem> GetAll();
         SalesItem Get(int id);
         IEnumerable<SalesItem> GetByCategory(int categoryID);
@@ -38,12 +39,23 @@ namespace APIProject.Service
             var foundCategory = _salesCategoryRepository.GetById(salesItem.SalesCategoryID.Value);
             if(foundCategory != null)
             {
+                salesItem.CreatedDate = DateTime.Now;
                 _salesItemRepository.Add(salesItem);
                 _unitOfWork.Commit();
                 return salesItem.ID;
             }
 
             return 0;
+        }
+
+        public void UpdateInfo(SalesItem salesItem)
+        {
+            var entity = _salesItemRepository.GetById(salesItem.ID);
+            entity.Name = salesItem.Name;
+            entity.Price = salesItem.Price;
+            entity.Unit = salesItem.Unit;
+            entity.UpdatedDate = DateTime.Now;
+            _salesItemRepository.Update(entity);
         }
 
         public SalesItem Get(int id)

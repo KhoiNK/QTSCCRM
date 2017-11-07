@@ -11,6 +11,7 @@ namespace APIProject.GlobalVariables
         public static string CustomerNotFound = "Không tìm thấy khách";
         public static string ContactNotFound = "Không tìm thấy liên lạc";
         public static string CustomerTypeRequired = "Yêu cầu loại khách hàng:";
+        public static string TaxCodeIsUsed = "Mã số thuế này đã được sử dụng";
 
         public static string OpportunityNotFound = "Không tìm thấy cơ hội bán hàng";
         public static string OppStageRequired = "Yêu cầu cơ hội bán hàng ở giai đoạn:";

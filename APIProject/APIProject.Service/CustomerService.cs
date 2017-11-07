@@ -122,6 +122,7 @@ namespace APIProject.Service
         }
         public Customer Add(Customer customer)
         {
+            VerifyCanAdd(customer);
             var entity = new Customer
             {
                 Name = customer.Name,
@@ -160,6 +161,15 @@ namespace APIProject.Service
         }
 
         #region private verify
+        private void VerifyCanAdd(Customer customer)
+        {
+            var existedCustomer = _customerRepository.GetAll().Where(c => c.TaxCode == customer.TaxCode &&
+            c.IsDelete == false).FirstOrDefault();
+            if (existedCustomer != null)
+            {
+                throw new Exception(CustomError.TaxCodeIsUsed);
+            }
+        }
         private void VerifyCanConvert(Customer cus)
         {
             if (cus.CustomerType != CustomerType.Lead)

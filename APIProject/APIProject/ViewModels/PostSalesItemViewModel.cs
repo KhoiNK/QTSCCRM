@@ -29,4 +29,23 @@ namespace APIProject.ViewModels
             };
         }
     }
+
+    public class PutSalesItemViewModel
+    {
+        public int ID { get; set; }
+        public int StaffID { get; set; }
+        public string Name { get; set; }
+        public int Price { get; set; }
+        public string Unit { get; set; }
+        public SalesItem ToSalesItemModel()
+        {
+            return new SalesItem
+            {
+                ID=this.ID,
+                Name=this.Name,
+                Price=this.Price,
+                Unit=this.Unit
+            };
+        }
+    }
 }

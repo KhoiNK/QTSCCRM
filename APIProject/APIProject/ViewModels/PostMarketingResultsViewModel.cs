@@ -26,8 +26,6 @@ namespace APIProject.ViewModels
                 _list.Add(new MarketingResult
                 {
                     MarketingPlanID = this.PlanID,
-                    CustomerID = item.CustomerID,
-                    ContactID = item.ContactID,
                     CustomerName = item.CustomerName,
                     CustomerAddress = item.CustomerAddress,
                     ContactName = item.ContactName,
@@ -53,12 +51,12 @@ namespace APIProject.ViewModels
 
     public class PostMarketingResultViewModel
     {
-        public int? CustomerID { get; set; }
+        [Required]
+        public int PlanID { get; set; }
         [Required]
         public string CustomerName { get; set; }
         [Required]
         public string CustomerAddress { get; set; }
-        public int? ContactID { get; set; }
         [Required]
         public string ContactName { get; set; }
         [Required]
@@ -88,5 +86,27 @@ namespace APIProject.ViewModels
         public bool IsFromOthers { get; set; }
         [Required]
         public bool IsWantMore { get; set; }
+        public MarketingResult ToResultModel()
+        {
+            return new MarketingResult
+            {
+                CustomerName = this.CustomerName,
+                ContactName = this.ContactName,
+                Email = this.Email,
+                Phone = this.Phone,
+                Notes = this.Notes,
+                FacilityRate = this.FacilityRate,
+                ArrangingRate = this.ArrangingRate,
+                ServicingRate = this.ServicingRate,
+                IndicatorRate = this.IndicatorRate,
+                OthersRate = this.OthersRate,
+                IsFromMedia = this.IsFromMedia,
+                IsFromInvitation = this.IsFromInvitation,
+                IsFromWebsite = this.IsFromWebsite,
+                IsFromFriend = this.IsFromFriend,
+                IsFromOthers = this.IsFromOthers,
+                IsWantMore = this.IsWantMore,
+            };
+        }
     }
 }

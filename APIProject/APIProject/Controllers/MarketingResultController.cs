@@ -15,10 +15,13 @@ namespace APIProject.Controllers
     public class MarketingResultController : ApiController
     {
         private readonly IMarketingResultService _marketingResultService;
+        private readonly IMarketingPlanService _marketingPlanService;
 
-        public MarketingResultController(IMarketingResultService _marketingResultService)
+        public MarketingResultController(IMarketingResultService _marketingResultService,
+            IMarketingPlanService _marketingPlanService)
         {
             this._marketingResultService = _marketingResultService;
+            this._marketingPlanService = _marketingPlanService;
         }
 
         [Route("GetMarketingResults")]
@@ -42,18 +45,23 @@ namespace APIProject.Controllers
         }
 
         [Route("PostMarketingResults")]
-        public IHttpActionResult PostMarketingResults(PostMarketingResultsViewModel request)
+        public IHttpActionResult PostMarketingResults(PostMarketingResultViewModel request)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || request == null)
             {
                 return BadRequest(ModelState);
-            }else if(request == null)
-            {
-                return BadRequest();
             }
-
-            bool requestDone = _marketingResultService.CreateResults(request.ToMarketingResultModels(), request.IsFinished, request.StaffID);
-            return Ok(requestDone);
+            //bool requestDone = _marketingResultService.CreateResults(request.ToMarketingResultModels(), request.IsFinished, request.StaffID);
+            try
+            {
+                var foundPlan = _marketingPlanService.Get(request.PlanID);
+                var addedResult = _marketingResultService.Add(request.ToResultModel());
+                _marketingResultService.SaveChanges();
+                return Ok(addedResult.ID);
+            }catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
     }
 }

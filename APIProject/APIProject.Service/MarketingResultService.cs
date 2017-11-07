@@ -1,5 +1,6 @@
 ﻿using APIProject.Data.Infrastructure;
 using APIProject.Data.Repositories;
+using APIProject.GlobalVariables;
 using APIProject.Model.Models;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,9 @@ namespace APIProject.Service
     {
         IEnumerable<MarketingResult> GetMarketingResults();
         bool CreateResults(List<MarketingResult> list, bool isFinished, int staffID);
+        MarketingResult Add(MarketingResult marketingResult);
+        void SaveChanges();
+
     }
 
     public class MarketingResultService : IMarketingResultService
@@ -114,6 +118,49 @@ namespace APIProject.Service
             return true;
         }
 
+        public MarketingResult Add(MarketingResult marketingResult)
+        {
+            var planEntity = _marketingPlanRepository.GetById(marketingResult.MarketingPlanID);
+            VerifyCanAdd(planEntity);
+            var entity = new MarketingResult
+            {
+                CustomerName=marketingResult.CustomerName,
+                ContactName=marketingResult.ContactName,
+                Email=marketingResult.Email,
+                Phone=marketingResult.Phone,
+                Notes=marketingResult.Notes,
+                FacilityRate=marketingResult.FacilityRate,
+                ArrangingRate=marketingResult.ArrangingRate,
+                ServicingRate=marketingResult.ServicingRate,
+                IndicatorRate=marketingResult.IndicatorRate,
+                OthersRate=marketingResult.OthersRate,
+                IsFromMedia=marketingResult.IsFromMedia,
+                IsFromInvitation=marketingResult.IsFromInvitation,
+                IsFromWebsite=marketingResult.IsFromWebsite,
+                IsFromFriend=marketingResult.IsFromFriend,
+                IsFromOthers=marketingResult.IsFromOthers,
+                IsWantMore=marketingResult.IsWantMore,
+                CreatedDate=DateTime.Now
+            };
+            _marketingResultRepository.Add(entity);
+            return entity;
+        }
+
+        public void SaveChanges()
+        {
+            _unitOfWork.Commit();
+        }
+
+        #region private verify
+        private void VerifyCanAdd(MarketingPlan marketingPlan)
+        {
+            if (marketingPlan.Status == MarketingStatus.Finished)
+            {
+                throw new Exception("Sự kiện đã kết thúc");
+            }
+        }
+
+        #endregion
         //internal insert results and generate lead
         private void InsertResultsAndLeads(List<MarketingResult> resultList)
         {

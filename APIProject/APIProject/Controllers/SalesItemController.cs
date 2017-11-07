@@ -14,9 +14,12 @@ namespace APIProject.Controllers
     public class SalesItemController : ApiController
     {
         private readonly ISalesItemService _salesItemService;
-        public SalesItemController(ISalesItemService _salesItemService)
+        private readonly IStaffService _staffService;
+        public SalesItemController(ISalesItemService _salesItemService,
+            IStaffService _staffService)
         {
             this._salesItemService = _salesItemService;
+            this._staffService = _staffService;
         }
 
         [Route("GetSalesCategoryItems")]
@@ -47,6 +50,25 @@ namespace APIProject.Controllers
 
             int insertedID = _salesItemService.CreateNewItem(request.ToSalesItemModel());
             return Ok(insertedID);
+        }
+        [Route("PutSalesItem")]
+        [HttpPost]
+        public IHttpActionResult PutSalesItem(PutSalesItemViewModel request)
+        {
+            if (!ModelState.IsValid || request == null)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var foundItem = _salesItemService.Get(request.ID);
+                var foundStaff = _staffService.Get(request.StaffID);
+                _salesItemService.UpdateInfo(request.ToSalesItemModel());
+                return Ok(new { ItemUpdated = true });
+            }catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
     }
 }
