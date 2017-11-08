@@ -291,6 +291,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helper\CalculateHelper.cs" />
+    <Compile Include="Helper\CompareHelper.cs" />
     <Compile Include="Helper\EmailHelper.cs" />
     <Compile Include="Helper\PdfHelper.cs" />
     <Compile Include="Helper\SaveFileHelper.cs" />

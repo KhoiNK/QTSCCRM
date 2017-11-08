@@ -15,10 +15,10 @@ namespace APIProject.Service
     public interface IMarketingResultService
     {
         IEnumerable<MarketingResult> GetMarketingResults();
-        bool CreateResults(List<MarketingResult> list, bool isFinished, int staffID);
+        //bool CreateResults(List<MarketingResult> list, bool isFinished, int staffID);
+        IEnumerable<MarketingResult> GetByPlan(int planID);
         MarketingResult Add(MarketingResult marketingResult);
         void SaveChanges();
-
     }
 
     public class MarketingResultService : IMarketingResultService
@@ -47,76 +47,76 @@ namespace APIProject.Service
             this._unitOfWork = _unitOfWork;
         }
 
-        public bool CreateResults(List<MarketingResult> list, bool isFinished, int staffID)
-        {
-            int planID = list.First().MarketingPlanID;
-            var foundPlan = _marketingPlanRepository.GetById(planID);
-            var foundStaff = _staffRepository.GetById(staffID);
+        //public bool CreateResults(List<MarketingResult> list, bool isFinished, int staffID)
+        //{
+        //    int planID = list.First().MarketingPlanID;
+        //    var foundPlan = _marketingPlanRepository.GetById(planID);
+        //    var foundStaff = _staffRepository.GetById(staffID);
 
-            //verify staff exist
-            if (foundStaff == null)
-            {
-                return false;
-            }
+        //    //verify staff exist
+        //    if (foundStaff == null)
+        //    {
+        //        return false;
+        //    }
 
-            //verify customer and contact
-            foreach (var item in list)
-            {
-                //verify customer exist
-                if (item.CustomerID.HasValue)
-                {
-                    var foundCustomer = _customerRepository.GetById(item.CustomerID.Value);
-                    if (foundCustomer == null)
-                    {
-                        return false;
-                    }
-                }
-                //verify contact exist and in right customer
-                if (item.ContactID.HasValue)
-                {
-                    var foundContact = _contactRepository.GetById(item.ContactID.Value);
-                    if (foundContact == null)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        if (item.CustomerID.HasValue)
-                        {
-                            if (foundContact.CustomerID != item.CustomerID)
-                            {
-                                return false;
-                            }
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
+        //    //verify customer and contact
+        //    foreach (var item in list)
+        //    {
+        //        //verify customer exist
+        //        if (item.CustomerID.HasValue)
+        //        {
+        //            var foundCustomer = _customerRepository.GetById(item.CustomerID.Value);
+        //            if (foundCustomer == null)
+        //            {
+        //                return false;
+        //            }
+        //        }
+        //        //verify contact exist and in right customer
+        //        if (item.ContactID.HasValue)
+        //        {
+        //            var foundContact = _contactRepository.GetById(item.ContactID.Value);
+        //            if (foundContact == null)
+        //            {
+        //                return false;
+        //            }
+        //            else
+        //            {
+        //                if (item.CustomerID.HasValue)
+        //                {
+        //                    if (foundContact.CustomerID != item.CustomerID)
+        //                    {
+        //                        return false;
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    return false;
+        //                }
+        //            }
+        //        }
+        //    }
 
-            //verify plan exist
-            if (foundPlan == null)
-            {
-                return false;
-            }
-            //verify stage
-            //verify stage and is finished
-            if (isFinished)
-            {
-            }
+        //    //verify plan exist
+        //    if (foundPlan == null)
+        //    {
+        //        return false;
+        //    }
+        //    //verify stage
+        //    //verify stage and is finished
+        //    if (isFinished)
+        //    {
+        //    }
 
 
-            //start adding result code here
-            InsertResultsAndLeads(list);
-            SendMessageToResults(list);
-            _unitOfWork.Commit();
+        //    //start adding result code here
+        //    InsertResultsAndLeads(list);
+        //    SendMessageToResults(list);
+        //    _unitOfWork.Commit();
 
-            //start sending email code here
+        //    //start sending email code here
 
-            return true;
-        }
+        //    return true;
+        //}
 
         public MarketingResult Add(MarketingResult marketingResult)
         {
@@ -124,6 +124,8 @@ namespace APIProject.Service
             VerifyCanAdd(planEntity);
             var entity = new MarketingResult
             {
+                MarketingPlanID=marketingResult.MarketingPlanID,
+                CustomerAddress=marketingResult.CustomerAddress,
                 CustomerName=marketingResult.CustomerName,
                 ContactName=marketingResult.ContactName,
                 Email=marketingResult.Email,
@@ -146,6 +148,13 @@ namespace APIProject.Service
             return entity;
         }
 
+        public IEnumerable<MarketingResult> GetByPlan(int planID)
+        {
+            var entities = _marketingResultRepository.GetAll().Where(c => c.MarketingPlanID == planID);
+            return entities;
+        }
+
+
         public void SaveChanges()
         {
             _unitOfWork.Commit();
@@ -162,66 +171,6 @@ namespace APIProject.Service
 
         #endregion
         //internal insert results and generate lead
-        private void InsertResultsAndLeads(List<MarketingResult> resultList)
-        {
-            foreach (MarketingResult resultItem in resultList)
-            {
-                if (resultItem.CustomerID.HasValue)
-                {
-                    if (resultItem.ContactID.HasValue)
-                    {
-                        //do nothing
-                    }
-                    else
-                    {
-                        Contact _item = new Contact
-                        {
-                            Name = resultItem.ContactName,
-                            Email = resultItem.Email,
-                            Phone = resultItem.Phone,
-                            CustomerID = resultItem.CustomerID.Value
-                        };
-                        _contactRepository.Add(_item);
-                        _unitOfWork.Commit();
-                        resultItem.ContactID = _item.ID;
-                    }
-                }
-                else
-                {
-                    if (resultItem.ContactID.HasValue)
-                    {
-                        //do nothing
-                    }
-                    else
-                    {
-                        resultItem.IsLeadGenerated = true;
-                        //add new lead and it's contact
-                        Customer _customer = new Customer
-                        {
-                            Name = resultItem.CustomerName,
-                            Address = resultItem.CustomerAddress,
-                        };
-                        _customerRepository.Add(_customer);
-                        _unitOfWork.Commit();
-                        resultItem.CustomerID = _customer.ID;
-
-                        Contact _contact = new Contact
-                        {
-                            Name = resultItem.ContactName,
-                            Email = resultItem.Email,
-                            Phone = resultItem.Phone,
-                            CustomerID = resultItem.CustomerID.Value
-                        };
-                        _contactRepository.Add(_contact);
-                        _unitOfWork.Commit();
-                        resultItem.ContactID = _contact.ID;
-                    }
-                }
-                resultItem.CreatedDate = DateTime.Today.Date;
-                _marketingResultRepository.Add(resultItem);
-            }
-            _unitOfWork.Commit();
-        }
 
         private void SendMessageToResults(List<MarketingResult> resultList)
         {

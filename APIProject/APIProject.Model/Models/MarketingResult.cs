@@ -14,10 +14,8 @@ namespace APIProject.Model.Models
 
         public int? CustomerID { get; set; }
 
-        public int? ContactID { get; set; }
 
         public int MarketingPlanID { get; set; }
-
         public string CustomerName { get; set; }
         public string CustomerAddress { get; set; }
         public string ContactName { get; set; }
@@ -38,11 +36,9 @@ namespace APIProject.Model.Models
         public DateTime CreatedDate { get; set; }
         public string Status { get; set; }
         public bool IsLeadGenerated { get; set; }
-
-        public virtual Contact Contact { get; set; }
-
+        [ForeignKey("CustomerID")]
         public virtual Customer Customer { get; set; }
-
+        [ForeignKey("MarketingPlanID")]
         public virtual MarketingPlan MarketingPlan { get; set; }
     }
 }

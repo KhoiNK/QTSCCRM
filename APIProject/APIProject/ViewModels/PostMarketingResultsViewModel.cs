@@ -90,6 +90,7 @@ namespace APIProject.ViewModels
         {
             return new MarketingResult
             {
+                MarketingPlanID=PlanID,
                 CustomerName = this.CustomerName,
                 ContactName = this.ContactName,
                 Email = this.Email,
@@ -108,5 +109,20 @@ namespace APIProject.ViewModels
                 IsWantMore = this.IsWantMore,
             };
         }
+    }
+
+    public class MarketingResultParticipantViewModel
+    {
+        public int ID { get; set; }
+        public int? CustomerID { get; set; }
+        public string CustomerName { get; set; }
+        public string CustomerAddress { get; set; }
+        public string ContactName { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public double AverageRate { get; set; }
+        public bool IsWantMore { get; set; }
+        public string Notes { get; set; }
+        public string Status { get; set; }
     }
 }

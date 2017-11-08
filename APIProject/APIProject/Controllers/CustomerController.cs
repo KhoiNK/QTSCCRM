@@ -143,6 +143,21 @@ namespace APIProject.Controllers
             return Ok(entities.Select(c => new CustomerDetailViewModel(c)));
         }
 
+        [Route("GetSimilarCustomers")]
+        [ResponseType(typeof(CustomerDetailViewModel))]
+        public IHttpActionResult GetSimilarCustomers(string customerName, string customerAddress)
+        {
+            CompareHelper compareHelper = new CompareHelper();
+            var compareResult = compareHelper.StringCompare(customerAddress, customerName);
+            var similarCustomers = _customerService.GetAll().Where(c => compareHelper.StringCompare(customerName, c.Name) >= 75
+            && compareHelper.StringCompare(customerAddress, c.Address) >= 75).ToList();
+            similarCustomers.ForEach(c => _uploadNamingService.ConcatCustomerAvatar(c));
+            var result = similarCustomers.Select(c => new CustomerDetailViewModel(c));
+            return Ok(result);
+        }
+
+
+
         [Route("GetCustomerDetails")]
         [ResponseType(typeof(CustomerDetailsViewModel))]
         public IHttpActionResult GetCustomerDetails(int ID = 0)

@@ -64,6 +64,7 @@ namespace APIProject.Controllers
                 var foundItem = _salesItemService.Get(request.ID);
                 var foundStaff = _staffService.Get(request.StaffID);
                 _salesItemService.UpdateInfo(request.ToSalesItemModel());
+                _salesItemService.SaveChanges();
                 return Ok(new { ItemUpdated = true });
             }catch(Exception e)
             {

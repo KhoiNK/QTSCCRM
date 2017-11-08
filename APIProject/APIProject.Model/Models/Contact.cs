@@ -14,7 +14,6 @@ namespace APIProject.Model.Models
         {
             Activities = new HashSet<Activity>();
             Issues = new HashSet<Issue>();
-            MarketingResults = new HashSet<MarketingResult>();
             Opportunities = new HashSet<Opportunity>();
         }
 
@@ -37,8 +36,8 @@ namespace APIProject.Model.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Issue> Issues { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<MarketingResult> MarketingResults { get; set; }
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        //public virtual ICollection<MarketingResult> MarketingResults { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Opportunity> Opportunities { get; set; }

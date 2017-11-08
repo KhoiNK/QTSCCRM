@@ -14,4 +14,11 @@ namespace APIProject.GlobalVariables
         public static string Reporting = "Đang tổng kết";
         public static string Finished = "Kết thúc";
     }
+
+    public static class MarketingResultStatus
+    {
+        public static string HasSimilar = "Có tương đồng";
+        public static string New = "Khách hàng mới";
+        public static string BecameNewLead = "Đã cập nhật khách hàng tiềm năng";
+    }
 }

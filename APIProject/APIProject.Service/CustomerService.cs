@@ -99,7 +99,7 @@ namespace APIProject.Service
         }
         public IEnumerable<Customer> GetAll()
         {
-            return _customerRepository.GetAll();
+            return _customerRepository.GetAll().Where(c=>c.IsDelete==false);
         }
         public IEnumerable<Customer> GetOfficial()
         {
@@ -160,7 +160,7 @@ namespace APIProject.Service
             _unitOfWork.Commit();
         }
 
-        #region private verify
+        #region private
         private void VerifyCanAdd(Customer customer)
         {
             var existedCustomer = _customerRepository.GetAll().Where(c => c.TaxCode == customer.TaxCode &&
@@ -200,7 +200,9 @@ namespace APIProject.Service
                     + String.Join(", ", requiredType));
             }
         }
-#endregion
+
+        
+        #endregion
     }
 
     public interface ICustomerService

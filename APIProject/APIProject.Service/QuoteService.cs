@@ -78,7 +78,7 @@ namespace APIProject.Service
             VerifyQuoteItems(itemIDs);
             VerifyCanAddQuote(quote);
             var quoteStaff = _staffRepository.GetById(quote.CreatedStaffID);
-            VerifyCanAddQuoteStaff(quoteStaff);
+            //VerifyCanAddQuoteStaff(quoteStaff);
 
             var deleteQuoteEntity = _quoteRepository.GetAll().Where(c => c.OpportunityID == quote.OpportunityID
               &&c.IsDelete==false).SingleOrDefault();

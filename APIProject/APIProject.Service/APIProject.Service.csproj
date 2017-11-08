@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="ActivityService.cs" />
     <Compile Include="CategoryService.cs" />
+    <Compile Include="CompareService.cs" />
     <Compile Include="ContactService.cs" />
     <Compile Include="ContractService.cs" />
     <Compile Include="CustomerService.cs" />

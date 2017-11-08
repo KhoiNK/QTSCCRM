@@ -38,7 +38,6 @@ namespace APIProject.ViewModels
             ID = c.ID;
             CustomerName = c.CustomerName;
             CustomerAddress = c.CustomerAddress;
-            ContactID = c.ContactID;
             ContactName = c.ContactName;
             Email = c.Email;
             Phone = c.Phone;

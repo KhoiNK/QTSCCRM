@@ -16,6 +16,7 @@ namespace APIProject.Service
         IEnumerable<SalesItem> GetAll();
         SalesItem Get(int id);
         IEnumerable<SalesItem> GetByCategory(int categoryID);
+        void SaveChanges();
     }
     public class SalesItemService: ISalesItemService
     {
@@ -57,6 +58,11 @@ namespace APIProject.Service
             entity.UpdatedDate = DateTime.Now;
             _salesItemRepository.Update(entity);
         }
+        public void SaveChanges()
+        {
+            _unitOfWork.Commit();
+        }
+
 
         public SalesItem Get(int id)
         {
