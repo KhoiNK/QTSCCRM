@@ -1,4 +1,5 @@
 ﻿using APIProject.GlobalVariables;
+using APIProject.Model.Models;
 using APIProject.Service;
 using APIProject.ViewModels;
 using System;
@@ -42,7 +43,7 @@ namespace APIProject.Controllers
         
         [Route("GetIssues")]
         [ResponseType(typeof(IssueViewModel))]
-        public IHttpActionResult GetIssues(int page=1, int pageSize=10)
+        public IHttpActionResult GetIssues(int page=1, int pageSize=100)
         {
             var list = _issueService.GetAll().Skip(pageSize * (page - 1)).Take(pageSize);
             return Ok(list.Select(c => new IssueViewModel(c)));
@@ -62,10 +63,17 @@ namespace APIProject.Controllers
                 var issueCategories = _salesCategoryService.GetByIssue(foundIssue.ID);
                 var issueContact = _contactService.Get(foundIssue.ContactID.Value);
                 var issueCustomer = _customerService.Get(foundIssue.CustomerID.Value);
+                var createStaff = _staffService.Get(foundIssue.CreateStaffID.Value);
+                Staff solveStaff = null;
+                if (foundIssue.SolveStaffID.HasValue)
+                {
+                    solveStaff = _staffService.Get(foundIssue.SolveStaffID.Value);
+                }
                 _uploadNamingService.ConcatContactAvatar(issueContact);
                 _uploadNamingService.ConcatCustomerAvatar(issueCustomer);
                 var response = new IssueDetailsViewModel(foundIssue,
-                    issueContact, issueCustomer, issueCategories.ToList());
+                    issueContact, issueCustomer, issueCategories.ToList(),
+                    createStaff,solveStaff);
                 return Ok(response);
             }
             catch (Exception e)

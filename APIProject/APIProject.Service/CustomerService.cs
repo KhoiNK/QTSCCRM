@@ -65,7 +65,7 @@ namespace APIProject.Service
 
         public IEnumerable<Customer> GetCustomerList()
         {
-            return _customerRepository.GetAll().Where(c=>c.IsDelete==false);
+            return _customerRepository.GetAll().Where(c => c.IsDelete == false);
         }
 
         public Customer GetByActivity(int activityID)
@@ -92,14 +92,14 @@ namespace APIProject.Service
             }
             return null;
         }
-        
+
         public Customer Get(int id)
         {
             return _customerRepository.GetById(id);
         }
         public IEnumerable<Customer> GetAll()
         {
-            return _customerRepository.GetAll().Where(c=>c.IsDelete==false);
+            return _customerRepository.GetAll().Where(c => c.IsDelete == false);
         }
         public IEnumerable<Customer> GetOfficial()
         {
@@ -122,7 +122,10 @@ namespace APIProject.Service
         }
         public Customer Add(Customer customer)
         {
-            VerifyCanAdd(customer);
+            if (customer.TaxCode != null)
+            {
+                VerifyTaxCode(customer);
+            }
             var entity = new Customer
             {
                 Name = customer.Name,
@@ -161,7 +164,7 @@ namespace APIProject.Service
         }
 
         #region private
-        private void VerifyCanAdd(Customer customer)
+        private void VerifyTaxCode(Customer customer)
         {
             var existedCustomer = _customerRepository.GetAll().Where(c => c.TaxCode == customer.TaxCode &&
             c.IsDelete == false).FirstOrDefault();
@@ -180,7 +183,7 @@ namespace APIProject.Service
         }
         private void VerifyCanUpdateInfo(Customer customer)
         {
-            if(customer.CustomerType!= CustomerType.Lead)
+            if (customer.CustomerType != CustomerType.Lead)
             {
                 throw new Exception(CustomError.CustomerTypeRequired
                     + CustomerType.Lead);
@@ -201,7 +204,7 @@ namespace APIProject.Service
             }
         }
 
-        
+
         #endregion
     }
 

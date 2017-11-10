@@ -31,7 +31,7 @@ namespace APIProject.Controllers
         //[Authorize(Roles = "Admin,Employee")]
         [Route("GetMarketingPlanList")]
         [ResponseType(typeof(MarketingPlanViewModel))]
-        public async Task<IHttpActionResult> GetMarketingPlanList(int page=1, int pageSize =10)
+        public async Task<IHttpActionResult> GetMarketingPlanList(int page=1, int pageSize =100)
         {
             var task = Task.Factory.StartNew(() =>
             {

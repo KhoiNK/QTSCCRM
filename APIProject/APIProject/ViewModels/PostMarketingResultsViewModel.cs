@@ -92,6 +92,7 @@ namespace APIProject.ViewModels
             {
                 MarketingPlanID=PlanID,
                 CustomerName = this.CustomerName,
+                CustomerAddress=this.CustomerAddress,
                 ContactName = this.ContactName,
                 Email = this.Email,
                 Phone = this.Phone,

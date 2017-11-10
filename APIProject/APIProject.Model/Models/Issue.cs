@@ -20,6 +20,7 @@ namespace APIProject.Model.Models
         public int? CustomerID { get; set; }
         public int? ContactID { get; set; }
         public int? CreateStaffID { get; set; }
+        public int? SolveStaffID { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         //public string Stage { get; set; }
@@ -43,6 +44,8 @@ namespace APIProject.Model.Models
         //public virtual SalesCategory SalesCategory { get; set; }
         [ForeignKey("CreateStaffID")]
         public virtual Staff Staff { get; set; }
+        [ForeignKey("SolveStaffID")]
+        public virtual Staff SolveStaff { get; set; }
 
         //public virtual Staff OpenStaff { get; set; }
 

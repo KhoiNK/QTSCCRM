@@ -52,10 +52,13 @@ namespace APIProject.Controllers
             var response = new PostContactResponseViewModel();
             if (request.Avatar != null)
             {
+                String[] splitBase64 = request.Avatar.Base64Content.Split(',');
+
                 string avatarExtension = Path.GetExtension(request.Avatar.Name).ToLower();
                 request.Avatar.Name = _uploadNamingService.GetContactAvatarNaming() + avatarExtension;
                 SaveFileHelper saveFileHelper = new SaveFileHelper();
-                saveFileHelper.SaveContactImage(request.Avatar.Name, request.Avatar.Base64Content);
+                //saveFileHelper.SaveContactImage(request.Avatar.Name, request.Avatar.Base64Content);
+                saveFileHelper.SaveContactImage(request.Avatar.Name, splitBase64.ToList().Last());
                 response.ContactAvatarUpdated = true;
             }
             try

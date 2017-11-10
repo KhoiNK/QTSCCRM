@@ -16,8 +16,10 @@ namespace APIProject.Service
     {
         IEnumerable<MarketingResult> GetMarketingResults();
         //bool CreateResults(List<MarketingResult> list, bool isFinished, int staffID);
+        MarketingResult Get(int planResultID);
         IEnumerable<MarketingResult> GetByPlan(int planID);
         MarketingResult Add(MarketingResult marketingResult);
+        void Update(MarketingResult marketingResult);
         void SaveChanges();
     }
 
@@ -124,28 +126,40 @@ namespace APIProject.Service
             VerifyCanAdd(planEntity);
             var entity = new MarketingResult
             {
-                MarketingPlanID=marketingResult.MarketingPlanID,
-                CustomerAddress=marketingResult.CustomerAddress,
-                CustomerName=marketingResult.CustomerName,
-                ContactName=marketingResult.ContactName,
-                Email=marketingResult.Email,
-                Phone=marketingResult.Phone,
-                Notes=marketingResult.Notes,
-                FacilityRate=marketingResult.FacilityRate,
-                ArrangingRate=marketingResult.ArrangingRate,
-                ServicingRate=marketingResult.ServicingRate,
-                IndicatorRate=marketingResult.IndicatorRate,
-                OthersRate=marketingResult.OthersRate,
-                IsFromMedia=marketingResult.IsFromMedia,
-                IsFromInvitation=marketingResult.IsFromInvitation,
-                IsFromWebsite=marketingResult.IsFromWebsite,
-                IsFromFriend=marketingResult.IsFromFriend,
-                IsFromOthers=marketingResult.IsFromOthers,
-                IsWantMore=marketingResult.IsWantMore,
-                CreatedDate=DateTime.Now
+                MarketingPlanID = marketingResult.MarketingPlanID,
+                CustomerAddress = marketingResult.CustomerAddress,
+                CustomerName = marketingResult.CustomerName,
+                ContactName = marketingResult.ContactName,
+                Email = marketingResult.Email,
+                Phone = marketingResult.Phone,
+                Notes = marketingResult.Notes,
+                FacilityRate = marketingResult.FacilityRate,
+                ArrangingRate = marketingResult.ArrangingRate,
+                ServicingRate = marketingResult.ServicingRate,
+                IndicatorRate = marketingResult.IndicatorRate,
+                OthersRate = marketingResult.OthersRate,
+                IsFromMedia = marketingResult.IsFromMedia,
+                IsFromInvitation = marketingResult.IsFromInvitation,
+                IsFromWebsite = marketingResult.IsFromWebsite,
+                IsFromFriend = marketingResult.IsFromFriend,
+                IsFromOthers = marketingResult.IsFromOthers,
+                IsWantMore = marketingResult.IsWantMore,
+                CreatedDate = DateTime.Now
             };
             _marketingResultRepository.Add(entity);
             return entity;
+        }
+        public MarketingResult Get(int planResultID)
+        {
+            var entity = _marketingResultRepository.GetById(planResultID);
+            if (entity != null)
+            {
+                return entity;
+            }
+            else
+            {
+                throw new Exception("Không tìm thấy khảo sát");
+            }
         }
 
         public IEnumerable<MarketingResult> GetByPlan(int planID)
@@ -154,6 +168,12 @@ namespace APIProject.Service
             return entities;
         }
 
+        public void Update(MarketingResult marketingResult)
+        {
+            var entity = _marketingResultRepository.GetById(marketingResult.ID);
+            entity = marketingResult;
+            _marketingResultRepository.Update(entity);
+        }
 
         public void SaveChanges()
         {
@@ -188,7 +208,7 @@ namespace APIProject.Service
             foreach (MarketingResult item in resultList)
             {
                 string mailBody = $"Cám ơn anh/chị {item.ContactName} đã tham gia sự kiện {planTitle}";
-                MailMessage message = new MailMessage(senderEmail,item.Email,mailSubject,mailBody);
+                MailMessage message = new MailMessage(senderEmail, item.Email, mailSubject, mailBody);
                 smtpobj.Send(message);
                 item.Status = "Đã gửi";
             }

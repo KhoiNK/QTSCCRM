@@ -122,7 +122,7 @@ namespace APIProject.Service
         {
             return new List<string>
             {
-                IssueStatus.Open,
+                //IssueStatus.Open,
                 IssueStatus.Doing,
                 IssueStatus.Overdue,
                 IssueStatus.Done,
@@ -157,7 +157,7 @@ namespace APIProject.Service
                 CreateStaffID = issue.CreateStaffID.Value,
                 Title = issue.Title,
                 Description = issue.Description,
-                Status = IssueStatus.Open,
+                Status = IssueStatus.Doing,
                 CreatedDate=DateTime.Now,
                 UpdatedDate=DateTime.Now,
             };
@@ -188,6 +188,7 @@ namespace APIProject.Service
         {
             var entity = _issueRepository.GetById(issue.ID);
             VerifyCanSetDone(entity);
+            entity.SolveStaffID = issue.SolveStaffID;
             entity.Status = IssueStatus.Done;
             entity.ClosedDate = DateTime.Now;
             entity.UpdatedDate = DateTime.Now;
@@ -197,6 +198,7 @@ namespace APIProject.Service
         {
             var entity = _issueRepository.GetById(issue.ID);
             VerifyCanSetFail(entity);
+            entity.SolveStaffID = issue.SolveStaffID;
             entity.Status = IssueStatus.Failed;
             entity.UpdatedDate = DateTime.Now;
             entity.ClosedDate = DateTime.Today;
@@ -226,7 +228,7 @@ namespace APIProject.Service
         {
             List<string> requiredStatus = new List<string>
             {
-                IssueStatus.Open,
+                //IssueStatus.Open,
                 IssueStatus.Doing,
                 IssueStatus.Overdue
             };

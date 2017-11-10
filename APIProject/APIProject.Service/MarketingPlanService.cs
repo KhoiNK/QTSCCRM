@@ -165,7 +165,7 @@ namespace APIProject.Service
         public MarketingPlan Add(MarketingPlan marketingPlan)
         {
             marketingPlan.CreatedDate = DateTime.Now;
-            marketingPlan.Status = MarketingStatus.Drafting;
+            marketingPlan.Status = MarketingStatus.Executing;
             _marketingPlanRepository.Add(marketingPlan);
             return marketingPlan;
         }
@@ -183,7 +183,6 @@ namespace APIProject.Service
         public void UpdateInfo(MarketingPlan marketingPlan)
         {
             var entity = _marketingPlanRepository.GetById(marketingPlan.ID);
-            VerifyCanUpdateInfo(entity);
             entity.UpdatedDate = DateTime.Now;
             entity.Title = marketingPlan.Title;
             entity.Description = marketingPlan.Description;
@@ -196,20 +195,12 @@ namespace APIProject.Service
         }
 
         #region private verify
-        private void VerifyCanUpdateInfo(MarketingPlan plan)
-        {
-            if(plan.Status!= MarketingStatus.Drafting)
-            {
-                throw new Exception(CustomError.MarketingPlanStatusRequired
-                    + MarketingStatus.Drafting);
-            }
-        }
         private void VerifyCanFinish(MarketingPlan plan)
         {
-            if (plan.Status != MarketingStatus.Reporting)
+            if (plan.Status != MarketingStatus.Executing)
             {
                 throw new Exception(CustomError.MarketingPlanStatusRequired
-                    + MarketingStatus.Reporting);
+                    + MarketingStatus.Executing);
             }
         }
 #endregion

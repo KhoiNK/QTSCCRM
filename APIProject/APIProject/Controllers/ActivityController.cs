@@ -54,7 +54,7 @@ namespace APIProject.Controllers
             return Ok(_activityService.GetActivityMethodNames());
         }
         [Route("GetActivityList")]
-        public IHttpActionResult GetActivityList(int page=1,int pageSize=10)
+        public IHttpActionResult GetActivityList(int page=1,int pageSize=100)
         {
             return Ok(_activityService.GetAllActivities().Skip(pageSize*(page-1)).Take(pageSize)
                 .Select(c => new ActivityViewModel(c)));

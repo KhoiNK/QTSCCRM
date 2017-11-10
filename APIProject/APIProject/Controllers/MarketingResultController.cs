@@ -1,5 +1,6 @@
 ﻿using APIProject.GlobalVariables;
 using APIProject.Helper;
+using APIProject.Model.Models;
 using APIProject.Service;
 using APIProject.ViewModels;
 using System;
@@ -18,14 +19,17 @@ namespace APIProject.Controllers
     {
         private readonly IMarketingResultService _marketingResultService;
         private readonly IMarketingPlanService _marketingPlanService;
+        private readonly IContactService _contactService;
         private readonly ICustomerService _customerService;
         private readonly ICompareService _compareService;
 
         public MarketingResultController(IMarketingResultService _marketingResultService,
             IMarketingPlanService _marketingPlanService,
+            IContactService _contactService,
             ICustomerService _customerService,
             ICompareService _compareService)
         {
+            this._contactService = _contactService;
             this._marketingResultService = _marketingResultService;
             this._marketingPlanService = _marketingPlanService;
             this._customerService = _customerService;
@@ -61,6 +65,10 @@ namespace APIProject.Controllers
             {
                 var foundPlan = _marketingPlanService.Get(planID);
                 var results = _marketingResultService.GetByPlan(planID);
+                if (!results.Any())
+                {
+                    throw new Exception("Không có dữ liệu nào");
+                }
                 var facilityRate = results.Select(c => c.FacilityRate).ToList().Average();
                 var arrangingRate = results.Select(c => c.ArrangingRate).ToList().Average();
                 var servicingRate = results.Select(c => c.ServicingRate).ToList().Average();
@@ -176,6 +184,49 @@ namespace APIProject.Controllers
                 return Ok(addedResult.ID);
             }
             catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [Route("PostCustomerAndContact")]
+        public IHttpActionResult PostCustomerAndContact(int planResultID = 0)
+        {
+            if (planResultID == 0)
+            {
+                return BadRequest();
+            }
+            try
+            {
+                var foundResult = _marketingResultService.Get(planResultID);
+                if (foundResult.Status == MarketingResultStatus.BecameNewLead)
+                {
+                    throw new Exception("Không thể tạo mới thêm");
+                }
+                var newCus = new Customer
+                {
+                    Name=foundResult.CustomerName,
+                    Address=foundResult.CustomerAddress
+                };
+                var addedCus = _customerService.Add(newCus);
+                var newContact = new Contact
+                {
+                    CustomerID = addedCus.ID,
+                    Name = foundResult.ContactName,
+                    Email = foundResult.Email,
+                    Phone = foundResult.Phone
+                };
+                var addedContact = _contactService.Add(newContact);
+                foundResult.CustomerID = addedCus.ID;
+                foundResult.Status = MarketingResultStatus.BecameNewLead;
+                _marketingResultService.Update(foundResult);
+                _marketingResultService.SaveChanges();
+                return Ok(new
+                {
+                    CustomerID = addedCus.ID,
+                    ContactID = addedContact.ID
+                });
+            }catch(Exception e)
             {
                 return BadRequest(e.Message);
             }

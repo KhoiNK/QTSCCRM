@@ -95,7 +95,8 @@ namespace APIProject.ViewModels
         {
             return new Issue
             {
-                ID=this.ID
+                ID=this.ID,
+                SolveStaffID=StaffID
             };
         }
     }
@@ -113,7 +114,8 @@ namespace APIProject.ViewModels
         {
             return new Issue
             {
-                ID = this.ID
+                ID = this.ID,
+                SolveStaffID=this.StaffID
             };
         }
     }

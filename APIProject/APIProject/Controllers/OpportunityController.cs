@@ -50,7 +50,7 @@ namespace APIProject.Controllers
 
         [Route("GetOpportunities")]
         [ResponseType(typeof(OpportunityViewModel))]
-        public IHttpActionResult GetOpportunities(int page = 1,int pageSize =10)
+        public IHttpActionResult GetOpportunities(int page = 1,int pageSize =100)
         {
             var opportunities = _opportunityService.GetAll().Skip(pageSize * (page - 1)).Take(pageSize)
                 .ToList();
@@ -197,17 +197,10 @@ namespace APIProject.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            var foundStaff = _staffService.Get(request.StaffID);
-            if (foundStaff == null)
-            {
-                return BadRequest(message: CustomError.StaffNotFound);
-            }
-
-
             try
             {
                 var response = new PutWonOppResponseViewModel();
+                var foundStaff = _staffService.Get(request.StaffID);
                 var foundOpportunity = _opportunityService.Get(request.ID);
                 _opportunityService.SetWon(request.ToOpportunityModel());
                 response.OpportunityUpdated = true;

@@ -245,6 +245,7 @@ namespace APIProject.Service
                 ActivityStatus.Overdue
             };
             var latestActivityEntity = _activityRepository.GetAll().Where(c => c.IsDelete == false &&
+            c.OpportunityID==opportunity.ID &&
             doingActivityStatus.Contains(c.Status)).FirstOrDefault();
             if (latestActivityEntity != null)
             {

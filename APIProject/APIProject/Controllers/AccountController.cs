@@ -539,10 +539,12 @@ namespace APIProject.Controllers
             {
                 if (request.Avatar != null)
                 {
+                    String[] splitBase64 = request.Avatar.Base64Content.Split(',');
+
                     string avatarExtension = Path.GetExtension(request.Avatar.Name).ToLower();
                     request.Avatar.Name = _uploadNamingService.GetStaffAvatarNaming() + avatarExtension;
                     SaveFileHelper saveFileHelper = new SaveFileHelper();
-                    saveFileHelper.SaveStaffImage(request.Avatar.Name, request.Avatar.Base64Content);
+                    saveFileHelper.SaveStaffImage(request.Avatar.Name, splitBase64.ToList().Last());
                 }
                 _staffService.CreateStaff(request.ToStaffModel());
                 if (_roleManager.FindByName(foundRole.Name) == null)

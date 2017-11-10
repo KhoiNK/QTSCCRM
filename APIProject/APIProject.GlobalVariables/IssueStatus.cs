@@ -9,7 +9,7 @@ namespace APIProject.GlobalVariables
     public static class IssueStatus
     {
         //Open Stage
-        public static string Open = "Chưa có ngày giải quyết";
+        //public static string Open = "Chưa có ngày giải quyết";
 
         //Solving Stage
         public static string Doing = "Đang xử lý";

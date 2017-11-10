@@ -158,7 +158,7 @@ namespace APIProject.Service
             var entity = _quoteRepository.GetById(quote.ID);
             VerifyCanUpdateQuoteStatus(entity);
             var quoteStaff = _staffRepository.GetById(quote.CreatedStaffID);
-            VerifyCanUpdateQuoteStaff(quoteStaff);
+            //VerifyCanUpdateQuoteStaff(quoteStaff);
             entity.Tax = quote.Tax;
             entity.Discount = quote.Discount;
             entity.UpdatedDate = DateTime.Now;

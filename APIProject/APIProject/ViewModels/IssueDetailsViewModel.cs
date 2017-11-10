@@ -11,10 +11,14 @@ namespace APIProject.ViewModels
         public IssueDetailViewModel IssueDetail { get; set; }
         public CustomerDetailViewModel CustomerDetail { get; set; }
         public ContactViewModel ContactDetail { get; set; }
+        public StaffDetailViewModel CreateStaffDetail { get; set; }
+        public StaffDetailViewModel SolveStaffDetail { get; set; }
         //public List<int> CategoryIDs { get; set; }
         public List<IssueCategoryViewModel> Categories { get; set; }
         public IssueDetailsViewModel(Issue issue, Contact contact, Customer customer,
-            List<SalesCategory> issueCategories)
+            List<SalesCategory> issueCategories,
+            Staff createStaffDto,
+            Staff solveStaffDto)
         {
             IssueDetail = new IssueDetailViewModel(issue);
             CustomerDetail = new CustomerDetailViewModel(customer);
@@ -23,6 +27,11 @@ namespace APIProject.ViewModels
             foreach (var category in issueCategories)
             {
                 Categories.Add(new IssueCategoryViewModel(category));
+            }
+            CreateStaffDetail = new StaffDetailViewModel(createStaffDto);
+            if (solveStaffDto != null)
+            {
+                SolveStaffDetail = new StaffDetailViewModel(solveStaffDto);
             }
         }
     }

@@ -49,14 +49,22 @@ namespace APIProject.Controllers
             var response = new PostLeadCustomerResponseViewModel();
             if (request.Avatar != null)
             {
+                String[] splitBase64 = request.Avatar.Base64Content.Split(',');
+
                 string avatarExtension = Path.GetExtension(request.Avatar.Name).ToLower();
+                //string avatarExtension = ".jpg";
                 request.Avatar.Name = _uploadNamingService.GetCustomerAvatarNaming() + avatarExtension;
                 SaveFileHelper saveFileHelper = new SaveFileHelper();
-                saveFileHelper.SaveCustomerImage(request.Avatar.Name, request.Avatar.Base64Content);
+                //saveFileHelper.SaveCustomerImage(request.Avatar.Name, request.Avatar.Base64Content);
+                saveFileHelper.SaveCustomerImage(request.Avatar.Name, splitBase64.ToList().Last());
                 response.CustomerAvatarUpdated = true;
             }
             try
             {
+                if(DateTime.Compare(DateTime.Now,request.EstablishedDate)< 0)
+                {
+                    throw new Exception("Ngày thành lập không được sau thời gian hiện tại");
+                }
                 var insertedCustomer = _customerService.Add(request.ToCustomerModel());
                 response.CustomerCreated = true;
                 response.CustomerID = insertedCustomer.ID;
@@ -66,6 +74,24 @@ namespace APIProject.Controllers
             {
                 return BadRequest(e.Message);
             }
+        }
+
+        [Route("PostMarketingCustomerAndContact")]
+        public IHttpActionResult PostMarketingCustomerAndContact(PostMarketingCustomerAndContactViewModel request)
+        {
+            if (!ModelState.IsValid || request == null)
+            {
+                return BadRequest(ModelState);
+            }
+            var insertedCustomer = _customerService.Add(request.ToCustomerModel());
+            var _contact = request.ToContactModel();
+            _contact.CustomerID = insertedCustomer.ID;
+            var insertedContact = _contactService.Add(_contact);
+            return Ok(new
+            {
+                CustomerID = insertedCustomer.ID,
+                ContactID = insertedContact.ID
+            });
         }
 
         [Route("PutLeadInformation")]
@@ -125,7 +151,7 @@ namespace APIProject.Controllers
 
         [Route("GetCustomerList")]
         [ResponseType(typeof(CustomerViewModel))]
-        public IHttpActionResult GetCustomerList(int page=1,int pageSize=10)
+        public IHttpActionResult GetCustomerList(int page = 1, int pageSize = 100)
         {
 
             var customers = _customerService.GetAll().Skip(pageSize * (page - 1)).Take(pageSize)

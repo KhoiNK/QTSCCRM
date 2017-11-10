@@ -229,7 +229,8 @@ namespace APIProject.Service
         {
             var entity = _opportunityRepository.GetById(opp.ID);
             VerifyCanSetWonStage(entity);
-            entity.StageName = OpportunityStage.Won;
+            entity.StageName = OpportunityStage.Closed;
+            entity.Status = OpportunityStatus.Won;
             entity.ClosedDate = DateTime.Today;
             entity.UpdatedStaffID = opp.UpdatedStaffID;
             entity.UpdatedDate = DateTime.Now;
@@ -239,7 +240,8 @@ namespace APIProject.Service
         {
             var entity = _opportunityRepository.GetById(opp.ID);
             VeryfiCanSetLostStage(entity);
-            entity.StageName = OpportunityStage.Lost;
+            entity.StageName = OpportunityStage.Closed;
+            entity.Status = OpportunityStatus.Lost;
             entity.ClosedDate = DateTime.Today;
             entity.UpdatedStaffID = opp.UpdatedStaffID;
             entity.UpdatedDate = DateTime.Now;

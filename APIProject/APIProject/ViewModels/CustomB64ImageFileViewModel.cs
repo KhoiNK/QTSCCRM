@@ -9,7 +9,7 @@ namespace APIProject.ViewModels
     public class CustomB64ImageFileViewModel
     {
         [Required]
-        [RegularExpression(@"[^\s]+(\.(?i)(jpg|png|gif|bmp))$", ErrorMessage = "Chỉ đc jpg,png,gif,bmp")]
+        //[RegularExpression(@"[^\s]+(\.(?i)(jpg|png|gif|bmp))$", ErrorMessage = "Chỉ đc jpg,png,gif,bmp")]
         public string Name { get; set; }
         [Required]
         public string Base64Content { get; set; }

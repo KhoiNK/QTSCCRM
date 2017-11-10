@@ -40,4 +40,35 @@ namespace APIProject.ViewModels
         public bool CustomerCreated { get; set; }
         public int CustomerID { get; set; }
     }
+
+    public class PostMarketingCustomerAndContactViewModel
+    {
+        [Required]
+        public string CustomerName { get; set; }
+        [Required]
+        public string CustomerAddress { get; set; }
+        [Required]
+        public string ContactName { get; set; }
+        [Required]
+        public string Email { get; set; }
+        [Required]
+        public string Phone { get; set; }
+        public Customer ToCustomerModel()
+        {
+            return new Customer
+            {
+                Name=this.CustomerName,
+                Address=this.CustomerAddress
+            };
+        }
+        public Contact ToContactModel()
+        {
+            return new Contact
+            {
+                Name = this.ContactName,
+                Email = this.Email,
+                Phone = this.Phone
+            };
+        }
+    }
 }

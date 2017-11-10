@@ -12,6 +12,7 @@ namespace APIProject.ViewModels
         public string StageName { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        public string Status { get; set; }
         //QuoteViewModel Quote { get; set; }
         //List<ActivityViewModel> HistoryActivities { get; set; }
         //CustomerDetailViewModel Customer { get; set; }
@@ -24,6 +25,7 @@ namespace APIProject.ViewModels
             this.StageName = dto.StageName;
             this.Title = dto.Title;
             this.Description = dto.Description;
+            this.Status = dto.Status;
             //if(dto.Activities.Count > 0)
             //{
             //    HistoryActivities = new List<ActivityViewModel>();
