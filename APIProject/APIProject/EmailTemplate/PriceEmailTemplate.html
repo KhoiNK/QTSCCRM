@@ -19,7 +19,7 @@
       {% for salesItem in salesItems -%}
       <tr>
         <td>{{salesItem.Name}}</td>
-        <td>{{salesItem.Price}}</td>
+        <td>{{salesItem.Price | Money}}</td>
         <td>{{salesItem.Unit}}</td>
       </tr>
       {% endfor -%}

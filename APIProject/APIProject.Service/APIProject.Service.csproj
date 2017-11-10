@@ -54,6 +54,7 @@
     <Compile Include="ContactService.cs" />
     <Compile Include="ContractService.cs" />
     <Compile Include="CustomerService.cs" />
+    <Compile Include="DotliquidFilters\Filters.cs" />
     <Compile Include="EmailService.cs" />
     <Compile Include="IssueCategoryMappingService.cs" />
     <Compile Include="IssueService.cs" />
@@ -87,6 +88,5 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

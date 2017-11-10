@@ -7,6 +7,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using APIProject.Model.Models;
+using APIProject.Service.DotliquidFilters;
 using DotLiquid;
 
 namespace APIProject.Service
@@ -61,16 +62,21 @@ namespace APIProject.Service
                 quoteItem.SalesItem.Price,
                 quoteItem.SalesItem.Unit
             }));
-            string body = template.Render(Hash.FromAnonymousObject(new
+            RenderParameters renderParameters = new RenderParameters(null)
             {
-                customerName = contact.Name,
-                salesItems,
-                tax = quote.Tax,
-                discount = quote.Discount,
-                staffName = staff.Name,
-                staffEmail = staff.Email,
-                staffPhonenumber = staff.Phone
-            }));
+                Filters = new [] {typeof(CustomFilters)},
+                LocalVariables = Hash.FromAnonymousObject(new
+                {
+                    customerName = contact.Name,
+                    salesItems,
+                    tax = quote.Tax,
+                    discount = quote.Discount,
+                    staffName = staff.Name,
+                    staffEmail = staff.Email,
+                    staffPhonenumber = staff.Phone
+                })
+            }; 
+            string body = template.Render(renderParameters);
             NetworkCredential networkCredential = GetDefaultNetworkCredential();
             MailMessage message = new MailMessage();
             message.From = new MailAddress(networkCredential.UserName);
