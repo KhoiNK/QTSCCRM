@@ -1,0 +1,43 @@
+<head>
+    <meta charset="utf-8">
+    <style>
+      table, th, td{
+        border: solid 1px;
+      }
+    </style>
+</head>
+<body>
+  <div class="content">
+    Kính gửi: {{customerName}}<br/><br/>
+    <table>
+      <tr>
+          <th>Hạng mục</th>
+          <th>Giá thành</th>
+          <th>Đơn vị tính</th>
+      </tr>
+      <!--Loop start-->
+      {% for salesItem in salesItems -%}
+      <tr>
+        <td>{{salesItem.Name}}</td>
+        <td>{{salesItem.Price}}</td>
+        <td>{{salesItem.Unit}}</td>
+      </tr>
+      {% endfor -%}
+      <!--Loop end-->
+      <tr>
+        <td>Tax</td>
+        <td colspan="2">{{tax}}</td>
+      </tr>
+      <tr>
+        <td>Discount</td>
+        <td colspan="2">{{discount}}</td>
+      </tr>
+    </table>
+    <br/>
+    <div class="staff">
+      Tên nhân viên: {{staffName}}<br/>
+      Email nhân viên: {{staffEmail}}<br/>
+      Điện thoại nhân viên:{{staffPhonenumber}}<br/>
+    </div>
+  </div>
+</body>
