@@ -15,8 +15,13 @@ namespace APIProject.Service
     {
         private NetworkCredential GetDefaultNetworkCredential()
         {
-            return null;
-        }   
+            return new NetworkCredential
+            {
+                UserName = "qtsccrmemailsender@gmail.com",
+                Password = "kenejnzwmzwboknd"
+            };
+        }
+
         /// <summary>
         /// Send email
         /// </summary>
@@ -45,36 +50,35 @@ namespace APIProject.Service
             smtpobj.Send(message);
         }
 
-        public MailMessage BuildQuoteInfomationBody(MailMessage message, string customerName, Staff staff,
-            List<SalesItem> salesItems,
-            Quote quote)
+        public void SendQuoteEmail(Contact contact, Staff staff, IEnumerable<QuoteItemMapping> quoteItemMappings, Quote quote)
         {
-            if (message == null)
-            {
-                message = new MailMessage();
-            }
             string file = AppDomain.CurrentDomain.BaseDirectory + "/EmailTemplate/PriceEmailTemplate.html";
             string templateString = File.ReadAllText(file);
             Template template = Template.Parse(templateString);
-            var objects = salesItems.Select(item => Hash.FromAnonymousObject(new
+            var salesItems = quoteItemMappings.Select(quoteItem => Hash.FromAnonymousObject(new
             {
-                item.Name,
-                item.Price,
-                item.Unit
+                quoteItem.SalesItem.Name,
+                quoteItem.SalesItem.Price,
+                quoteItem.SalesItem.Unit
             }));
             string body = template.Render(Hash.FromAnonymousObject(new
             {
-                customerName,
-                salesItems = objects,
+                customerName = contact.Customer.Name,
+                salesItems,
                 tax = quote.Tax,
                 discount = quote.Discount,
                 staffName = staff.Name,
                 staffEmail = staff.Email,
                 staffPhonenumber = staff.Phone
             }));
+            NetworkCredential networkCredential = GetDefaultNetworkCredential();
+            MailMessage message = new MailMessage();
+            message.From = new MailAddress(networkCredential.UserName);
+            message.To.Add(contact.Email);
+            message.Subject = $"QTSC - Báo giá ngày {DateTime.Now.Date}";
             message.Body = body;
             message.IsBodyHtml = true;
-            return message;
+            SendEmail(message, networkCredential);
         }
     }
 
@@ -82,7 +86,6 @@ namespace APIProject.Service
     {
         void SendEmail(MailMessage message, NetworkCredential credential);
 
-        MailMessage BuildQuoteInfomationBody(MailMessage message, string customerName, Staff staff,
-            List<SalesItem> salesItems, Quote quote);
+        void SendQuoteEmail(Contact contact, Staff staff, IEnumerable<QuoteItemMapping> quoteItemMappings, Quote quote);
     }
 }

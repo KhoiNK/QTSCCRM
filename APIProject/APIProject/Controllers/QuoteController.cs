@@ -26,13 +26,15 @@ namespace APIProject.Controllers
         private readonly IQuoteItemMappingService _quoteItemMappingService;
         private readonly ISalesCategoryService _salesCategoryService;
         private readonly IUploadNamingService _uploadNamingService;
+        private readonly IEmailService _emailService;
 
         public QuoteController(IQuoteService _quoteService, IOpportunityService _opportunityService,
             IStaffService _staffService, ISalesItemService _salesItemService,
             IQuoteItemMappingService _quoteItemMappingService,
             IContactService _contactService,
             ISalesCategoryService _salesCategoryService,
-            IUploadNamingService _uploadNamingService
+            IUploadNamingService _uploadNamingService,
+            IEmailService _emailService
             )
         {
             this._uploadNamingService = _uploadNamingService;
@@ -43,6 +45,7 @@ namespace APIProject.Controllers
             this._staffService = _staffService;
             this._salesItemService = _salesItemService;
             this._quoteItemMappingService = _quoteItemMappingService;
+            this._emailService = _emailService;
         }
 
         [Route("GetOpportunityQuote")]
@@ -305,6 +308,7 @@ namespace APIProject.Controllers
 
                 //EmailHelper emailHelper = new EmailHelper();
                 //emailHelper.SendQuote(oppContact.Email, oppContact.Name, null);
+                _emailService.SendQuoteEmail(oppContact,foundStaff,quoteItems,foundQuote);
 
                 _quoteService.SetSend(request.ToQuoteModel());
                 response.QuoteSent = true;
