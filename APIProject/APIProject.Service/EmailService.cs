@@ -63,7 +63,7 @@ namespace APIProject.Service
             }));
             string body = template.Render(Hash.FromAnonymousObject(new
             {
-                customerName = contact.Customer.Name,
+                customerName = contact.Name,
                 salesItems,
                 tax = quote.Tax,
                 discount = quote.Discount,
