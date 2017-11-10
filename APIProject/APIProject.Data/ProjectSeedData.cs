@@ -355,7 +355,7 @@ namespace APIProject.Data
                                 ContactID = contact.ID,
                                 Title = "Hư chỗ " + count,
                                 Description = "Chi tiết việc hư chỗ " + count,
-                                Status = IssueStatus.Open,
+                                //Status = IssueStatus.Open,
                             });
                             count++;
                             _list.Add(new Issue
@@ -730,38 +730,6 @@ namespace APIProject.Data
                     TodoTime = DateTime.Now,
                     Status = ActivityStatus.Completed,
                     OfOpportunityStage = OpportunityStage.ValidateQuote
-                });
-                i++;
-                _list.Add(new Activity
-                {
-                    OpportunityID = item.ID,
-                    CustomerID = item.CustomerID,
-                    ContactID = item.ContactID,
-                    CreateStaffID = item.CreatedStaffID,
-                    Type = ActivityType.ToCustomer,
-                    Method = ActivityMethod.Direct,
-                    Title = "Bàn về vấn đề: " + i,
-                    Description = "Chi tiết về vấn đề " + i,
-                    OpporunityGenerated = false,
-                    TodoTime = DateTime.Now,
-                    Status = ActivityStatus.Completed,
-                    OfOpportunityStage = OpportunityStage.Won
-                });
-                i++;
-                _list.Add(new Activity
-                {
-                    OpportunityID = item.ID,
-                    CustomerID = item.CustomerID,
-                    ContactID = item.ContactID,
-                    CreateStaffID = item.CreatedStaffID,
-                    Type = ActivityType.ToCustomer,
-                    Method = ActivityMethod.Direct,
-                    Title = "Bàn về vấn đề: " + i,
-                    Description = "Chi tiết về vấn đề " + i,
-                    OpporunityGenerated = false,
-                    TodoTime = DateTime.Now,
-                    Status = ActivityStatus.Completed,
-                    OfOpportunityStage = OpportunityStage.Lost
                 });
                 i++;
             }
