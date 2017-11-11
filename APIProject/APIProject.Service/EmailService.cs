@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -62,7 +63,7 @@ namespace APIProject.Service
                 quoteItem.SalesItem.Price,
                 quoteItem.SalesItem.Unit
             }));
-            RenderParameters renderParameters = new RenderParameters(null)
+            RenderParameters renderParameters = new RenderParameters(CultureInfo.CurrentCulture)
             {
                 Filters = new [] {typeof(CustomFilters)},
                 LocalVariables = Hash.FromAnonymousObject(new
@@ -78,12 +79,14 @@ namespace APIProject.Service
             }; 
             string body = template.Render(renderParameters);
             NetworkCredential networkCredential = GetDefaultNetworkCredential();
-            MailMessage message = new MailMessage();
-            message.From = new MailAddress(networkCredential.UserName);
-            message.To.Add(contact.Email);
-            message.Subject = $"QTSC - Báo giá ngày {DateTime.Now.Date}";
-            message.Body = body;
-            message.IsBodyHtml = true;
+            MailMessage message = new MailMessage
+            {
+                From = new MailAddress(networkCredential.UserName),
+                Subject = $"QTSC - Báo giá ngày {DateTime.Now.ToShortDateString()}",
+                To = {contact.Email },
+                Body = body,
+                IsBodyHtml = true
+            };
             SendEmail(message, networkCredential);
         }
     }

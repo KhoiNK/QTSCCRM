@@ -4,13 +4,13 @@ namespace APIProject.Service.DotliquidFilters
 {
     public static class CustomFilters
     {
-        public static string Money(string input)
+        public static string Money(int? input)
         {
-            if (String.IsNullOrEmpty(input))
+            if (input == null)
             {
                 return null;
             }
-            return $"Order Total: {input:C}";
+            return $"{input.Value:C}".Replace(".00","").Replace("$","");
         }
     }
 }
