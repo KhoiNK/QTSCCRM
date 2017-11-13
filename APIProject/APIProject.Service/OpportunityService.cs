@@ -18,6 +18,14 @@ namespace APIProject.Service
         bool MapOpportunityActivity(int insertedOpportunityID, int insertedActivityID);
         Opportunity GetByID(int id);
         void EditInfo(Opportunity opportunity);
+        int CountConsider();
+        int CountMakeQuote();
+        int CountValidateQuote();
+        int CountSendQuote();
+        int CountNegotiation();
+        int CountWon();
+        int CountLost();
+        double AverageConsider();
         Opportunity Get(int id);
         IEnumerable<Opportunity> GetAll();
         Opportunity GetByQuote(int quoteID);
@@ -93,6 +101,63 @@ namespace APIProject.Service
             _opportunityRepository.Update(foundOpp);
             _unitOfWork.Commit();
         }
+        public int CountConsider()
+        {
+            var entity = _opportunityRepository.GetAll().Where(c => c.IsDelete == false
+            && c.StageName == OpportunityStage.Consider);
+            return entity.Count();
+        }
+
+        public int CountMakeQuote()
+        {
+            var entity = _opportunityRepository.GetAll().Where(c => c.IsDelete == false
+            && c.StageName == OpportunityStage.MakeQuote);
+            return entity.Count();
+        }
+
+        public int CountValidateQuote()
+        {
+            var entity = _opportunityRepository.GetAll().Where(c => c.IsDelete == false
+            && c.StageName == OpportunityStage.ValidateQuote);
+            return entity.Count();
+        }
+
+        public int CountSendQuote()
+        {
+            var entity = _opportunityRepository.GetAll().Where(c => c.IsDelete == false
+            && c.StageName == OpportunityStage.SendQuote);
+            return entity.Count();
+        }
+
+        public int CountNegotiation()
+        {
+            var entity = _opportunityRepository.GetAll().Where(c => c.IsDelete == false
+            && c.StageName == OpportunityStage.Negotiation);
+            return entity.Count();
+        }
+
+        public int CountWon()
+        {
+            var entity = _opportunityRepository.GetAll().Where(c => c.IsDelete == false
+            && c.StageName == OpportunityStage.Closed
+            && c.Status == OpportunityStatus.Won);
+            return entity.Count();
+        }
+        public int CountLost()
+        {
+            var entity = _opportunityRepository.GetAll().Where(c => c.IsDelete == false
+            && c.StageName == OpportunityStage.Closed
+            && c.Status == OpportunityStatus.Lost);
+            return entity.Count();
+        }
+        public double AverageConsider()
+        {
+            var entities = _opportunityRepository.GetAll().Where(c => c.IsDelete == false &&
+            c.ConsiderStart.HasValue && c.MakeQuoteStart.HasValue);
+            var durationList = entities.Select(c => (c.MakeQuoteStart.Value - c.ConsiderStart.Value).TotalDays);
+
+        }
+
 
         public Opportunity Get(int id)
         {
@@ -188,7 +253,7 @@ namespace APIProject.Service
         public Opportunity SetNextStage(Opportunity opp)
         {
             var entity = _opportunityRepository.GetById(opp.ID);
-            
+
             VerifyCanSetNextStage(entity);
             #region move stage 
             if (entity.StageName == OpportunityStage.Consider)
@@ -301,7 +366,7 @@ namespace APIProject.Service
                 }
                 else
                 {
-                    if(quoteEntity.Status == QuoteStatus.NotValid)
+                    if (quoteEntity.Status == QuoteStatus.NotValid)
                     {
                         throw new Exception(CustomError.CreateQuoteRequired);
                     }
@@ -323,7 +388,7 @@ namespace APIProject.Service
                 }
             }
         }
-        
+
 
         private void VerifyCanSetWonStage(Opportunity opp)
         {

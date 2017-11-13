@@ -1,4 +1,5 @@
-﻿using APIProject.Model.Models;
+﻿using APIProject.GlobalVariables;
+using APIProject.Model.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,48 +8,6 @@ using System.Web;
 
 namespace APIProject.ViewModels
 {
-    public class PostMarketingResultsViewModel
-    {
-        [Required]
-        public int PlanID { get; set; }
-        [Required]
-        public int StaffID { get; set; }
-        [Required]
-        public List<PostMarketingResultViewModel> Results { get; set; }
-        [Required]
-        public bool IsFinished { get; set; }
-
-        public List<MarketingResult> ToMarketingResultModels()
-        {
-            List<MarketingResult> _list = new List<MarketingResult>();
-            foreach (PostMarketingResultViewModel item in Results)
-            {
-                _list.Add(new MarketingResult
-                {
-                    MarketingPlanID = this.PlanID,
-                    CustomerName = item.CustomerName,
-                    CustomerAddress = item.CustomerAddress,
-                    ContactName = item.ContactName,
-                    Email = item.Email,
-                    Phone = item.Phone,
-                    Notes = item.Notes,
-                    FacilityRate = item.FacilityRate,
-                    ArrangingRate = item.ArrangingRate,
-                    ServicingRate = item.ServicingRate,
-                    IndicatorRate = item.IndicatorRate,
-                    OthersRate = item.OthersRate,
-                    IsFromMedia = item.IsFromMedia,
-                    IsFromInvitation = item.IsFromInvitation,
-                    IsFromWebsite = item.IsFromWebsite,
-                    IsFromFriend = item.IsFromFriend,
-                    IsFromOthers = item.IsFromOthers,
-                    IsWantMore = item.IsWantMore
-                });
-            };
-            return _list;
-        }
-    }
-
     public class PostMarketingResultViewModel
     {
         [Required]
@@ -75,24 +34,16 @@ namespace APIProject.ViewModels
         [Required]
         public int OthersRate { get; set; }
         [Required]
-        public bool IsFromMedia { get; set; }
-        [Required]
-        public bool IsFromInvitation { get; set; }
-        [Required]
-        public bool IsFromWebsite { get; set; }
-        [Required]
-        public bool IsFromFriend { get; set; }
-        [Required]
-        public bool IsFromOthers { get; set; }
+        public List<string> IsFrom { get; set; }
         [Required]
         public bool IsWantMore { get; set; }
         public MarketingResult ToResultModel()
         {
-            return new MarketingResult
+            var response = new MarketingResult()
             {
-                MarketingPlanID=PlanID,
+                MarketingPlanID = PlanID,
                 CustomerName = this.CustomerName,
-                CustomerAddress=this.CustomerAddress,
+                CustomerAddress = this.CustomerAddress,
                 ContactName = this.ContactName,
                 Email = this.Email,
                 Phone = this.Phone,
@@ -102,13 +53,13 @@ namespace APIProject.ViewModels
                 ServicingRate = this.ServicingRate,
                 IndicatorRate = this.IndicatorRate,
                 OthersRate = this.OthersRate,
-                IsFromMedia = this.IsFromMedia,
-                IsFromInvitation = this.IsFromInvitation,
-                IsFromWebsite = this.IsFromWebsite,
-                IsFromFriend = this.IsFromFriend,
-                IsFromOthers = this.IsFromOthers,
-                IsWantMore = this.IsWantMore,
             };
+            response.IsFromMedia = (IsFrom.Contains(MarketingResultIsFrom.IsFromMedia)) ? true : false;
+            response.IsFromWebsite = (IsFrom.Contains(MarketingResultIsFrom.IsFromWebsite)) ? true : false;
+            response.IsFromFriend = (IsFrom.Contains(MarketingResultIsFrom.IsFromFriend)) ? true : false;
+            response.IsFromOthers = (IsFrom.Contains(MarketingResultIsFrom.IsFromOthers)) ? true : false;
+            response.IsFromInvitation = (IsFrom.Contains(MarketingResultIsFrom.IsFromInvitation)) ? true : false;
+            return response;
         }
     }
 

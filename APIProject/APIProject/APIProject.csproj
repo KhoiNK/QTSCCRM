@@ -277,6 +277,7 @@
     <Compile Include="Controllers\ContactController.cs" />
     <Compile Include="Controllers\ContractController.cs" />
     <Compile Include="Controllers\CustomerController.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IssueController.cs" />
     <Compile Include="Controllers\MarketingPlanController.cs" />
@@ -343,6 +344,7 @@
     <Compile Include="ViewModels\PutSaveChangeActivityViewModel.cs" />
     <Compile Include="ViewModels\PutValidateMarketingPlanViewModel.cs" />
     <Compile Include="ViewModels\QuoteViewModel.cs" />
+    <Compile Include="ViewModels\RoleViewModel.cs" />
     <Compile Include="ViewModels\SalesCategoryViewModel.cs" />
     <Compile Include="ViewModels\SalesItemViewModel.cs" />
     <Compile Include="ViewModels\StaffDetailViewModel.cs" />

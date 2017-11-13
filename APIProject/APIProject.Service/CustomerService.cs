@@ -113,6 +113,14 @@ namespace APIProject.Service
             && requiredCustomerTypes.Contains(c.CustomerType));
             return entities;
         }
+
+        public IEnumerable<Customer> GetLead()
+        {
+            var entities = _customerRepository.GetAll().Where(c => c.IsDelete == false
+            & c.CustomerType == CustomerType.Lead);
+            return entities;
+        }
+
         public Customer GetByOpportunity(int opportunityID)
         {
             var foundOpportunity = _opportunityRepository.GetById(opportunityID);
@@ -218,6 +226,7 @@ namespace APIProject.Service
         Customer Get(int id);
         IEnumerable<Customer> GetAll();
         IEnumerable<Customer> GetOfficial();
+        IEnumerable<Customer> GetLead();
         Customer GetByOpportunity(int opportunityID);
         Customer Add(Customer customer);
         void UpdateInfo(Customer customer);

@@ -18,4 +18,13 @@ namespace APIProject.GlobalVariables
         public static string New = "Khách hàng mới";
         public static string BecameNewLead = "Đã cập nhật khách hàng tiềm năng";
     }
+
+    public static class MarketingResultIsFrom
+    {
+        public static string IsFromMedia = "IsFromMedia";
+        public static string IsFromInvitation = "IsFromInvitation";
+        public static string IsFromWebsite = "IsFromWebsite";
+        public static string IsFromFriend = "IsFromFriend";
+        public static string IsFromOthers = "IsFromOthers";
+    }
 }

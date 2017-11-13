@@ -1,4 +1,5 @@
 ﻿using APIProject.Service;
+using APIProject.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,12 +18,17 @@ namespace APIProject.Controllers
             this._roleService = _roleService;
         }
 
-        //[Route("GetRoles")]
-        //public IHttpActionResult GetRoles()
-        //{
-        //    var roles = _roleService.GetAll();
-        //    var response = roles.Select(c=> new )
-        //}
+        [Route("GetRoles")]
+        public IHttpActionResult GetRoles()
+        {
+            var roles = _roleService.GetAll();
+            var response = roles.Select(c => new RoleViewModel
+            {
+                Name = c.Name,
+                ID = c.ID
+            });
+            return Ok(response);
+        }
 
     }
 }
