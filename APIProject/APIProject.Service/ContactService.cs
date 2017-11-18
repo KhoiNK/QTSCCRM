@@ -104,6 +104,13 @@ namespace APIProject.Service
                 throw new Exception(CustomError.ContactNotFound);
             }
         }
+        public Contact GetByEmail(Customer customer, string email)
+        {
+            var entity = _contactRepository.GetAll().Where(c => c.IsDelete == false
+            && c.CustomerID == customer.ID && c.Email.Equals(email)).FirstOrDefault();
+            return entity;
+        }
+
         public IEnumerable<Contact> GetByCustomer(int customerID)
         {
             var entities = _contactRepository.GetAll().Where(
@@ -119,6 +126,7 @@ namespace APIProject.Service
         Contact GetContactByActivity(int activityID);
         Contact GetContactByOpportunity(int opportunityID);
         Contact Get(int id);
+        Contact GetByEmail(Customer customer,string email);
         Contact Add(Contact contact);
         void UpdateInfo(Contact contact);
         IEnumerable<Contact> GetByCustomer(int customerID);

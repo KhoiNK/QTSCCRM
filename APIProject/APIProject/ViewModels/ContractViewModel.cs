@@ -46,7 +46,7 @@ namespace APIProject.ViewModels
     public class ContractDetailsViewModel
     {
         public int ID { get; set; }
-        public string ContractCode { get; set; }
+        //public string ContractCode { get; set; }
         public CustomerDetailViewModel CustomerDetail { get; set; }
         public ContactViewModel ContactDetail { get; set; }
         public StaffDetailViewModel StaffDetail { get; set; }
@@ -63,7 +63,7 @@ namespace APIProject.ViewModels
             Staff staffDto)
         {
             ID = contractDto.ID;
-            ContractCode = contractDto.ContractCode;
+            //ContractCode = contractDto.ContractCode;
             Status = contractDto.Status;
             StartDate = contractDto.StartDate;
             EndDate = contractDto.EndDate;

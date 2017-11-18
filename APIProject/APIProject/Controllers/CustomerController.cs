@@ -1,5 +1,6 @@
 ﻿using APIProject.GlobalVariables;
 using APIProject.Helper;
+using APIProject.Model.Models;
 using APIProject.Service;
 using APIProject.ViewModels;
 using System;
@@ -19,17 +20,23 @@ namespace APIProject.Controllers
         private readonly ICustomerService _customerService;
         private readonly IUploadNamingService _uploadNamingService;
         private readonly IContactService _contactService;
+        private readonly IMarketingResultService _marketingResultService;
         private readonly IIssueService _issueService;
+        private readonly ICompareService _compareService;
         private readonly IOpportunityService _opportunityService;
         private readonly IActivityService _activityService;
 
         public CustomerController(ICustomerService _customerService,
             IIssueService _issueService,
+            IMarketingResultService _marketingResultService,
             IActivityService _activityService,
+            ICompareService _compareService,
             IContactService _contactService,
             IOpportunityService _opportunityService,
             IUploadNamingService _uploadNamingService)
         {
+            this._marketingResultService = _marketingResultService;
+            this._compareService = _compareService;
             this._issueService = _issueService;
             this._activityService = _activityService;
             this._customerService = _customerService;
@@ -76,23 +83,26 @@ namespace APIProject.Controllers
             }
         }
 
-        [Route("PostMarketingCustomerAndContact")]
-        public IHttpActionResult PostMarketingCustomerAndContact(PostMarketingCustomerAndContactViewModel request)
-        {
-            if (!ModelState.IsValid || request == null)
-            {
-                return BadRequest(ModelState);
-            }
-            var insertedCustomer = _customerService.Add(request.ToCustomerModel());
-            var _contact = request.ToContactModel();
-            _contact.CustomerID = insertedCustomer.ID;
-            var insertedContact = _contactService.Add(_contact);
-            return Ok(new
-            {
-                CustomerID = insertedCustomer.ID,
-                ContactID = insertedContact.ID
-            });
-        }
+        //[Route("PostMarketingCustomerAndContact")]
+        //public IHttpActionResult PostMarketingCustomerAndContact(PostMarketingCustomerAndContactViewModel request)
+        //{
+        //    if (!ModelState.IsValid || request == null)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+        //    var foundResult = _marketingResultService.Get(request.ResultID);
+        //    var insertedCustomer = _customerService.Add(request.ToCustomerModel());
+        //    var _contact = request.ToContactModel();
+        //    _contact.CustomerID = insertedCustomer.ID;
+        //    var insertedContact = _contactService.Add(_contact);
+        //    _marketingResultService.UpdateLeadGenerated(foundResult,insertedCustomer,insertedContact);
+        //    _marketingResultService.SaveChanges();
+        //    return Ok(new
+        //    {
+        //        CustomerID = insertedCustomer.ID,
+        //        ContactID = insertedContact.ID
+        //    });
+        //}
 
         [Route("PutLeadInformation")]
         [ResponseType(typeof(PutCustomerViewModel))]
@@ -170,16 +180,31 @@ namespace APIProject.Controllers
         }
 
         [Route("GetSimilarCustomers")]
-        [ResponseType(typeof(CustomerDetailViewModel))]
-        public IHttpActionResult GetSimilarCustomers(string customerName, string customerAddress)
+        [ResponseType(typeof(SimilarCustomerDetailsViewModel))]
+        public IHttpActionResult GetSimilarCustomers(string customerName, string customerAddress, string contactEmail = null)
         {
-            CompareHelper compareHelper = new CompareHelper();
-            var compareResult = compareHelper.StringCompare(customerAddress, customerName);
-            var similarCustomers = _customerService.GetAll().Where(c => compareHelper.StringCompare(customerName, c.Name) >= 75
-            && compareHelper.StringCompare(customerAddress, c.Address) >= 75).ToList();
-            similarCustomers.ForEach(c => _uploadNamingService.ConcatCustomerAvatar(c));
-            var result = similarCustomers.Select(c => new CustomerDetailViewModel(c));
-            return Ok(result);
+            var responseList = new List<SimilarCustomerDetailsViewModel>();
+            var results = _compareService.GetSimilarCustomers(new Customer
+            {
+                Name = customerName,
+                Address = customerAddress
+            });
+            results.ToList().ForEach(c => _uploadNamingService.ConcatCustomerAvatar(c));
+            foreach(var result in results)
+            {
+                _uploadNamingService.ConcatCustomerAvatar(result);
+                var resultContact= _contactService.GetByEmail(result, contactEmail);
+                var response = new SimilarCustomerDetailsViewModel();
+                response.Customer = new CustomerDetailViewModel(result);
+                if(resultContact!= null)
+                {
+                    _uploadNamingService.ConcatContactAvatar(resultContact);
+                    response.Contact = new ContactViewModel(resultContact);
+                }
+                responseList.Add(response);
+            }
+            //var response = result.Select(c => new SimilarCustomerDetailsViewModel(c));
+            return Ok(responseList);
         }
 
 

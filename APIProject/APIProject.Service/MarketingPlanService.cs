@@ -15,7 +15,9 @@ namespace APIProject.Service
 
     public interface IMarketingPlanService
     {
-        IEnumerable<MarketingPlan> GetMarketingPlans();
+        IEnumerable<MarketingPlan> GetAll();
+        IEnumerable<MarketingPlan> GetDoing();
+        Dictionary<string, int> GetRates(int monthRange);
         MarketingPlan GetMarketingPlan(int id);
         int CreateNewPlan(MarketingPlan marketingPlan, bool isFinished, string budgetB64, string taskAssignB64, string eventB64, string licenseB64);
         MarketingPlan Get(int marketingID);
@@ -109,11 +111,35 @@ namespace APIProject.Service
             return fileName;
         }
 
-        public IEnumerable<MarketingPlan> GetMarketingPlans()
+        public IEnumerable<MarketingPlan> GetAll()
         {
-            BackgroundMoveStage();
-            return _marketingPlanRepository.GetAll();
+            //BackgroundMoveStage();
+            return _marketingPlanRepository.GetAll().Where(c=>c.IsDelete==false);
         }
+
+        public IEnumerable<MarketingPlan> GetDoing()
+        {
+            var entities = _marketingPlanRepository.GetAll().Where(c => c.IsDelete == false &&
+            c.Status == MarketingStatus.Executing);
+            return entities;
+        }
+        public Dictionary<string, int> GetRates(int monthRange)
+        {
+            var response = new Dictionary<string, int>();
+            var startTime = DateTime.Now.AddMonths(-(monthRange - 1));
+            var entities = GetAll();
+            for(int i =1; i <= monthRange; i++)
+            {
+                response.Add(startTime.Month + "/" + startTime.Year,
+                    entities.Where(c => c.StartDate.Month == startTime.Month &&
+                    c.StartDate.Year == startTime.Year).Count());
+                startTime = startTime.AddMonths(1);
+            }
+
+            return response;
+
+        }
+
 
         public MarketingPlan GetMarketingPlan(int id)
         {
@@ -185,6 +211,8 @@ namespace APIProject.Service
             var entity = _marketingPlanRepository.GetById(marketingPlan.ID);
             entity.UpdatedDate = DateTime.Now;
             entity.Title = marketingPlan.Title;
+            entity.StartDate = marketingPlan.StartDate;
+            entity.EndDate = marketingPlan.EndDate;
             entity.Description = marketingPlan.Description;
             _marketingPlanRepository.Update(entity);
         }

@@ -16,9 +16,14 @@ namespace APIProject.Service
     {
         IEnumerable<MarketingResult> GetMarketingResults();
         //bool CreateResults(List<MarketingResult> list, bool isFinished, int staffID);
+        IEnumerable<MarketingResult> GetAll();
         MarketingResult Get(int planResultID);
         IEnumerable<MarketingResult> GetByPlan(int planID);
+        Dictionary<string, int> GetLeadRates(int monthRange);
+        Dictionary<string, int> GetSourceRates(int monthRange);
         MarketingResult Add(MarketingResult marketingResult);
+        void UpdateLeadGenerated(MarketingResult foundResult, Customer customer, Contact contact);
+        void UpdateSimilar(MarketingResult marketingResult);
         void Update(MarketingResult marketingResult);
         void SaveChanges();
     }
@@ -49,76 +54,44 @@ namespace APIProject.Service
             this._unitOfWork = _unitOfWork;
         }
 
-        //public bool CreateResults(List<MarketingResult> list, bool isFinished, int staffID)
-        //{
-        //    int planID = list.First().MarketingPlanID;
-        //    var foundPlan = _marketingPlanRepository.GetById(planID);
-        //    var foundStaff = _staffRepository.GetById(staffID);
 
-        //    //verify staff exist
-        //    if (foundStaff == null)
-        //    {
-        //        return false;
-        //    }
-
-        //    //verify customer and contact
-        //    foreach (var item in list)
-        //    {
-        //        //verify customer exist
-        //        if (item.CustomerID.HasValue)
-        //        {
-        //            var foundCustomer = _customerRepository.GetById(item.CustomerID.Value);
-        //            if (foundCustomer == null)
-        //            {
-        //                return false;
-        //            }
-        //        }
-        //        //verify contact exist and in right customer
-        //        if (item.ContactID.HasValue)
-        //        {
-        //            var foundContact = _contactRepository.GetById(item.ContactID.Value);
-        //            if (foundContact == null)
-        //            {
-        //                return false;
-        //            }
-        //            else
-        //            {
-        //                if (item.CustomerID.HasValue)
-        //                {
-        //                    if (foundContact.CustomerID != item.CustomerID)
-        //                    {
-        //                        return false;
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    return false;
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    //verify plan exist
-        //    if (foundPlan == null)
-        //    {
-        //        return false;
-        //    }
-        //    //verify stage
-        //    //verify stage and is finished
-        //    if (isFinished)
-        //    {
-        //    }
-
-
-        //    //start adding result code here
-        //    InsertResultsAndLeads(list);
-        //    SendMessageToResults(list);
-        //    _unitOfWork.Commit();
-
-        //    //start sending email code here
-
-        //    return true;
-        //}
+        public Dictionary<string, int> GetLeadRates(int monthRange)
+        {
+            var response = new Dictionary<string, int>();
+            var startTime = DateTime.Now.AddMonths(-(monthRange - 1));
+            var entities = _marketingResultRepository.GetAll().Where(c => c.IsDelete == false);
+            for (int i = 1; i <= monthRange; i++)
+            {
+                response.Add(startTime.Month + "/" + startTime.Year,
+                    entities.Where(c => c.Status == MarketingResultStatus.BecameNewLead).Count());
+                startTime = startTime.AddMonths(1);
+            }
+            return response;
+        }
+        public Dictionary<string, int> GetSourceRates(int monthRange)
+        {
+            var response = new Dictionary<string, int>();
+            var labelList = new List<string>
+            {
+                MarketingResultSource.IsFromInvitation,
+                MarketingResultSource.IsFromMedia,
+                MarketingResultSource.IsFromFriend,
+                MarketingResultSource.IsFromWebsite,
+                MarketingResultSource.IsFromOthers
+            };
+            var entities = GetAll();
+            response.Add(MarketingResultSource.IsFromInvitation,
+                entities.Where(c => c.IsFromInvitation).Count());
+            response.Add(MarketingResultSource.IsFromMedia,
+               entities.Where(c => c.IsFromMedia).Count());
+            response.Add(MarketingResultSource.IsFromFriend,
+               entities.Where(c => c.IsFromFriend).Count());
+            response.Add(MarketingResultSource.IsFromWebsite,
+               entities.Where(c => c.IsFromWebsite).Count());
+            response.Add(MarketingResultSource.IsFromOthers,
+               entities.Where(c => c.IsFromOthers).Count());
+            return response;
+        }
 
         public MarketingResult Add(MarketingResult marketingResult)
         {
@@ -144,11 +117,17 @@ namespace APIProject.Service
                 IsFromFriend = marketingResult.IsFromFriend,
                 IsFromOthers = marketingResult.IsFromOthers,
                 IsWantMore = marketingResult.IsWantMore,
-                CreatedDate = DateTime.Now
+                CreatedDate = DateTime.Now,
+                Status = MarketingResultStatus.New
             };
             _marketingResultRepository.Add(entity);
             return entity;
         }
+        public IEnumerable<MarketingResult> GetAll()
+        {
+            return _marketingResultRepository.GetAll().Where(c => c.IsDelete == false);
+        }
+
         public MarketingResult Get(int planResultID)
         {
             var entity = _marketingResultRepository.GetById(planResultID);
@@ -166,6 +145,28 @@ namespace APIProject.Service
         {
             var entities = _marketingResultRepository.GetAll().Where(c => c.MarketingPlanID == planID);
             return entities;
+        }
+        public void UpdateLeadGenerated(MarketingResult foundResult, Customer customer, Contact contact)
+        {
+            var entity = Get(foundResult.ID);
+            entity.UpdatedDate = DateTime.Now;
+            if (customer != null)
+            {
+                entity.CustomerID = customer.ID;
+                entity.Status = MarketingResultStatus.BecameNewLead;
+            }
+            else
+            {
+                entity.Status = MarketingResultStatus.BecameNewContact;
+            }
+            _marketingResultRepository.Update(entity);
+        }
+        public void UpdateSimilar(MarketingResult marketingResult)
+        {
+            var entity = Get(marketingResult.ID);
+            entity.Status = MarketingResultStatus.HasSimilar;
+            entity.UpdatedDate = DateTime.Now;
+            _marketingResultRepository.Update(entity);
         }
 
         public void Update(MarketingResult marketingResult)

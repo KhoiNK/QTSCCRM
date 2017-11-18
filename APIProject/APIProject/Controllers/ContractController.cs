@@ -82,7 +82,7 @@ namespace APIProject.Controllers
                             CreatedStaffID = foundStaff.ID,
                             CreatedDate = DateTime.Now,
                             UpdatedDate = DateTime.Now,
-                            ContractCode = contractCode + dbContractsCount.ToString("00000"),
+                            //ContractCode = contractCode + dbContractsCount.ToString("00000"),
                             Status = ContractStatus.Waiting,
                             CustomerID = oppContact.CustomerID
                         });
@@ -246,7 +246,7 @@ namespace APIProject.Controllers
                 response.Add(new ContractViewModel
                 {
                     ID = entity.ID,
-                    ContractCode = entity.ContractCode,
+                    //ContractCode = entity.ContractCode,
                     CustomerName = contractCustomerName,
                     Name = entity.Name,
                     Status = entity.Status

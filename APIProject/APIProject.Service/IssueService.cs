@@ -15,15 +15,20 @@ namespace APIProject.Service
         int CreateOpenIssue(Issue issue, List<int> salesCategoryIDs);
         IEnumerable<Issue> GetAllIssues();
         IEnumerable<Issue> GetByCustomer(int customerID);
+        IEnumerable<Issue> GetDoing();
+        IEnumerable<Issue> GetFailed();
+        IEnumerable<Issue> GetDone();
         List<string> GetStages();
         List<string> GetStatus();
         IEnumerable<Issue> GetAll();
         Issue Get(int id);
+        Dictionary<string, int> GetRates(int monthRange);
         Issue Add(Issue issue);
         void UpdateInfo(Issue issue);
         void SetSolve(Issue issue);
         void SetDone(Issue issue);
         void SetFail(Issue issue);
+        void BackgroundUpdateStatus();
         void SaveChanges();
     }
     public class IssueService : IIssueService
@@ -109,6 +114,29 @@ namespace APIProject.Service
             return entities;
         }
 
+        public IEnumerable<Issue> GetDoing()
+        {
+            List<string> selectStatus = new List<string>
+            {
+                IssueStatus.Doing,
+                IssueStatus.Overdue
+            };
+            var response = GetAll().Where(c => selectStatus.Contains(c.Status));
+            return response;
+        }
+
+        public IEnumerable<Issue> GetFailed()
+        {
+            var response = GetAll().Where(c => c.Status==IssueStatus.Failed);
+            return response;
+        }
+        public IEnumerable<Issue> GetDone()
+        {
+            var response = GetAll().Where(c => c.Status == IssueStatus.Done);
+            return response;
+        }
+
+
         public List<string> GetStages()
         {
             return new List<string>
@@ -146,6 +174,22 @@ namespace APIProject.Service
                 throw new Exception(CustomError.IssueNotFound);
             }
         }
+
+        public Dictionary<string, int> GetRates(int monthRange)
+        {
+            var entities = GetAll();
+            var response = new Dictionary<string, int>();
+            DateTime startTime = DateTime.Now.AddMonths(-(monthRange - 1));
+            for(int i=1; i<= monthRange; i++)
+            {
+                response.Add(startTime.Month + "/" + startTime.Year,
+                    entities.Where(c => c.CreatedDate.Value.Month == startTime.Month
+                    && c.CreatedDate.Value.Year == startTime.Year).Count());
+                startTime = startTime.AddMonths(1);
+            }
+            return response;
+        }
+
         public Issue Add(Issue issue)
         {
             var contactCus = _customerRepository.GetByContact(issue.ContactID.Value);
@@ -158,6 +202,7 @@ namespace APIProject.Service
                 Title = issue.Title,
                 Description = issue.Description,
                 Status = IssueStatus.Doing,
+                SolveDate=issue.SolveDate,
                 CreatedDate=DateTime.Now,
                 UpdatedDate=DateTime.Now,
             };
@@ -204,7 +249,19 @@ namespace APIProject.Service
             entity.ClosedDate = DateTime.Today;
             _issueRepository.Update(entity);
         }
-
+        public void BackgroundUpdateStatus()
+        {
+            var entities = GetAll().Where(c=>c.Status==IssueStatus.Doing&&
+            c.SolveDate.HasValue);
+            foreach(var entity in entities)
+            {
+                if (DateTime.Compare(DateTime.Now, entity.SolveDate.Value) > 0)
+                {
+                    entity.Status = IssueStatus.Overdue;
+                    _issueRepository.Update(entity);
+                }
+            }
+        }
         public void SaveChanges()
         {
             _unitOfWork.Commit();

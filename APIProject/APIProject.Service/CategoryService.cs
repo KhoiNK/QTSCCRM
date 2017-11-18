@@ -12,6 +12,7 @@ namespace APIProject.Service
     public interface ICategoryService
     {
         IEnumerable<Category> GetCategories(string name = null);
+        IEnumerable<Category> GetAll();
         Category GetCategory(int id);
         Category GetCategory(string name);
         void CreateCategory(Category category);
@@ -20,13 +21,13 @@ namespace APIProject.Service
 
     public class CategoryService : ICategoryService
     {
-        private readonly ICategoryRepository categorysRepository;
-        private readonly IUnitOfWork unitOfWork;
+        private readonly ICategoryRepository _categorysRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CategoryService(ICategoryRepository categorysRepository, IUnitOfWork unitOfWork)
+        public CategoryService(ICategoryRepository _categorysRepository, IUnitOfWork _unitOfWork)
         {
-            this.categorysRepository = categorysRepository;
-            this.unitOfWork = unitOfWork;
+            this._categorysRepository = _categorysRepository;
+            this._unitOfWork = _unitOfWork;
         }
 
         #region ICategoryService Members
@@ -34,31 +35,36 @@ namespace APIProject.Service
         public IEnumerable<Category> GetCategories(string name = null)
         {
             if (string.IsNullOrEmpty(name))
-                return categorysRepository.GetAll();
+                return _categorysRepository.GetAll();
             else
-                return categorysRepository.GetAll().Where(c => c.Name == name);
+                return _categorysRepository.GetAll().Where(c => c.Name == name);
+        }
+        public IEnumerable<Category> GetAll()
+        {
+            var entities = _categorysRepository.GetAll().Where(c => c.IsDelete == false);
+            return entities;
         }
 
         public Category GetCategory(int id)
         {
-            var category = categorysRepository.GetById(id);
+            var category = _categorysRepository.GetById(id);
             return category;
         }
 
         public Category GetCategory(string name)
         {
-            var category = categorysRepository.GetCategoryByName(name);
+            var category = _categorysRepository.GetCategoryByName(name);
             return category;
         }
 
         public void CreateCategory(Category category)
         {
-            categorysRepository.Add(category);
+            _categorysRepository.Add(category);
         }
 
         public void SaveCategory()
         {
-            unitOfWork.Commit();
+            _unitOfWork.Commit();
         }
 
         #endregion

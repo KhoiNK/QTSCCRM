@@ -44,6 +44,8 @@ namespace APIProject.ViewModels
     public class PostMarketingCustomerAndContactViewModel
     {
         [Required]
+        public int ResultID { get; set; }
+        [Required]
         public string CustomerName { get; set; }
         [Required]
         public string CustomerAddress { get; set; }

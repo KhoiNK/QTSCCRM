@@ -84,10 +84,11 @@ namespace APIProject.Controllers
                 var joinMoreCount = results.Where(c => c.IsWantMore).Count();
 
                 var leadGeneratedCount = results.Where(c => c.IsLeadGenerated).Count();
+                var totalResultCount = results.Count();
                 //customer generated count
                 return Ok(new
                 {
-                    FacilityRate= facilityRate,
+                    FacilityRate = facilityRate,
                     ArrangingRate = arrangingRate,
                     ServicingRate = servicingRate,
                     IndicatorRate = indicatorRate,
@@ -98,10 +99,11 @@ namespace APIProject.Controllers
                     QtscSite = qtscSite,
                     OtherCount = otherCount,
                     JoinMoreCount = joinMoreCount,
-                    LeadGeneratedCount = leadGeneratedCount
+                    LeadGeneratedCount = leadGeneratedCount,
+                    TotalParticipants = totalResultCount
                 });
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
 
@@ -109,9 +111,9 @@ namespace APIProject.Controllers
         }
 
         [Route("GetMarketingResultParticipants")]
-        public IHttpActionResult GetMarketingResultParticipants(int planID= 0)
+        public IHttpActionResult GetMarketingResultParticipants(int planID = 0)
         {
-            if(planID == 0)
+            if (planID == 0)
             {
                 return BadRequest();
             }
@@ -121,7 +123,7 @@ namespace APIProject.Controllers
                 var allCustomers = _customerService.GetAll().ToList();
                 var planResults = _marketingResultService.GetByPlan(planID);
                 var response = new List<MarketingResultParticipantViewModel>();
-                foreach(var result in planResults)
+                foreach (var result in planResults)
                 {
                     var responseItem = new MarketingResultParticipantViewModel();
                     responseItem.ID = result.ID;
@@ -138,31 +140,14 @@ namespace APIProject.Controllers
                         result.ServicingRate) / 5;
                     responseItem.IsWantMore = result.IsWantMore;
                     responseItem.Notes = result.Notes;
-                    responseItem.Status = MarketingResultStatus.New;
-                    if (responseItem.CustomerID.HasValue)
-                    {
-                        responseItem.Status = MarketingResultStatus.BecameNewLead;
-                    }
-                    else
-                    {
-                        foreach (var customer in allCustomers)
-                        {
-                            if (_compareService.StringCompare(result.CustomerName, customer.Name) >= 60)
-                            {
-                                if (_compareService.StringCompare(result.CustomerAddress, customer.Address) >= 60)
-                                {
-                                    responseItem.Status = MarketingResultStatus.HasSimilar;
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                    responseItem.Status = result.Status;
                     response.Add(responseItem);
                 }
                 //todo next
                 return Ok(response);
 
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
@@ -180,6 +165,16 @@ namespace APIProject.Controllers
             {
                 var foundPlan = _marketingPlanService.Get(request.PlanID);
                 var addedResult = _marketingResultService.Add(request.ToResultModel());
+                _marketingResultService.SaveChanges();
+                var similarCustomers = _compareService.GetSimilarCustomers(new Customer
+                {
+                    Name = addedResult.CustomerName,
+                    Address = addedResult.CustomerAddress
+                });
+                if (similarCustomers.Any())
+                {
+                    _marketingResultService.UpdateSimilar(addedResult);
+                }
                 _marketingResultService.SaveChanges();
                 return Ok(addedResult.ID);
             }
@@ -199,14 +194,15 @@ namespace APIProject.Controllers
             try
             {
                 var foundResult = _marketingResultService.Get(planResultID);
-                if (foundResult.Status == MarketingResultStatus.BecameNewLead)
+                if (foundResult.Status == MarketingResultStatus.BecameNewContact||
+                    foundResult.Status==MarketingResultStatus.BecameNewLead)
                 {
                     throw new Exception("Không thể tạo mới thêm");
                 }
                 var newCus = new Customer
                 {
-                    Name=foundResult.CustomerName,
-                    Address=foundResult.CustomerAddress
+                    Name = foundResult.CustomerName,
+                    Address = foundResult.CustomerAddress
                 };
                 var addedCus = _customerService.Add(newCus);
                 var newContact = new Contact
@@ -218,15 +214,15 @@ namespace APIProject.Controllers
                 };
                 var addedContact = _contactService.Add(newContact);
                 foundResult.CustomerID = addedCus.ID;
-                foundResult.Status = MarketingResultStatus.BecameNewLead;
-                _marketingResultService.Update(foundResult);
+                _marketingResultService.UpdateLeadGenerated(foundResult, addedCus,addedContact);
                 _marketingResultService.SaveChanges();
                 return Ok(new
                 {
                     CustomerID = addedCus.ID,
                     ContactID = addedContact.ID
                 });
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }

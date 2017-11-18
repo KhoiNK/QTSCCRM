@@ -35,7 +35,7 @@ namespace APIProject.Controllers
         {
             var task = Task.Factory.StartNew(() =>
             {
-                var list = _marketingPlanService.GetMarketingPlans().Skip(pageSize * (page - 1)).Take(pageSize)
+                var list = _marketingPlanService.GetAll().Skip(pageSize * (page - 1)).Take(pageSize)
                 .Select(c => new MarketingPlanViewModel(c));
                 return list;
             });

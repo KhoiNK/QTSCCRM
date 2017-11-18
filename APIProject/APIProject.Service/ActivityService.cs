@@ -22,6 +22,7 @@ namespace APIProject.Service
         IEnumerable<Activity> GetByOpprtunity(int opportunityID);
         Activity Add(Activity activity);
         void UpdateInfo(Activity activity);
+        void BackgroundUpdateStatus();
         void SetCancel(Activity activity);
         void SetComplete(Activity activity);
         void MapOpportunity(Activity activity, Opportunity opportunity);
@@ -78,7 +79,7 @@ namespace APIProject.Service
         }
         public IEnumerable<Activity> GetAllActivities()
         {
-            return _activityRepository.GetAll();
+            return _activityRepository.GetAll().Where(c => c.IsDelete == false);
         }
         public IEnumerable<Activity> GetByOpprtunity(int opportunityID)
         {
@@ -160,6 +161,26 @@ namespace APIProject.Service
             entity.Status = ActivityStatus.Open;
             _activityRepository.Update(entity);
         }
+        public void BackgroundUpdateStatus()
+        {
+            var entities = GetAllActivities();
+            foreach (var entity in entities)
+            {
+                if (entity.Status == ActivityStatus.Open)
+                {
+                    if (entity.TodoTime.HasValue)
+                    {
+                        if (DateTime.Compare(DateTime.Now, entity.TodoTime.Value) > 0)
+                        {
+                            entity.Status = ActivityStatus.Overdue;
+                            entity.UpdatedDate = DateTime.Now;
+                            _activityRepository.Update(entity);
+                        }
+                    }
+                }
+            }
+        }
+
         public void SetCancel(Activity activity)
         {
             var entity = _activityRepository.GetById(activity.ID);
@@ -245,7 +266,7 @@ namespace APIProject.Service
                 ActivityStatus.Overdue
             };
             var latestActivityEntity = _activityRepository.GetAll().Where(c => c.IsDelete == false &&
-            c.OpportunityID==opportunity.ID &&
+            c.OpportunityID == opportunity.ID &&
             doingActivityStatus.Contains(c.Status)).FirstOrDefault();
             if (latestActivityEntity != null)
             {

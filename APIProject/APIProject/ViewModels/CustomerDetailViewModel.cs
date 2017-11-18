@@ -28,5 +28,11 @@ namespace APIProject.ViewModels
         }
     }
 
-    
+    public class SimilarCustomerDetailsViewModel
+    {
+        public CustomerDetailViewModel Customer { get; set; }
+        public ContactViewModel Contact { get; set; }
+    }
+
+
 }

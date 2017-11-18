@@ -36,8 +36,8 @@ namespace APIProject.Data
             GetMarketingPlans().ForEach(c => context.MarketingPlans.Add(c));
             List<SalesItem> salesItemList = GetSalesItem();
             salesItemList.ForEach(c => context.SalesItems.Add(c));
-            List<Issue> issueList = GetIssues(contactList, staffList);
-            issueList.ForEach(c => context.Issues.Add(c));
+            //List<Issue> issueList = GetIssues(contactList, staffList);
+            //issueList.ForEach(c => context.Issues.Add(c));
             context.Commit();
 
             //GetIssueCategories(issueList).ForEach(c => context.IssueCategoryMappings.Add(c));
@@ -269,7 +269,8 @@ namespace APIProject.Data
                     CustomerType = CustomerType.Lead,
                     EstablishedDate = DateTime.Today.Date,
                     AvatarSrc = imgName,
-                    TaxCode = i.ToString()+i+i+i+i+i+i+i+i+i
+                    TaxCode = i.ToString()+i+i+i+i+i+i+i+i+i,
+                    CreatedDate = DateTime.Now
                 });
             }
             for (int i = 3; i <= 4; i++)
@@ -281,7 +282,9 @@ namespace APIProject.Data
                     CustomerType = CustomerType.Official,
                     EstablishedDate = DateTime.Today.Date,
                     TaxCode = i.ToString()+i+i+i+i+i+i+i+i+i,
-                    AvatarSrc = imgName
+                    AvatarSrc = imgName,
+                    CreatedDate = DateTime.Now
+
                 });
             }
             for (int i = 5; i <= 6; i++)
@@ -293,7 +296,9 @@ namespace APIProject.Data
                     CustomerType = CustomerType.Inside,
                     EstablishedDate = DateTime.Today.Date,
                     TaxCode = i.ToString()+i+i+i+i+i+i+i+i+i,
-                    AvatarSrc = imgName
+                    AvatarSrc = imgName,
+                    CreatedDate = DateTime.Now
+
                 });
             }
             for (int i = 7; i <= 8; i++)
@@ -305,7 +310,9 @@ namespace APIProject.Data
                     CustomerType = CustomerType.Outside,
                     EstablishedDate = DateTime.Today.Date,
                     TaxCode = i.ToString()+i+i+i+i+i+i+i+i+i,
-                    AvatarSrc = imgName
+                    AvatarSrc = imgName,
+                    CreatedDate = DateTime.Now
+
                 });
             }
 
@@ -329,7 +336,8 @@ namespace APIProject.Data
                     count + count + count + "-" +
                     count + count + count,
                     AvatarSrc = imgSrc,
-                    Position = "Nhân viên thứ " + count
+                    Position = "Nhân viên thứ " + count,
+                    CreatedDate=DateTime.Now
                 });
                 count++;
             }
@@ -356,6 +364,7 @@ namespace APIProject.Data
                                 Title = "Hư chỗ " + count,
                                 Description = "Chi tiết việc hư chỗ " + count,
                                 //Status = IssueStatus.Open,
+                                CreatedDate=DateTime.Now
                             });
                             count++;
                             _list.Add(new Issue
@@ -366,6 +375,8 @@ namespace APIProject.Data
                                 Title = "Hư chỗ " + count,
                                 Description = "Chi tiết việc hư chỗ " + count,
                                 Status = IssueStatus.Doing,
+                                CreatedDate = DateTime.Now
+
                             });
                             count++;
                             _list.Add(new Issue
@@ -376,6 +387,8 @@ namespace APIProject.Data
                                 Title = "Hư chỗ " + count,
                                 Description = "Chi tiết việc hư chỗ " + count,
                                 Status = IssueStatus.Overdue,
+                                CreatedDate = DateTime.Now
+
                             });
                             count++;
                             _list.Add(new Issue
@@ -386,7 +399,9 @@ namespace APIProject.Data
                                 Title = "Hư chỗ " + count,
                                 Description = "Chi tiết việc hư chỗ " + count,
                                 Status = IssueStatus.Done,
-                                ClosedDate = DateTime.Today.Date
+                                ClosedDate = DateTime.Today.Date,
+                                CreatedDate = DateTime.Now
+
                             });
                             count++;
                             _list.Add(new Issue
@@ -397,7 +412,8 @@ namespace APIProject.Data
                                 Title = "Hư chỗ " + count,
                                 Description = "Chi tiết việc hư chỗ " + count,
                                 Status = IssueStatus.Failed,
-                                ClosedDate = DateTime.Today.Date
+                                ClosedDate = DateTime.Today.Date,
+                                CreatedDate = DateTime.Now
                             });
 
                         }
@@ -413,14 +429,31 @@ namespace APIProject.Data
         {
             return new List<SalesCategory>
             {
-                new SalesCategory
-                {
-                    Name = "Dịch vụ viễn thông",
-                },
+                
                 new SalesCategory
                 {
                     Name = "Dịch vụ thuê văn phòng",
-                }
+                },
+                new SalesCategory
+                {
+                    Name = "Dịch vụ datacenter - chỗ đặt",
+                },
+                new SalesCategory
+                {
+                    Name = "Dịch vụ datacenter - rack",
+                },
+                new SalesCategory
+                {
+                    Name = "Dịch vụ internet - QTSC-LLoE",
+                },
+                new SalesCategory
+                {
+                    Name = "Dịch vụ internet - BE",
+                },
+                new SalesCategory
+                {
+                    Name = "Dịch vụ internet - VDSL",
+                },
             };
         }
 

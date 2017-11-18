@@ -1,4 +1,6 @@
-﻿using System;
+﻿using APIProject.Data.Repositories;
+using APIProject.Model.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,10 +10,16 @@ namespace APIProject.Service
 {
     public interface ICompareService
     {
+        IEnumerable<Customer> GetSimilarCustomers(Customer customer);
         double StringCompare(string a, string b);
     }
     public class CompareService:ICompareService
     {
+        private readonly ICustomerRepository _customerRepository;
+        public CompareService(ICustomerRepository _customerRepository)
+        {
+            this._customerRepository = _customerRepository;
+        }
         public double StringCompare(string a, string b)
         {
             if (a == b) //Same string, no iteration needed.
@@ -31,6 +39,14 @@ namespace APIProject.Service
                 }
             }
             return sameCharAtIndex / maxLen * 100;
+        }
+
+        public IEnumerable<Customer> GetSimilarCustomers(Customer customer)
+        {
+            int percentage = 70;
+            var customerEntities = _customerRepository.GetAll().Where(c => c.IsDelete == false
+            && StringCompare(customer.Name,c.Name)>=percentage);
+            return customerEntities;
         }
     }
 }

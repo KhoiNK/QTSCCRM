@@ -17,6 +17,7 @@ namespace APIProject.GlobalVariables
         public static string HasSimilar = "Có tương đồng";
         public static string New = "Khách hàng mới";
         public static string BecameNewLead = "Đã cập nhật khách hàng tiềm năng";
+        public static string BecameNewContact = "Đã cập nhật liên lạc";
     }
 
     public static class MarketingResultIsFrom
@@ -26,5 +27,14 @@ namespace APIProject.GlobalVariables
         public static string IsFromWebsite = "IsFromWebsite";
         public static string IsFromFriend = "IsFromFriend";
         public static string IsFromOthers = "IsFromOthers";
+    }
+
+    public static class MarketingResultSource
+    {
+        public static string IsFromMedia = "Phương tiện truyền thông";
+        public static string IsFromInvitation = "Thư mời";
+        public static string IsFromWebsite = "Website QTSC";
+        public static string IsFromFriend = "Bạn bè";
+        public static string IsFromOthers = "Khác";
     }
 }

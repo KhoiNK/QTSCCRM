@@ -7,10 +7,10 @@ namespace APIProject.Model.Models
     using System.Data.Entity.Spatial;
 
     [Table("MarketingResult")]
-    public partial class MarketingResult
+    public partial class MarketingResult:BaseEntity
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //public int ID { get; set; }
 
         public int? CustomerID { get; set; }
 
@@ -33,7 +33,6 @@ namespace APIProject.Model.Models
         public bool IsFromFriend { get; set; }
         public bool IsFromOthers { get; set; }
         public bool IsWantMore { get; set; }
-        public DateTime CreatedDate { get; set; }
         public string Status { get; set; }
         public bool IsLeadGenerated { get; set; }
         [ForeignKey("CustomerID")]

@@ -55,7 +55,7 @@ namespace APIProject.ViewModels
             IsFromFriend = c.IsFromFriend;
             IsFromOthers = c.IsFromOthers;
             IsWantMore = c.IsWantMore;
-            CreatedDate = c.CreatedDate;
+            CreatedDate = c.CreatedDate.Value;
             Status = c.Status;
         }
     }

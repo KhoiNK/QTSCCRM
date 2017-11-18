@@ -26,9 +26,15 @@ namespace APIProject.Service
         int CountWon();
         int CountLost();
         double AverageConsider();
+        double AverageMakeQuote();
+        double AverageValidateQuote();
+        double AverageSendQuote();
+        double AverageNegotiation();
+
         Opportunity Get(int id);
         IEnumerable<Opportunity> GetAll();
         Opportunity GetByQuote(int quoteID);
+        Dictionary<string, int> GetCreatedRates(int monthRange);
         Opportunity Add(Opportunity opp);
         void UpdateInfo(Opportunity opportunity);
         Opportunity SetNextStage(Opportunity opp);
@@ -155,9 +161,41 @@ namespace APIProject.Service
             var entities = _opportunityRepository.GetAll().Where(c => c.IsDelete == false &&
             c.ConsiderStart.HasValue && c.MakeQuoteStart.HasValue);
             var durationList = entities.Select(c => (c.MakeQuoteStart.Value - c.ConsiderStart.Value).TotalDays);
-
+            return durationList.Any()?durationList.Average():0;
         }
 
+        public double AverageMakeQuote()
+        {
+            var entities = _opportunityRepository.GetAll().Where(c => c.IsDelete == false &&
+            c.ValidateQuoteStart.HasValue && c.MakeQuoteStart.HasValue);
+            var durationList = entities.Select(c => (c.ValidateQuoteStart.Value - c.MakeQuoteStart.Value).TotalDays);
+            return durationList.Any()?durationList.Average():0;
+        }
+
+        public double AverageValidateQuote()
+        {
+            var entities = _opportunityRepository.GetAll().Where(c => c.IsDelete == false &&
+            c.SendQuoteStart.HasValue && c.ValidateQuoteStart.HasValue);
+            var durationList = entities.Select(c => (c.SendQuoteStart.Value - c.ValidateQuoteStart.Value).TotalDays);
+            return durationList.Any()?durationList.Average():0;
+        }
+
+        public double AverageSendQuote()
+        {
+            var entities = _opportunityRepository.GetAll().Where(c => c.IsDelete == false &&
+            c.NegotiationStart.HasValue && c.SendQuoteStart.HasValue);
+            var durationList = entities.Select(c => (c.NegotiationStart.Value - c.SendQuoteStart.Value).TotalDays);
+            return durationList.Any()?durationList.Average():0;
+        }
+
+
+        public double AverageNegotiation()
+        {
+            var entities = _opportunityRepository.GetAll().Where(c => c.IsDelete == false &&
+            c.ClosedDate.HasValue && c.NegotiationStart.HasValue);
+            var durationList = entities.Select(c => (c.ClosedDate.Value - c.NegotiationStart.Value).TotalDays);
+            return durationList.Any()?durationList.Average():0;
+        }
 
         public Opportunity Get(int id)
         {
@@ -178,7 +216,20 @@ namespace APIProject.Service
             var quoteOpp = _opportunityRepository.GetById(oppID);
             return quoteOpp;
         }
-
+        public Dictionary<string, int> GetCreatedRates(int monthRange)
+        {
+            var startTime = DateTime.Now.AddMonths(-(monthRange - 1));
+            var entities = GetAll();
+            var response = new Dictionary<string, int>();
+            for(int i = 1; i <= monthRange; i++)
+            {
+                response.Add(startTime.Month + "/" + startTime.Year,
+                    entities.Where(c => c.CreatedDate.Value.Month == startTime.Month
+                    && c.CreatedDate.Value.Year == startTime.Year).Count());
+                startTime = startTime.AddMonths(1);
+            }
+            return response;
+        }
 
         public IEnumerable<Opportunity> GetAll()
         {
@@ -296,7 +347,7 @@ namespace APIProject.Service
             VerifyCanSetWonStage(entity);
             entity.StageName = OpportunityStage.Closed;
             entity.Status = OpportunityStatus.Won;
-            entity.ClosedDate = DateTime.Today;
+            entity.ClosedDate = DateTime.Now;
             entity.UpdatedStaffID = opp.UpdatedStaffID;
             entity.UpdatedDate = DateTime.Now;
             _opportunityRepository.Update(entity);
@@ -307,7 +358,7 @@ namespace APIProject.Service
             VeryfiCanSetLostStage(entity);
             entity.StageName = OpportunityStage.Closed;
             entity.Status = OpportunityStatus.Lost;
-            entity.ClosedDate = DateTime.Today;
+            entity.ClosedDate = DateTime.Now;
             entity.UpdatedStaffID = opp.UpdatedStaffID;
             entity.UpdatedDate = DateTime.Now;
             _opportunityRepository.Update(entity);
