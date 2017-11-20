@@ -83,7 +83,7 @@ namespace APIProject.Controllers
 
                 var joinMoreCount = results.Where(c => c.IsWantMore).Count();
 
-                var leadGeneratedCount = results.Where(c => c.IsLeadGenerated).Count();
+                var leadGeneratedCount = results.Where(c => c.Status==MarketingResultStatus.BecameNewLead).Count();
                 var totalResultCount = results.Count();
                 //customer generated count
                 return Ok(new

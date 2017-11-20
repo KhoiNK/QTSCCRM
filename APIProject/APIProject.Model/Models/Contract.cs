@@ -13,7 +13,6 @@ namespace APIProject.Model.Models
         public int CustomerID { get; set; }
         public int ContactID { get; set; }
         public int CreatedStaffID { get; set; }
-        public string ContractCode { get; set; }
         //public int SalesCategoryID { get; set; }
         public int SalesItemID { get; set; }
         public string Name { get; set; }

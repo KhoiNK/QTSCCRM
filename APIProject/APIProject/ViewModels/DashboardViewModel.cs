@@ -16,9 +16,9 @@ namespace APIProject.ViewModels
     }
     public class DashboardActivity
     {
-        public ActivityViewModel OverdueActivities { get; set; }
-        public ActivityViewModel TodayActivities { get; set; }
-        public ActivityViewModel FutureActivities { get; set; }
+        public List<ActivityViewModel> OverdueActivities { get; set; }
+        public List<ActivityViewModel> TodayActivities { get; set; }
+        public List<ActivityViewModel> FutureActivities { get; set; }
     }
     public class DashboardContract
     {
@@ -67,13 +67,14 @@ namespace APIProject.ViewModels
     {
         public int CustomerCount { get; set; }
         public int LeadCount { get; set; }
-        public CustomerRateChart Rates { get; set; }
+        public ChartViewModel ConvertRates { get; set; }
     }
     public class DashboardIssue
     {
         public int DoingIssuesCount { get; set; }
-        public IssueRateChart Rates { get; set; }
-        public IssueCountChart Counts { get; set; }
+        public ChartViewModel DoneFailedRate { get; set; }
+        public ChartViewModel CreateRates { get; set; }
+        public ChartViewModel IssueCategoryRates { get; set; }
     }
     public class DashboardMarketing
     {
@@ -81,12 +82,10 @@ namespace APIProject.ViewModels
         public ChartViewModel Rates { get; set; }
         public ChartViewModel LeadCountChart { get; set; }
         public ChartViewModel LeadSourceCountChart { get; set; }
+        public double MarketingRatingMaxValue { get; set; }
+        public DoubleTypeChartViewModel MarketingRatings { get; set; }
     }
-    public class MarketingRateChart
-    {
-        public List<string> XLabels { get; set; }
-        public List<int> Rates { get; set; }
-    }
+    
     public class IssueCountChart
     {
         public int FailedCount { get; set; }

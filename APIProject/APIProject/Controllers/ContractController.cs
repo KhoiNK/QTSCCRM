@@ -22,9 +22,9 @@ namespace APIProject.Controllers
         private readonly IQuoteItemMappingService _quoteItemMappingService;
         private readonly ICustomerService _customerService;
         private readonly ISalesItemService _salesItemService;
+        private readonly ISalesCategoryService _salesCategoryService;
         private readonly IOpportunityService _opportunityService;
         private readonly IUploadNamingService _uploadNamingService;
-        private readonly ISalesCategoryService _salesCategoryService;
 
         public ContractController(IContractService _contractService,
             IQuoteItemMappingService _quoteItemMappingService,
@@ -47,6 +47,20 @@ namespace APIProject.Controllers
             this._staffService = _staffService;
             this._contactService = _contactService;
         }
+
+        [Route("GetContractStatus")]
+        public IHttpActionResult GetContractStatus()
+        {
+            return Ok(new List<string>
+            {
+                ContractStatus.Waiting,
+                ContractStatus.Active,
+                ContractStatus.NeedAction,
+                ContractStatus.Recontracted,
+                ContractStatus.Closing,
+                ContractStatus.Done
+            });
+        }
         [Route("PostContracts")]
         public IHttpActionResult PostContracts(PostContractsViewModel request)
         {
@@ -56,7 +70,6 @@ namespace APIProject.Controllers
             }
             try
             {
-                var dbContractsCount = _contractService.GetAll().Count();
                 var response = new PostContractsResponseViewModel();
                 var foundStaff = _staffService.Get(request.StaffID);
                 var foundOpp = _opportunityService.Get(request.OpportunityID);
@@ -69,20 +82,18 @@ namespace APIProject.Controllers
                     var quoteItem = _quoteItemMappingService.Get(contract.QuoteItemID);
                     for(int i =1; i<=contract.Quantity;i++)
                     {
-                        dbContractsCount++;
                         var addedContract = _contractService.Add(new Contract
                         {
                             ContactID = oppContact.ID,
                             Name = quoteItem.SalesItemName,
                             Price = quoteItem.Price.Value,
                             Unit = quoteItem.Unit,
-                            StartDate = contract.StartDate,
-                            EndDate = contract.EndDate,
+                            StartDate = contract.StartDate.Date,
+                            EndDate = contract.EndDate.Date,
                             SalesItemID = quoteItem.SalesItemID,
                             CreatedStaffID = foundStaff.ID,
                             CreatedDate = DateTime.Now,
                             UpdatedDate = DateTime.Now,
-                            //ContractCode = contractCode + dbContractsCount.ToString("00000"),
                             Status = ContractStatus.Waiting,
                             CustomerID = oppContact.CustomerID
                         });
@@ -108,6 +119,59 @@ namespace APIProject.Controllers
 
 
         }
+
+        [Route("PostRecontract")]
+        public IHttpActionResult PostRecontract(PostRecontractViewModel request)
+        {
+            if (!ModelState.IsValid || request == null)
+            {
+                return BadRequest();
+            }
+            try
+            {
+                var foundStaff = _staffService.Get(request.StaffID);
+                var foundContract = _contractService.Get(request.ContractID);
+                
+                var recontractEntity = _contractService.Recontract(foundContract, request.EndDate);
+                _contractService.SaveChanges();
+                var oldContract = _contractService.Get(request.ContractID);
+                return Ok(new
+                {
+                    OldContract = new ContractViewModel
+                    {
+                        ID = oldContract.ID,
+                        //ContractCode = entity.ContractCode,
+                        CustomerName = _customerService.Get(oldContract.CustomerID).Name,
+                        ContactName = _contactService.Get(oldContract.ContactID).Name,
+                        Category = _salesItemService.Get(oldContract.SalesItemID).SalesCategory.Name,
+                        Name = oldContract.Name,
+                        Price = oldContract.Price,
+                        Unit = oldContract.Unit,
+                        StartDate = oldContract.StartDate,
+                        EndDate = oldContract.EndDate,
+                        Status = oldContract.Status
+                    },
+                    NewContract = new ContractViewModel
+                    {
+                        ID = recontractEntity.ID,
+                        //ContractCode = entity.ContractCode,
+                        CustomerName = _customerService.Get(recontractEntity.CustomerID).Name,
+                        ContactName = _contactService.Get(recontractEntity.ContactID).Name,
+                        Category = _salesItemService.Get(recontractEntity.SalesItemID).SalesCategory.Name,
+                        Name = recontractEntity.Name,
+                        Price = recontractEntity.Price,
+                        Unit = recontractEntity.Unit,
+                        StartDate = recontractEntity.StartDate,
+                        EndDate = recontractEntity.EndDate,
+                        Status = recontractEntity.Status
+                    }
+                });
+            }catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
         #region failedPost
         //[Route("PostContract")]
         //[ResponseType(typeof(PostContractsResponseViewModel))]
@@ -242,13 +306,18 @@ namespace APIProject.Controllers
             var response = new List<ContractViewModel>();
             foreach (var entity in entities)
             {
-                var contractCustomerName = _customerService.Get(entity.CustomerID).Name;
                 response.Add(new ContractViewModel
                 {
                     ID = entity.ID,
                     //ContractCode = entity.ContractCode,
-                    CustomerName = contractCustomerName,
+                    CustomerName = _customerService.Get(entity.CustomerID).Name,
+                    ContactName= _contactService.Get(entity.ContactID).Name,
+                    Category = _salesItemService.Get(entity.SalesItemID).SalesCategory.Name,
                     Name = entity.Name,
+                    Price=entity.Price,
+                    Unit=entity.Unit,
+                    StartDate=entity.StartDate,
+                    EndDate=entity.EndDate,
                     Status = entity.Status
                 });
             }

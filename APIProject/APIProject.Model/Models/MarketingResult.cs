@@ -34,7 +34,6 @@ namespace APIProject.Model.Models
         public bool IsFromOthers { get; set; }
         public bool IsWantMore { get; set; }
         public string Status { get; set; }
-        public bool IsLeadGenerated { get; set; }
         [ForeignKey("CustomerID")]
         public virtual Customer Customer { get; set; }
         [ForeignKey("MarketingPlanID")]

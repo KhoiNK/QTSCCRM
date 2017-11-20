@@ -161,6 +161,23 @@ namespace APIProject.Service
             return response;
         }
 
+        public Dictionary<string, int> GetConvertRates(int monthRange)
+        {
+            var response = new Dictionary<string, int>();
+            var entities = GetAll().Where(c => c.ConvertedDate.HasValue);
+            DateTime startTime = DateTime.Now.AddMonths(-(monthRange - 1));
+            for (int i = 1; i <= monthRange; i++)
+            {
+                response.Add(startTime.Month + "/" + startTime.Year,
+                    entities.Where(c => c.ConvertedDate.Value.Month == startTime.Month
+                    && c.CreatedDate.Value.Year == startTime.Year)
+                    .Count());
+                startTime = startTime.AddMonths(1);
+            }
+            return response;
+        }
+
+
         public Customer Add(Customer customer)
         {
             if (customer.TaxCode != null)
@@ -263,6 +280,7 @@ namespace APIProject.Service
         Customer GetByOpportunity(int opportunityID);
         Dictionary<string, int> GetCustomerRates(int monthRange);
         Dictionary<string, int> GetLeadRates(int monthRange);
+        Dictionary<string, int> GetConvertRates(int monthRange);
         Customer Add(Customer customer);
         void UpdateInfo(Customer customer);
         void UpdateType(Customer customer);

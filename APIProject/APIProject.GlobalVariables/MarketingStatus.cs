@@ -37,4 +37,12 @@ namespace APIProject.GlobalVariables
         public static string IsFromFriend = "Bạn bè";
         public static string IsFromOthers = "Khác";
     }
+    public static class MarketingRatingName
+    {
+        public static string FacilityRate = "Cơ sở vật chất";
+        public static string ArrangingRate = "Công tác tổ chức";
+        public static string ServicingRate = "Công tác phục vụ";
+        public static string IndicatorRate = "Người trình bày";
+        public static string OthersRate = "Khác";
+    }
 }

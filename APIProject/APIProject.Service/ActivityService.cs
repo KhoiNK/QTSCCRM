@@ -19,7 +19,10 @@ namespace APIProject.Service
         List<string> GetActivityStatusNames();
         IEnumerable<Activity> GetByCustomer(int customerID);
         Activity Get(int id);
+        IEnumerable<Activity> GetOverdue();
+        IEnumerable<Activity> GetFuture();
         IEnumerable<Activity> GetByOpprtunity(int opportunityID);
+        IEnumerable<Activity> GetByDate(DateTime datetime);
         Activity Add(Activity activity);
         void UpdateInfo(Activity activity);
         void BackgroundUpdateStatus();
@@ -87,6 +90,13 @@ namespace APIProject.Service
                 .Where(c => c.OpportunityID == opportunityID && c.IsDelete == false);
             return entities;
         }
+        public IEnumerable<Activity> GetByDate(DateTime datetime)
+        {
+            var entities = GetAllActivities().Where(c => c.TodoTime.Value.Day == datetime.Day
+            && c.TodoTime.Value.Month == datetime.Month
+            && c.TodoTime.Value.Year == datetime.Year);
+            return entities;
+        }
         public IEnumerable<Activity> GetByCustomer(int customerID)
         {
             var entities = _activityRepository.GetAll()
@@ -116,6 +126,20 @@ namespace APIProject.Service
                 throw new Exception(CustomError.ActivityNotFound);
             }
         }
+
+        public IEnumerable<Activity> GetOverdue()
+        {
+            var entities = GetAllActivities().Where(c => c.Status == ActivityStatus.Overdue);
+            return entities;
+        }
+        public IEnumerable<Activity> GetFuture()
+        {
+            var entities = GetAllActivities().Where(c => c.Status == ActivityStatus.Open
+            && c.TodoTime.Value.Date != DateTime.Now.Date);
+            return entities;
+        }
+
+
         public Activity Add(Activity activity)
         {
             var entity = new Activity

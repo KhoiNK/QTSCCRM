@@ -162,32 +162,10 @@ namespace APIProject.Controllers
                 {
                     CustomerCount = customerCount,
                     LeadCount = leadCount,
-                    Rates = new CustomerRateChart
-                    {
-                        XLabels = customerRates.Keys.ToList(),
-                        CustomerRates = customerRates.Values.ToList(),
-                        LeadRates = leadRates.Values.ToList()
-                    },
-
                 },
                 Issue = new DashboardIssue
                 {
                     DoingIssuesCount = doingIssueCount,
-                    Rates = new IssueRateChart
-                    {
-                        XLabels = issueRates.Keys.ToList(),
-                        IssueRates = issueRates.Values.ToList(),
-                    },
-                    Counts = new IssueCountChart
-                    {
-                        FailedCount = failedIssueCount,
-                        DoneCount = doneIssueCount,
-                        CategoryCount = new IssueCategoryCount
-                        {
-                            Labels = issueCategoryCount.Keys.ToList(),
-                            Counts = issueCategoryCount.Values.ToList()
-                        }
-                    }
                 },
                 Marketing = new DashboardMarketing
                 {
@@ -277,6 +255,177 @@ namespace APIProject.Controllers
                 {
                     Labels = OppCreatedRates.Keys.ToList(),
                     Values = OppCreatedRates.Values.ToList()
+                }
+            };
+            return Ok(response);
+        }
+
+        [Route("GetCustomerDashboard")]
+        [ResponseType(typeof(DashboardCustomer))]
+        public IHttpActionResult GetCustomerDashboard(int monthRange = 12)
+        {
+            var customerCount = _customerService.GetOfficial().Count();
+            var leadCount = _customerService.GetLead().Count();
+            var customerConvertRates = _customerService.GetConvertRates(monthRange);
+            var response = new DashboardCustomer
+            {
+                CustomerCount = customerCount,
+                LeadCount = leadCount,
+                ConvertRates = new ChartViewModel
+                {
+                    Labels = customerConvertRates.Keys.ToList(),
+                    Values = customerConvertRates.Values.ToList()
+                }
+            };
+            return Ok(response);
+        }
+
+        [Route("GetActivityDashboard")]
+        [ResponseType(typeof(DashboardActivity))]
+        public IHttpActionResult GetActivityDashboard(int monthRange = 12)
+        {
+            _activityService.BackgroundUpdateStatus();
+
+            var overdueActivities = _activityService.GetOverdue();
+            var todayActivities = _activityService.GetByDate(DateTime.Now);
+            var futureActivities = _activityService.GetFuture();
+            var response = new DashboardActivity();
+            if (overdueActivities.Any())
+            {
+                response.OverdueActivities = overdueActivities.Select(c => new ActivityViewModel(c)).ToList();
+            }
+            if (todayActivities.Any())
+            {
+                response.TodayActivities = todayActivities.Select(c => new ActivityViewModel(c)).ToList();
+            }
+            if (futureActivities.Any())
+            {
+                response.FutureActivities = futureActivities.Select(c => new ActivityViewModel(c)).ToList();
+            }
+            return Ok(response);
+        }
+
+        [Route("GetContractDashboard")]
+        [ResponseType(typeof(DashboardContract))]
+        public IHttpActionResult GetContractDashboard(int monthRange = 12)
+        {
+            int contractRemindDays = 10;
+            _contractService.BackgroundUpdateStatus(contractRemindDays);
+
+
+            var totalCount = _contractService.GetAll().Count();
+            var needActionCount = _contractService.GetNeedAction().Count();
+            List<int> usingYears = new List<int>
+            {
+                1,2,5
+            };
+            var allCategoriesUsingRates = _contractService.GetAllUsingRates(usingYears);
+            var allCategories = _categoryService.GetAll();
+            var individualUsingRatesList = new List<Dictionary<string, int>>();
+            foreach (var category in allCategories)
+            {
+                individualUsingRatesList.Add(_contractService.GetUsingRates(category, usingYears));
+            }
+            var contractUsingRatesList = new List<UsingRateCharts>();
+            for (int i = 0; i < allCategories.Count(); i++)
+            {
+                contractUsingRatesList.Add(new UsingRateCharts
+                {
+                    CategoryName = allCategories.ElementAt(i).Name,
+                    Chart = new ChartViewModel
+                    {
+                        Labels = individualUsingRatesList.ElementAt(i).Keys.ToList(),
+                        Values = individualUsingRatesList.ElementAt(i).Values.ToList()
+                    }
+                });
+
+            }
+            var response = new DashboardContract
+            {
+                TotalCount = totalCount,
+                NeedActionCount = needActionCount,
+                AllUsingRates = new ChartViewModel
+                {
+                    Labels = allCategoriesUsingRates.Keys.ToList(),
+                    Values = allCategoriesUsingRates.Values.ToList()
+                },
+                UsingRatesList = contractUsingRatesList
+            };
+            return Ok(response);
+        }
+
+        [Route("GetMarketingDashboard")]
+        [ResponseType(typeof(DashboardMarketing))]
+        public IHttpActionResult GetMarketingDashboard(int monthRange = 12)
+        {
+            var executingCount = _marketingPlanService.GetDoing().Count();
+            var createRates = _marketingPlanService.GetRates(monthRange);
+            var leadGenerateRates = _marketingResultService.GetLeadRates(monthRange);
+            var leadSourceRates = _marketingResultService.GetSourceRates(monthRange);
+            var marketingRatings = _marketingResultService.GetRatings();
+            var response = new DashboardMarketing
+            {
+                ExecutingCount = executingCount,
+                Rates = new ChartViewModel
+                {
+                    Labels = createRates.Keys.ToList(),
+                    Values = createRates.Values.ToList()
+                },
+                LeadCountChart = new ChartViewModel
+                {
+                    Labels = leadGenerateRates.Keys.ToList(),
+                    Values = leadGenerateRates.Values.ToList()
+                },
+                LeadSourceCountChart = new ChartViewModel
+                {
+                    Labels = leadSourceRates.Keys.ToList(),
+                    Values = leadSourceRates.Values.ToList()
+                },
+                MarketingRatingMaxValue = 5,
+                MarketingRatings = new DoubleTypeChartViewModel
+                {
+                    Labels=marketingRatings.Keys.ToList(),
+                    Values=marketingRatings.Values.ToList(),
+                }
+            };
+            return Ok(response);
+        }
+
+        [Route("GetIssueDashboard")]
+        [ResponseType(typeof(DashboardIssue))]
+        public IHttpActionResult GetIssueDashboard(int monthRange = 12)
+        {
+            var doingIssueCount = _issueService.GetDoing().Count();
+            var failedIssueCount = _issueService.GetFailed().Count();
+            var doneIssueCount = _issueService.GetDone().Count();
+
+            Dictionary<string, int> issueRates = _issueService.GetRates(monthRange);
+            Dictionary<string, int> issueCategoryCount = _issueCategoryMappingService.GetCounts(monthRange);
+            var response = new DashboardIssue
+            {
+                DoingIssuesCount = doingIssueCount,
+                DoneFailedRate = new ChartViewModel
+                {
+                    Labels = new List<string>
+                    {
+                        IssueStatus.Done,
+                        IssueStatus.Failed
+                    },
+                    Values = new List<int>
+                    {
+                        doneIssueCount,
+                        failedIssueCount
+                    }
+                },
+                CreateRates = new ChartViewModel
+                {
+                    Labels = issueRates.Keys.ToList(),
+                    Values = issueRates.Values.ToList(),
+                },
+                IssueCategoryRates = new ChartViewModel
+                {
+                    Labels = issueCategoryCount.Keys.ToList(),
+                    Values = issueCategoryCount.Values.ToList()
                 }
             };
             return Ok(response);

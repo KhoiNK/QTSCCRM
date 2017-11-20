@@ -8,10 +8,12 @@ namespace APIProject.GlobalVariables
 {
     public static class ContractStatus
     {
-        public static string New = "Mới";
+        //public static string New = "Mới";
         public static string Waiting = "Chờ";
         public static string Active = "Đang sử dụng";
         public static string Done = "Kết thúc";
         public static string NeedAction = "Cần gia hạn/ thanh lý";
+        public static string Recontracted = "Đã gia hạn";
+        public static string Closing = "Đang thanh lý";
     }
 }

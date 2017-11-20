@@ -18,6 +18,8 @@ namespace APIProject.Service
         Dictionary<string, int> GetAllUsingRates(List<int> usingYears);
         Dictionary<string, int> GetUsingRates(Category category,List<int> usingYears);
         Contract Add(Contract contract);
+        Contract Recontract(Contract foundContract, DateTime endDate);
+
         void BackgroundUpdateStatus(int remindDays);
         void SaveChanges();
     }
@@ -91,26 +93,49 @@ namespace APIProject.Service
                 response.Add("Dưới " + usingYear + " năm",
                     entities.Where(c => (c.EndDate - c.StartDate).TotalDays<=(usingYear*daysInYear)).Count());
             }
-            response.Add("Trên " + usingYears + " năm",
+            response.Add("Trên " + usingYears.Last() + " năm",
                 entities.Where(c => (c.EndDate - c.StartDate).TotalDays > (usingYears.Last() * daysInYear)).Count());
             return response;    
         }
 
         public Contract Add(Contract contract)
         {
-            //var entity = new Contract
-            //{
-            //    CreatedStaffID = contract.CreatedStaffID,
-            //    SalesCategoryID = contract.SalesCategoryID,
-            //    Status = ContractStatus.Waiting,
-            //    CreatedDate = DateTime.Now,
-            //    UpdatedDate = DateTime.Now,
-            //    ContractCode = Guid.NewGuid().ToString()
-            //};
-            //int contractCodeNumber = _contractRepository.GetAll().Count() + 1;
-            //contract.ContractCode = _appConfigRepository.GetContractCode() + contractCodeNumber.ToString("00000");
+            if (DateTime.Compare(DateTime.Now.Date, contract.StartDate.Date) == 0)
+            {
+                contract.Status = ContractStatus.Active;
+            }
+            contract.CreatedDate = DateTime.Now;
             _contractRepository.Add(contract);
             return contract;
+        }
+        public Contract Recontract(Contract foundContract, DateTime endDate)
+        {
+            var entity = _contractRepository.GetById(foundContract.ID);
+            if (DateTime.Compare(entity.EndDate.Date, endDate.Date) >= 0)
+            {
+                throw new Exception("Ngày kết thúc không hợp lệ");
+            }
+            if(entity.Status!= ContractStatus.NeedAction)
+            {
+                throw new Exception("Yêu cầu ở trạng thái:" + ContractStatus.NeedAction);
+            }
+            var recontractEntity = new Contract
+            {
+                SalesItemID = entity.SalesItemID,
+                Name = entity.Name,
+                Price = entity.Price,
+                Unit = entity.Unit,
+                CustomerID = entity.CustomerID,
+                ContactID = entity.ContactID,
+                CreatedStaffID = entity.CreatedStaffID,
+                StartDate = entity.EndDate.AddDays(1),
+                EndDate = endDate
+            };
+            Add(recontractEntity);
+            entity.Status = ContractStatus.Recontracted;
+            entity.UpdatedDate = DateTime.Now;
+            _contractRepository.Update(entity);
+            return recontractEntity;
         }
 
         public void BackgroundUpdateStatus(int remindDays)

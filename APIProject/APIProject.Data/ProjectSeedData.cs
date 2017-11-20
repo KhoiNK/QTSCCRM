@@ -50,10 +50,32 @@ namespace APIProject.Data
             context.Commit();
             //GetQuoteItems(quoteList, salesItemList).ForEach(c => context.QuoteItemMappings.Add(c));
             GetOppCategories(opportunityList, categoryList).ForEach(c => context.OpportunityCategoryMappings.Add(c));
+            GetMarketingResults().ForEach(c => context.MarketingResults.Add(c));
             context.Commit();
 
         }
-
+        private List<MarketingResult> GetMarketingResults()
+        {
+            return new List<MarketingResult>
+            {
+                new MarketingResult
+                {
+                    ArrangingRate=1,
+                    ContactName="Tùng",
+                    CreatedDate = DateTime.Now,
+                    CustomerAddress = "123 tân định",
+                    CustomerName = "FPT",
+                    Email="123@gmail.com",
+                    FacilityRate=1,
+                    IndicatorRate=1,
+                    IsFromFriend=true,
+                    OthersRate=1,
+                    ServicingRate=1,
+                    Phone="0909090909",
+                    Status="Khách hàng mới"
+                }
+            };
+        }
         private List<IssueCategoryMapping> GetIssueCategories(List<Issue> issueList)
         {
             int i = 1;
@@ -522,7 +544,8 @@ namespace APIProject.Data
                         CustomerID = i,
                         CreatedStaffID = i,
                         Title = "Cơ hội " + count++,
-                        StageName = stage
+                        StageName = stage,
+                        CreatedDate =DateTime.Now
                     });
                 }
             }

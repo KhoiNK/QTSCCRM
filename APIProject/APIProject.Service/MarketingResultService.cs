@@ -18,6 +18,7 @@ namespace APIProject.Service
         //bool CreateResults(List<MarketingResult> list, bool isFinished, int staffID);
         IEnumerable<MarketingResult> GetAll();
         MarketingResult Get(int planResultID);
+        Dictionary<string, double> GetRatings();
         IEnumerable<MarketingResult> GetByPlan(int planID);
         Dictionary<string, int> GetLeadRates(int monthRange);
         Dictionary<string, int> GetSourceRates(int monthRange);
@@ -140,7 +141,34 @@ namespace APIProject.Service
                 throw new Exception("Không tìm thấy khảo sát");
             }
         }
-
+        public Dictionary<string, double> GetRatings()
+        {
+            var entities = GetAll();
+            var response = new Dictionary<string, double>
+            {
+                {
+                    MarketingRatingName.FacilityRate,
+                    entities.Select(c=>c.FacilityRate).Average()
+                },
+                {
+                    MarketingRatingName.ArrangingRate,
+                    entities.Select(c=>c.ArrangingRate).Average()
+                },
+                {
+                    MarketingRatingName.ServicingRate,
+                    entities.Select(c=>c.ServicingRate).Average()
+                },
+                {
+                    MarketingRatingName.IndicatorRate,
+                    entities.Select(c=>c.IndicatorRate).Average()
+                },
+                {
+                    MarketingRatingName.OthersRate,
+                    entities.Select(c=>c.OthersRate).Average()
+                },
+            };
+            return response;
+        }
         public IEnumerable<MarketingResult> GetByPlan(int planID)
         {
             var entities = _marketingResultRepository.GetAll().Where(c => c.MarketingPlanID == planID);

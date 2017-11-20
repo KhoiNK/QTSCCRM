@@ -12,7 +12,13 @@ namespace APIProject.ViewModels
         public int ID { get; set; }
         public string ContractCode { get; set; }
         public string CustomerName { get; set; }
+        public string ContactName { get; set; }
+        public string Category { get; set; }
         public string Name { get; set; }
+        public int Price { get; set; }
+        public string Unit { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public string Status { get; set; }
     }
     public class PostContractsResponseViewModel
@@ -39,6 +45,15 @@ namespace APIProject.ViewModels
         public int Quantity { get; set; }
         [Required]
         public DateTime StartDate { get; set; }
+        [Required]
+        public DateTime EndDate { get; set; }
+    }
+    public class PostRecontractViewModel
+    {
+        [Required]
+        public int StaffID { get; set; }
+        [Required]
+        public int ContractID { get; set; }
         [Required]
         public DateTime EndDate { get; set; }
     }
