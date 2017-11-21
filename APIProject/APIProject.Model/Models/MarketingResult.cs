@@ -9,8 +9,6 @@ namespace APIProject.Model.Models
     [Table("MarketingResult")]
     public partial class MarketingResult:BaseEntity
     {
-        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        //public int ID { get; set; }
 
         public int? CustomerID { get; set; }
 

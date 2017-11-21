@@ -60,6 +60,7 @@ namespace APIProject.Data
             {
                 new MarketingResult
                 {
+                    MarketingPlanID=1,
                     ArrangingRate=1,
                     ContactName="Tùng",
                     CreatedDate = DateTime.Now,
@@ -421,7 +422,6 @@ namespace APIProject.Data
                                 Title = "Hư chỗ " + count,
                                 Description = "Chi tiết việc hư chỗ " + count,
                                 Status = IssueStatus.Done,
-                                ClosedDate = DateTime.Today.Date,
                                 CreatedDate = DateTime.Now
 
                             });
@@ -434,7 +434,6 @@ namespace APIProject.Data
                                 Title = "Hư chỗ " + count,
                                 Description = "Chi tiết việc hư chỗ " + count,
                                 Status = IssueStatus.Failed,
-                                ClosedDate = DateTime.Today.Date,
                                 CreatedDate = DateTime.Now
                             });
 
@@ -718,7 +717,6 @@ namespace APIProject.Data
                     Method = ActivityMethod.Direct,
                     Title = "Bàn về vấn đề: " + i,
                     Description = "Chi tiết về vấn đề " + i,
-                    OpporunityGenerated = false,
                     TodoTime = DateTime.Now,
                     Status = ActivityStatus.Completed,
                     OfOpportunityStage = OpportunityStage.Consider
@@ -734,7 +732,6 @@ namespace APIProject.Data
                     Method = ActivityMethod.Direct,
                     Title = "Bàn về vấn đề: " + i,
                     Description = "Chi tiết về vấn đề " + i,
-                    OpporunityGenerated = false,
                     TodoTime = DateTime.Now,
                     Status = ActivityStatus.Completed,
                     OfOpportunityStage = OpportunityStage.MakeQuote
@@ -750,7 +747,6 @@ namespace APIProject.Data
                     Method = ActivityMethod.Direct,
                     Title = "Bàn về vấn đề: " + i,
                     Description = "Chi tiết về vấn đề " + i,
-                    OpporunityGenerated = false,
                     TodoTime = DateTime.Now,
                     Status = ActivityStatus.Completed,
                     OfOpportunityStage = OpportunityStage.Negotiation
@@ -766,7 +762,6 @@ namespace APIProject.Data
                     Method = ActivityMethod.Direct,
                     Title = "Bàn về vấn đề: " + i,
                     Description = "Chi tiết về vấn đề " + i,
-                    OpporunityGenerated = false,
                     TodoTime = DateTime.Now,
                     Status = ActivityStatus.Completed,
                     OfOpportunityStage = OpportunityStage.SendQuote
@@ -782,7 +777,6 @@ namespace APIProject.Data
                     Method = ActivityMethod.Direct,
                     Title = "Bàn về vấn đề: " + i,
                     Description = "Chi tiết về vấn đề " + i,
-                    OpporunityGenerated = false,
                     TodoTime = DateTime.Now,
                     Status = ActivityStatus.Completed,
                     OfOpportunityStage = OpportunityStage.ValidateQuote

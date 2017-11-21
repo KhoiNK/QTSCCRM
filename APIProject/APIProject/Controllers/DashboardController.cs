@@ -358,6 +358,8 @@ namespace APIProject.Controllers
         [ResponseType(typeof(DashboardMarketing))]
         public IHttpActionResult GetMarketingDashboard(int monthRange = 12)
         {
+            _marketingPlanService.BackgroundUdate();
+            _marketingPlanService.SaveChanges();
             var executingCount = _marketingPlanService.GetDoing().Count();
             var createRates = _marketingPlanService.GetRates(monthRange);
             var leadGenerateRates = _marketingResultService.GetLeadRates(monthRange);
@@ -395,6 +397,8 @@ namespace APIProject.Controllers
         [ResponseType(typeof(DashboardIssue))]
         public IHttpActionResult GetIssueDashboard(int monthRange = 12)
         {
+            _issueService.BackgroundUpdateStatus();
+            _issueService.SaveChanges();
             var doingIssueCount = _issueService.GetDoing().Count();
             var failedIssueCount = _issueService.GetFailed().Count();
             var doneIssueCount = _issueService.GetDone().Count();

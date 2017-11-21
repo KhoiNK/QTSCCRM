@@ -54,15 +54,15 @@ namespace APIProject.Data
                 .WithOptional(e => e.Staff)
                 .HasForeignKey(e => e.CreateStaffID);
 
-            modelBuilder.Entity<Staff>()
-                .HasMany(e => e.Activities1)
-                .WithOptional(e => e.Staff1)
-                .HasForeignKey(e => e.OfStaffID);
+            //modelBuilder.Entity<Staff>()
+            //    .HasMany(e => e.Activities1)
+            //    .WithOptional(e => e.Staff1)
+            //    .HasForeignKey(e => e.OfStaffID);
 
-            modelBuilder.Entity<Staff>()
-                .HasMany(e => e.Activities2)
-                .WithOptional(e => e.Staff2)
-                .HasForeignKey(e => e.ModifiedStaffID);
+            //modelBuilder.Entity<Staff>()
+            //    .HasMany(e => e.Activities2)
+            //    .WithOptional(e => e.Staff2)
+            //    .HasForeignKey(e => e.ModifiedStaffID);
 
             modelBuilder.Entity<Staff>()
                 .HasMany(e => e.Issues)

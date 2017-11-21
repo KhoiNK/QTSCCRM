@@ -23,6 +23,7 @@ namespace APIProject.Service
         MarketingPlan Get(int marketingID);
         MarketingPlan Add(MarketingPlan marketingPlan);
         void Finish(MarketingPlan marketingPlan);
+        void BackgroundUdate();
         void UpdateInfo(MarketingPlan marketingPlan);
         void SaveChanges();
     }
@@ -205,7 +206,10 @@ namespace APIProject.Service
             _marketingPlanRepository.Update(entity);
         }
 
+        public void BackgroundUdate()
+        {
 
+        }
         public void UpdateInfo(MarketingPlan marketingPlan)
         {
             var entity = _marketingPlanRepository.GetById(marketingPlan.ID);

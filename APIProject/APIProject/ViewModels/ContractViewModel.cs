@@ -48,6 +48,14 @@ namespace APIProject.ViewModels
         [Required]
         public DateTime EndDate { get; set; }
     }
+    public class PostCloseContractViewModel
+    {
+        [Required]
+        public int StaffID { get; set; }
+        [Required]
+        public int ID { get; set; }
+        public DateTime? EndDate { get; set; }
+    }
     public class PostRecontractViewModel
     {
         [Required]

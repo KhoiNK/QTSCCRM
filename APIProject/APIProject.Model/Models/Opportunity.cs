@@ -36,10 +36,8 @@ namespace APIProject.Model.Models
         public DateTime? SendQuoteStart { get; set; }   
         public DateTime? NegotiationStart { get; set; }
         public DateTime? ClosedDate { get; set; }
-        //public DateTime? UpdatedDate { get; set; }
         public string StageName { get; set; }
         public string Status { get; set; }
-        //public string StageDescription { get; set; }
         [ForeignKey("ContactID")]
         public virtual Contact Contact { get; set; }
         [ForeignKey("CustomerID")]
@@ -48,8 +46,6 @@ namespace APIProject.Model.Models
         public virtual Staff CreatedStaff { get; set; }
         [ForeignKey("UpdatedStaffID")]
         public virtual Staff UpdatedStaff { get; set; }
-        //[ForeignKey("StageID")]
-        //public virtual Stage Stage { get; set; }
 
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

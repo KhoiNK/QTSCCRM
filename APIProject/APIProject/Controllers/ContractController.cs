@@ -172,6 +172,31 @@ namespace APIProject.Controllers
             }
         }
 
+        [Route("PostClose")]
+        public IHttpActionResult PostClose(PostCloseContractViewModel request)
+        {
+            if (!ModelState.IsValid || request == null)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var foundStaff = _staffService.Get(request.StaffID);
+                var foundContract = _contractService.Get(request.ID);
+                if (request.EndDate.HasValue)
+                {
+                    foundContract.EndDate = request.EndDate.Value.Date;
+                }
+                _contractService.Close(foundContract);
+                _contractService.SaveChanges();
+                return Ok(new { ContractUpdated = true });
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
         #region failedPost
         //[Route("PostContract")]
         //[ResponseType(typeof(PostContractsResponseViewModel))]

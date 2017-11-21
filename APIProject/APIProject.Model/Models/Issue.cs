@@ -29,7 +29,8 @@ namespace APIProject.Model.Models
         //public DateTime? OpenedDate { get; set; }
         //public int? SolveStaffID { get; set; }
         public DateTime? SolveDate { get; set; }
-        public DateTime? ClosedDate { get; set; }
+        //future remove
+        //public DateTime? ClosedDate { get; set; }
 
         //public int? AcceptStaffID { get; set; }
 

@@ -218,7 +218,6 @@ namespace APIProject.Service
             var entity = _activityRepository.GetById(activity.ID);
             VerifyCanSetComplete(entity);
             entity.Status = ActivityStatus.Completed;
-            entity.CompletedDate = DateTime.Now;
             entity.UpdatedDate = DateTime.Now;
             _activityRepository.Update(entity);
         }

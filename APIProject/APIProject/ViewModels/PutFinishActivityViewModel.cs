@@ -19,7 +19,6 @@ namespace APIProject.ViewModels
         {
             return new Activity
             {
-                ModifiedStaffID = this.StaffID,
                 ID = this.ActivityID
             };
         }

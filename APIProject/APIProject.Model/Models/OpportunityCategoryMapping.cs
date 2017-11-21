@@ -16,9 +16,6 @@
 
         
         public int SalesCategoryID { get; set; }
-
-        //public bool? IsDeleted { get; set; }
-
         [ForeignKey("OpportunityID")]
         public virtual Opportunity Opportunity { get; set; }
         [ForeignKey("SalesCategoryID")]

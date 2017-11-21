@@ -19,7 +19,7 @@ namespace APIProject.Service
         Dictionary<string, int> GetUsingRates(Category category,List<int> usingYears);
         Contract Add(Contract contract);
         Contract Recontract(Contract foundContract, DateTime endDate);
-
+        void Close(Contract contract);
         void BackgroundUpdateStatus(int remindDays);
         void SaveChanges();
     }
@@ -136,6 +136,35 @@ namespace APIProject.Service
             entity.UpdatedDate = DateTime.Now;
             _contractRepository.Update(entity);
             return recontractEntity;
+        }
+        public void Close(Contract contract)
+        {
+            var entity = _contractRepository.GetById(contract.ID);
+            List<string> requiredStatus = new List<string>
+            {
+                ContractStatus.NeedAction,
+                ContractStatus.Active
+            };
+            if (!requiredStatus.Contains(entity.Status))
+            {
+                throw new Exception("Yêu cầu trạng thái sử dụng dịch vụ:" +
+                    String.Join(", ", requiredStatus));
+            }
+            if (entity.EndDate.Date != contract.EndDate.Date)
+            {
+                if (entity.Status != ContractStatus.Active)
+                {
+                    throw new Exception("Không thể thay đổi ngày kết thúc sử dụng dịch vụ");
+                }
+                if (DateTime.Compare(entity.EndDate.Date, contract.EndDate.Date) >= 0)
+                {
+                    throw new Exception("Ngày kết thúc không được quá ngày kết thúc sử dụng dịch vụ cũ");
+                }
+            }
+            entity.EndDate = contract.EndDate;
+            entity.UpdatedDate = DateTime.Now;
+            entity.Status = ContractStatus.Closing;
+            _contractRepository.Update(entity);
         }
 
         public void BackgroundUpdateStatus(int remindDays)

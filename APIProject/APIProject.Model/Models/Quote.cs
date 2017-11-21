@@ -27,8 +27,6 @@
         public string Status { get; set; }
         public string Notes { get; set; }
         public DateTime? SentCustomerDate { get; set; }
-        //public DateTime? CreatedDate { get; set; }
-        //public DateTime? UpdatedDate { get; set; }
         [ForeignKey("OpportunityID")]
         public virtual Opportunity Opportunity { get; set; }
         [ForeignKey("CreatedStaffID")]

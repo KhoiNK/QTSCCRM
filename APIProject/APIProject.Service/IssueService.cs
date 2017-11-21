@@ -235,7 +235,6 @@ namespace APIProject.Service
             VerifyCanSetDone(entity);
             entity.SolveStaffID = issue.SolveStaffID;
             entity.Status = IssueStatus.Done;
-            entity.ClosedDate = DateTime.Now;
             entity.UpdatedDate = DateTime.Now;
             _issueRepository.Update(entity);
         }
@@ -246,7 +245,6 @@ namespace APIProject.Service
             entity.SolveStaffID = issue.SolveStaffID;
             entity.Status = IssueStatus.Failed;
             entity.UpdatedDate = DateTime.Now;
-            entity.ClosedDate = DateTime.Today;
             _issueRepository.Update(entity);
         }
         public void BackgroundUpdateStatus()

@@ -15,13 +15,13 @@ namespace APIProject.Model.Models
         public int? CreateStaffID { get; set; }
         //public DateTime? CreatedDate { get; set; }
 
-        public int? OfStaffID { get; set; }
+        //public int? OfStaffID { get; set; }
 
         public int? CustomerID { get; set; }
 
         public int? ContactID { get; set; }
 
-        public int? ModifiedStaffID { get; set; }
+        //public int? ModifiedStaffID { get; set; }
         public int? OpportunityID { get; set; }
         public string OfOpportunityStage { get; set; }
         public string Title { get; set; }
@@ -29,8 +29,8 @@ namespace APIProject.Model.Models
         //public bool IsFromCustomerType { get; set; }
         public string Method { get; set; }
         public DateTime? TodoTime { get; set; }
-        public DateTime? CompletedDate { get; set; }
-        public bool OpporunityGenerated { get; set; }
+        //public DateTime? CompletedDate { get; set; }
+        //public bool OpporunityGenerated { get; set; }
         public string Description { get; set; }
         public string Status { get; set; }
         [ForeignKey("OpportunityID")]
@@ -42,8 +42,8 @@ namespace APIProject.Model.Models
 
         public virtual Staff Staff { get; set; }
 
-        public virtual Staff Staff1 { get; set; }
+        //public virtual Staff Staff1 { get; set; }
 
-        public virtual Staff Staff2 { get; set; }
+        //public virtual Staff Staff2 { get; set; }
     }
 }

@@ -11,10 +11,8 @@ namespace APIProject.ViewModels
         public int ID { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public string Stage { get; set; }
         public string Status { get; set; }
         public DateTime? SolveDate { get; set; }
-        public DateTime? ClosedDate { get; set; }
 
 
         public IssueDetailViewModel(Issue dto)
@@ -24,7 +22,6 @@ namespace APIProject.ViewModels
             this.Description = dto.Description;
             this.Status = dto.Status;
             this.SolveDate = dto.SolveDate;
-            this.ClosedDate = dto.ClosedDate;
         }
     }
 }
