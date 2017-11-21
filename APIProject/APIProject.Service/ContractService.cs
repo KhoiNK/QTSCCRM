@@ -16,7 +16,7 @@ namespace APIProject.Service
         IEnumerable<Contract> GetAll();
         IEnumerable<Contract> GetNeedAction();
         Dictionary<string, int> GetAllUsingRates(List<int> usingYears);
-        Dictionary<string, int> GetUsingRates(Category category,List<int> usingYears);
+        Dictionary<string, int> GetUsingRates(SalesCategory category,List<int> usingYears);
         Contract Add(Contract contract);
         Contract Recontract(Contract foundContract, DateTime endDate);
         void Close(Contract contract);
@@ -66,7 +66,7 @@ namespace APIProject.Service
             var entities = GetAll().Where(c => c.Status == ContractStatus.NeedAction);
             return entities;
         }
-        public Dictionary<string, int> GetUsingRates(Category category, List<int> usingYears)
+        public Dictionary<string, int> GetUsingRates(SalesCategory category, List<int> usingYears)
         {
             var response = new Dictionary<string, int>();
             var categoryItemIDs = _salesItemRepository.GetAll().Where(c => c.SalesCategoryID == category.ID
@@ -78,7 +78,7 @@ namespace APIProject.Service
                 response.Add("Dưới " + usingYear + " năm",
                     entities.Where(c => (c.EndDate - c.StartDate).TotalDays <= (usingYear * daysInYear)).Count());
             }
-            response.Add("Trên " + usingYears + " năm",
+            response.Add("Trên " + usingYears.Last() + " năm",
                 entities.Where(c => (c.EndDate - c.StartDate).TotalDays > (usingYears.Last() * daysInYear)).Count());
             return response;
         }

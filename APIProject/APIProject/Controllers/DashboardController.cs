@@ -19,21 +19,21 @@ namespace APIProject.Controllers
         private readonly IMarketingResultService _marketingResultService;
         private readonly IMarketingPlanService _marketingPlanService;
         private readonly IContractService _contractService;
-        private readonly ICategoryService _categoryService;
+        private readonly ISalesCategoryService _salesCategoryService;
         private readonly IActivityService _activityService;
         private readonly IIssueService _issueService;
         private readonly IIssueCategoryMappingService _issueCategoryMappingService;
         public DashboardController(ICustomerService _customerService,
             IActivityService _activityService,
             IContractService _contractService,
-            ICategoryService _categoryService,
+            ISalesCategoryService _salesCategoryService,
             IOpportunityService _opportunityService,
             IMarketingResultService _marketingResultService,
             IMarketingPlanService _marketingPlanService,
             IIssueCategoryMappingService _issueCategoryMappingService,
             IIssueService _issueService)
         {
-            this._categoryService = _categoryService;
+            this._salesCategoryService = _salesCategoryService;
             this._activityService = _activityService;
             this._marketingResultService = _marketingResultService;
             this._marketingPlanService = _marketingPlanService;
@@ -90,7 +90,7 @@ namespace APIProject.Controllers
                 1,2,5
             };
             var AllContractUsingRates = _contractService.GetAllUsingRates(contractUsingYears);
-            var allCategories = _categoryService.GetAll();
+            var allCategories = _salesCategoryService.GetAll();
             var individualUsingRatesList = new List<Dictionary<string, int>>();
             foreach (var category in allCategories)
             {
@@ -320,7 +320,7 @@ namespace APIProject.Controllers
                 1,2,5
             };
             var allCategoriesUsingRates = _contractService.GetAllUsingRates(usingYears);
-            var allCategories = _categoryService.GetAll();
+            var allCategories = _salesCategoryService.GetAll();
             var individualUsingRatesList = new List<Dictionary<string, int>>();
             foreach (var category in allCategories)
             {
