@@ -22,19 +22,21 @@ namespace APIProject.Controllers
         private readonly IContactService _contactService;
         private readonly ICustomerService _customerService;
         private readonly ICompareService _compareService;
+        private readonly IEmailService _emailService;
 
         public MarketingResultController(IMarketingResultService _marketingResultService,
             IMarketingPlanService _marketingPlanService,
             IContactService _contactService,
             ICustomerService _customerService,
-            ICompareService _compareService)
+            ICompareService _compareService,
+            IEmailService _emailService)
         {
             this._contactService = _contactService;
             this._marketingResultService = _marketingResultService;
             this._marketingPlanService = _marketingPlanService;
             this._customerService = _customerService;
             this._compareService = _compareService;
-
+            this._emailService = _emailService;
         }
 
         [Route("GetMarketingResults")]
@@ -164,6 +166,7 @@ namespace APIProject.Controllers
             try
             {
                 var foundPlan = _marketingPlanService.Get(request.PlanID);
+                var doingPlans = _marketingPlanService.GetDoing().Where(plan => plan.ID != foundPlan.ID);
                 var addedResult = _marketingResultService.Add(request.ToResultModel());
                 _marketingResultService.SaveChanges();
                 var similarCustomers = _compareService.GetSimilarCustomers(new Customer
@@ -175,6 +178,7 @@ namespace APIProject.Controllers
                 {
                     _marketingResultService.UpdateSimilar(addedResult);
                 }
+                _emailService.SendThankEmail(addedResult.CustomerName,addedResult.Email,foundPlan.Title,doingPlans);
                 _marketingResultService.SaveChanges();
                 return Ok(addedResult.ID);
             }
