@@ -41,8 +41,12 @@ namespace APIProject.Service
         ///         "kenejnzwmzwboknd"
         ///     );
         /// </param>
-        public void SendEmail(MailMessage message, NetworkCredential credential)
+        public void SendEmail(MailMessage message, NetworkCredential credential = null)
         {
+            if (credential == null)
+            {
+                credential = GetDefaultNetworkCredential();
+            }
             SmtpClient smtpobj = new SmtpClient("smtp.gmail.com", 25)
             {
                 EnableSsl = true,
@@ -52,11 +56,10 @@ namespace APIProject.Service
             smtpobj.Send(message);
         }
 
-        public void SendQuoteEmail(Contact contact, Staff staff, IEnumerable<QuoteItemMapping> quoteItemMappings, Quote quote)
+        public void SendQuoteEmail(Contact contact, Staff staff, IEnumerable<QuoteItemMapping> quoteItemMappings,
+            Quote quote)
         {
-            string file = AppDomain.CurrentDomain.BaseDirectory + "/EmailTemplate/PriceEmailTemplate.html";
-            string templateString = File.ReadAllText(file);
-            Template template = Template.Parse(templateString);
+            Template template = GetTemplate("PriceEmailTemplate.html");
             var salesItems = quoteItemMappings.Select(quoteItem => Hash.FromAnonymousObject(new
             {
                 quoteItem.SalesItem.Name,
@@ -65,7 +68,7 @@ namespace APIProject.Service
             }));
             RenderParameters renderParameters = new RenderParameters(CultureInfo.CurrentCulture)
             {
-                Filters = new [] {typeof(CustomFilters)},
+                Filters = new[] {typeof(CustomFilters)},
                 LocalVariables = Hash.FromAnonymousObject(new
                 {
                     customerName = contact.Name,
@@ -76,18 +79,51 @@ namespace APIProject.Service
                     staffEmail = staff.Email,
                     staffPhonenumber = staff.Phone
                 })
-            }; 
+            };
             string body = template.Render(renderParameters);
             NetworkCredential networkCredential = GetDefaultNetworkCredential();
             MailMessage message = new MailMessage
             {
                 From = new MailAddress(networkCredential.UserName),
                 Subject = $"QTSC - Báo giá ngày {DateTime.Now.ToShortDateString()}",
-                To = {contact.Email },
+                To = {contact.Email},
                 Body = body,
                 IsBodyHtml = true
             };
             SendEmail(message, networkCredential);
+        }
+
+        public void SendThankEmail(string customerName,string customerEmail, string marketingPlanTitle,
+            IEnumerable<MarketingPlan> doingPlans)
+        {
+            Template template = GetTemplate("ThankEmailTemplate.html");
+            var marketingPlans = doingPlans.Select(marketingPlan => Hash.FromAnonymousObject(new
+            {
+                name = marketingPlan.Title
+            }));
+            string body = template.Render(Hash.FromAnonymousObject(new
+            {
+                customerName,
+                eventName = marketingPlanTitle,
+                marketingPlans
+            }));
+            NetworkCredential networkCredential = GetDefaultNetworkCredential();
+            MailMessage message = new MailMessage
+            {
+                From = new MailAddress(networkCredential.UserName),
+                Subject = $"Sự kiện {marketingPlanTitle} - Lời cảm ơn",
+                To = {customerEmail},
+                Body = body,
+                IsBodyHtml = true
+            };
+            SendEmail(message, networkCredential);
+        }
+
+        private Template GetTemplate(String fileName)
+        {
+            string templateString =
+                File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "/EmailTemplate/" + fileName);
+            return Template.Parse(templateString);
         }
     }
 
@@ -96,5 +132,8 @@ namespace APIProject.Service
         void SendEmail(MailMessage message, NetworkCredential credential);
 
         void SendQuoteEmail(Contact contact, Staff staff, IEnumerable<QuoteItemMapping> quoteItemMappings, Quote quote);
+
+        void SendThankEmail(String customerName, String customerEmail, String marketingPlanTitle,
+            IEnumerable<MarketingPlan> marketingPlans);
     }
 }

@@ -1,0 +1,15 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<p>
+    Cám ơn anh/chị {{customerName}} đã tham gia sự kiện {{eventName}}<br/>
+    Hiện nay và sắp tới sẽ có những sự kiện khác mà anh/chị có thể sẽ quan tâm    
+</p>
+<br/>
+{% for marketingPlan in marketingPlans -%}
+{{marketingPlan.name}}<br/>
+{% endfor -%}
+</body>
+</html>
