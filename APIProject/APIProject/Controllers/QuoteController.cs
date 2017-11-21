@@ -117,8 +117,7 @@ namespace APIProject.Controllers
                 {
                     var categoryItemIDs = _salesItemService.GetByCategory(category.ID).Select(c => c.ID);
                     var intersectQuoteItems = quoteItems.Where(c => categoryItemIDs.Contains(c.SalesItemID))
-                        .Select(c => new QuoteItemViewModel(c));
-
+                        .Select(c => new QuoteItemViewModel(c)).ToList();
                     response.Categories.Add(new QuoteCategotyViewModel
                     {
                         ID = category.ID,

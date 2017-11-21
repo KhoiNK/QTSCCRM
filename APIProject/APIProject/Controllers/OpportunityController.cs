@@ -20,6 +20,7 @@ namespace APIProject.Controllers
         private readonly IOpportunityService _opportunityService;
         private readonly ICustomerService _customerService;
         private readonly IUploadNamingService _uploadNamingService;
+        private readonly ISalesItemService _salesItemService;
         private readonly IStaffService _staffService;
         private readonly IContactService _contactService;
         private readonly IActivityService _activityService;
@@ -29,6 +30,7 @@ namespace APIProject.Controllers
 
         public OpportunityController(IOpportunityService _opportunityService,
             IUploadNamingService _uploadNamingService,
+            ISalesItemService _salesItemService,
             ICustomerService _customerService,
             IContactService _contactService,
             IActivityService _activityService,
@@ -37,6 +39,7 @@ namespace APIProject.Controllers
             IQuoteService _quoteService,
             IOpportunityCategoryMappingService _opportunityCategoryMappingService)
         {
+            this._salesItemService = _salesItemService;
             this._contactService = _contactService;
             this._quoteService = _quoteService;
             this._activityService = _activityService;
@@ -90,6 +93,7 @@ namespace APIProject.Controllers
                 var oppStaff = _staffService.Get(foundOpp.CreatedStaffID.Value);
                 var oppActivities = _activityService.GetByOpprtunity(foundOpp.ID);
                 var oppQuote = _quoteService.GetByOpportunity(foundOpp.ID);
+                
                 var oppCategories = _salesCategoryService.GetByOpportunity(foundOpp.ID);
                 _uploadNamingService.ConcatContactAvatar(oppContact);
                 _uploadNamingService.ConcatCustomerAvatar(oppCus);
@@ -100,6 +104,10 @@ namespace APIProject.Controllers
                     oppCus,
                     oppContact,
                     oppCategories.ToList());
+                foreach(var quoteItem in response.QuoteDetail.Items)
+                {
+                    quoteItem.Name = _salesItemService.Get(quoteItem.ID).SalesCategory.Name+"/ "+quoteItem.Name;
+                }
                 return Ok(response);
             }
             catch (Exception e)

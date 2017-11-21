@@ -338,7 +338,7 @@ namespace APIProject.Controllers
                     CustomerName = _customerService.Get(entity.CustomerID).Name,
                     ContactName= _contactService.Get(entity.ContactID).Name,
                     Category = _salesItemService.Get(entity.SalesItemID).SalesCategory.Name,
-                    Name = entity.Name,
+                    Name = _salesItemService.Get(entity.SalesItemID).SalesCategory.Name + "/" + entity.Name,
                     Price=entity.Price,
                     Unit=entity.Unit,
                     StartDate=entity.StartDate,

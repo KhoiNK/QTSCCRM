@@ -59,7 +59,10 @@ namespace APIProject.Service
             entity.Address = customer.Address;
             entity.TaxCode = customer.TaxCode;
             entity.EstablishedDate = customer.EstablishedDate;
-            entity.AvatarSrc = customer.AvatarSrc;
+            if (customer.AvatarSrc != null)
+            {
+                entity.AvatarSrc = customer.AvatarSrc;
+            }
             _customerRepository.Update(entity);
         }
 

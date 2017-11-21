@@ -15,6 +15,7 @@ namespace APIProject.ViewModels
         public string Owner { get; set; }
         public DateTime TodoTime { get; set; }
         public string Status { get; set; }
+        public int? OpportunityID { get; set; }
         public string OfOpportunityStage { get; set; }
 
         public ActivityViewModel(Activity dto)
@@ -23,6 +24,7 @@ namespace APIProject.ViewModels
             this.Title = dto.Title;
             this.Type = dto.Type;
             this.Method = dto.Method;
+            this.OpportunityID = dto.OpportunityID;
             this.Owner = dto.Staff.Name;
             this.TodoTime = dto.TodoTime.Value;
             this.Status = dto.Status;
