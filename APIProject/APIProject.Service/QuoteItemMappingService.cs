@@ -53,7 +53,7 @@ namespace APIProject.Service
                 .Where(c => c.QuoteID == quoteID && c.IsDelete == false);
             var intersectItemIDs = oldItemEntities.Select(c => c.SalesItemID)
                 .Intersect(itemIDs);
-            var deleteEntities = oldItemEntities.Where(c => intersectItemIDs.Contains(c.SalesItemID));
+            var deleteEntities = oldItemEntities.Where(c => !intersectItemIDs.Contains(c.SalesItemID));
             var insertItemIDs = itemIDs.Except(intersectItemIDs);
             foreach(var deleteEntity in deleteEntities)
             {

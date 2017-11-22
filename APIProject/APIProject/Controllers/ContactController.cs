@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Mail;
 using System.Web.Http;
 using System.Web.Http.Description;
 
@@ -63,13 +64,19 @@ namespace APIProject.Controllers
             }
             try
             {
+                MailAddress m = new MailAddress(request.Email);
+
                 var foundCustomer = _customerService.Get(request.CustomerID);
                 var insertedContact = _contactService.Add(request.ToContactModel());
                 response.ContactCreated = true;
                 response.ContactID = insertedContact.ID;
                 return Ok(response);
 
-            }catch(Exception e)
+            }catch(FormatException ex)
+            {
+                return BadRequest("Email không đúng định dạng");
+            }
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }

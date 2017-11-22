@@ -21,7 +21,10 @@ namespace APIProject.ViewModels
                 Items = new List<SalesItemViewModel>();
                 foreach (SalesItem _item in dto.SalesItems)
                 {
-                    Items.Add(new SalesItemViewModel(_item));
+                    if (_item.IsDelete == false)
+                    {
+                        Items.Add(new SalesItemViewModel(_item));
+                    }
                 }
             }
         }
@@ -33,5 +36,5 @@ namespace APIProject.ViewModels
         public string Name { get; set; }
         public List<SalesItemViewModel> Items { get; set; }
     }
-    
+
 }

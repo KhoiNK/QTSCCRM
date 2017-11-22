@@ -16,6 +16,7 @@ namespace APIProject.ViewModels
         public StaffDetailViewModel ValidatedStaff { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public DateTime? SentCustomerDate { get; set; }
+        public string Notes { get; set; }
         public List<QuoteItemViewModel> Items { get; set; }
         public QuoteViewModel(Quote dto)
         {
@@ -23,6 +24,7 @@ namespace APIProject.ViewModels
             this.Tax = dto.Tax;
             this.Discount = dto.Discount;
             this.Status = dto.Status;
+            this.Notes = dto.Notes;
             this.SentCustomerDate = dto.SentCustomerDate;
             if (dto.QuoteItemMappings.Where(c => c.IsDelete == false).Count() != 0)
             {

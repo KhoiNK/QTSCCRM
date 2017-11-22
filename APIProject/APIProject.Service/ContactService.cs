@@ -9,6 +9,7 @@ using APIProject.Model.Models;
 using System.IO;
 using System.Web;
 using APIProject.GlobalVariables;
+using System.Text.RegularExpressions;
 
 namespace APIProject.Service
 {
@@ -42,15 +43,16 @@ namespace APIProject.Service
         {
             var entity = new Contact
             {
-                CustomerID=contact.CustomerID,
-                Name=contact.Name,
-                Position=contact.Position,
-                Email=contact.Email,
-                Phone=contact.Phone,
-                AvatarSrc=contact.AvatarSrc,
-                CreatedDate=DateTime.Now,
-                UpdatedDate=DateTime.Now
+                CustomerID = contact.CustomerID,
+                Name = contact.Name,
+                Position = contact.Position,
+                Email = contact.Email,
+                Phone = contact.Phone,
+                AvatarSrc = contact.AvatarSrc,
+                CreatedDate = DateTime.Now,
+                UpdatedDate = DateTime.Now
             };
+            VerifyPhone(contact);
             _contactRepository.Add(entity);
             _unitOfWork.Commit();
             return entity;
@@ -58,6 +60,7 @@ namespace APIProject.Service
         public void UpdateInfo(Contact contact)
         {
             var entity = _contactRepository.GetById(contact.ID);
+            VerifyPhone(contact);
             entity.Position = contact.Position;
             entity.Phone = contact.Phone;
             entity.Email = contact.Email;
@@ -76,7 +79,7 @@ namespace APIProject.Service
         }
         public Contact GetContactByActivity(int activityID)
         {
-            var foundActivity = _activityRepository.GetById(activityID); 
+            var foundActivity = _activityRepository.GetById(activityID);
             if (foundActivity != null)
             {
                 return foundActivity.Contact;
@@ -114,9 +117,21 @@ namespace APIProject.Service
         public IEnumerable<Contact> GetByCustomer(int customerID)
         {
             var entities = _contactRepository.GetAll().Where(
-                c => c.CustomerID == customerID&&c.IsDelete==false);
+                c => c.CustomerID == customerID && c.IsDelete == false);
             return entities;
         }
+
+        #region private verify
+        private void VerifyPhone(Contact contact)
+        {
+            Regex regex = new Regex(@"^\d+$");
+            if (!regex.IsMatch(contact.Phone))
+            {
+                throw new Exception("Lỗi số điện thoại: chỉ được nhập chữ số");
+            }
+        }
+
+        #endregion
 
     }
 
@@ -126,7 +141,7 @@ namespace APIProject.Service
         Contact GetContactByActivity(int activityID);
         Contact GetContactByOpportunity(int opportunityID);
         Contact Get(int id);
-        Contact GetByEmail(Customer customer,string email);
+        Contact GetByEmail(Customer customer, string email);
         Contact Add(Contact contact);
         void UpdateInfo(Contact contact);
         IEnumerable<Contact> GetByCustomer(int customerID);

@@ -101,7 +101,7 @@ namespace APIProject.Controllers
             {
                 contractUsingRatesList.Add(new UsingRateCharts
                 {
-                    CategoryName = allCategories.ElementAt(i).Name,
+                    CategoryID = allCategories.ElementAt(i).ID,
                     Chart = new ChartViewModel
                     {
                         Labels = individualUsingRatesList.ElementAt(i).Keys.ToList(),
@@ -331,7 +331,7 @@ namespace APIProject.Controllers
             {
                 contractUsingRatesList.Add(new UsingRateCharts
                 {
-                    CategoryName = allCategories.ElementAt(i).Name,
+                    CategoryID = allCategories.ElementAt(i).ID,
                     Chart = new ChartViewModel
                     {
                         Labels = individualUsingRatesList.ElementAt(i).Keys.ToList(),

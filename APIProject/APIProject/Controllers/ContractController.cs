@@ -80,17 +80,23 @@ namespace APIProject.Controllers
                 foreach(var contract in request.Contracts)
                 {
                     var quoteItem = _quoteItemMappingService.Get(contract.QuoteItemID);
+                    var quoteItemSalesItem = _salesItemService.Get(contract.QuoteItemID);
                     for(int i =1; i<=contract.Quantity;i++)
                     {
                         var addedContract = _contractService.Add(new Contract
                         {
                             ContactID = oppContact.ID,
-                            Name = quoteItem.SalesItemName,
-                            Price = quoteItem.Price.Value,
-                            Unit = quoteItem.Unit,
+                            //Name = quoteItem.SalesItemName,
+                            //Price = quoteItem.Price.Value,
+                            //Unit = quoteItem.Unit,
+
+                            Name = quoteItemSalesItem.Name,
+                            Price = quoteItemSalesItem.Price,
+                            Unit = quoteItemSalesItem.Unit,
+
                             StartDate = contract.StartDate.Date,
                             EndDate = contract.EndDate.Date,
-                            SalesItemID = quoteItem.SalesItemID,
+                            SalesItemID = quoteItemSalesItem.ID,
                             CreatedStaffID = foundStaff.ID,
                             CreatedDate = DateTime.Now,
                             UpdatedDate = DateTime.Now,

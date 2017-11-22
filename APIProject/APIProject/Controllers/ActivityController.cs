@@ -247,19 +247,22 @@ namespace APIProject.Controllers
                 var response = new PutCompleteActivityResponseViewModel();
                 _activityService.SetComplete(request.ToActivityModel());
                 response.ActivityUpdated = true;
-                if (request.CategoryIDs != null)
+                if (request.CategoryIDs != null )
                 {
-                    _salesCategoryService.VerifyCategories(request.CategoryIDs);
-                    _activityService.VerifyCanCreateOpportunity(request.ToActivityModel());
+                    if (request.CategoryIDs.Any())
+                    {
+                        _salesCategoryService.VerifyCategories(request.CategoryIDs);
+                        _activityService.VerifyCanCreateOpportunity(request.ToActivityModel());
 
-                    var newOpp = request.ToOpportunityModel();
-                    newOpp.ContactID = foundActivity.ContactID;
+                        var newOpp = request.ToOpportunityModel();
+                        newOpp.ContactID = foundActivity.ContactID;
 
-                    var insertedOpp = _opportunityService.Add(newOpp);
-                    _opportunityCategoryMappingService.AddRange(insertedOpp.ID, request.CategoryIDs);
-                    _activityService.MapOpportunity(request.ToActivityModel(), insertedOpp);
-                    response.OpportunityCreated = true;
-                    response.OpportunityID = insertedOpp.ID;
+                        var insertedOpp = _opportunityService.Add(newOpp);
+                        _opportunityCategoryMappingService.AddRange(insertedOpp.ID, request.CategoryIDs);
+                        _activityService.MapOpportunity(request.ToActivityModel(), insertedOpp);
+                        response.OpportunityCreated = true;
+                        response.OpportunityID = insertedOpp.ID;
+                    }
                 }
                 _activityService.SaveChanges();
                 return Ok(response);

@@ -29,7 +29,7 @@ namespace APIProject.ViewModels
     }
     public class UsingRateCharts
     {
-        public string CategoryName { get; set; }
+        public int CategoryID { get; set; }
         public ChartViewModel Chart { get; set; }
     }
     public class DashboardOpportunity
