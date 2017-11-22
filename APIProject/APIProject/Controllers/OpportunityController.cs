@@ -88,8 +88,9 @@ namespace APIProject.Controllers
             try
             {
                 var foundOpp = _opportunityService.Get(id);
-                var oppCus = _customerService.Get(foundOpp.CustomerID.Value);
+                //var oppCus = _customerService.Get(foundOpp.CustomerID.Value);
                 var oppContact = _contactService.Get(foundOpp.ContactID.Value);
+                var oppCus = _customerService.Get(oppContact.CustomerID);
                 var oppStaff = _staffService.Get(foundOpp.CreatedStaffID.Value);
                 var oppActivities = _activityService.GetByOpprtunity(foundOpp.ID);
                 var oppQuote = _quoteService.GetByOpportunity(foundOpp.ID);
@@ -104,9 +105,12 @@ namespace APIProject.Controllers
                     oppCus,
                     oppContact,
                     oppCategories.ToList());
-                foreach(var quoteItem in response.QuoteDetail.Items)
+                if (response.QuoteDetail != null)
                 {
-                    quoteItem.Name = _salesItemService.Get(quoteItem.ID).SalesCategory.Name+"/ "+quoteItem.Name;
+                    foreach (var quoteItem in response.QuoteDetail.Items)
+                    {
+                        quoteItem.Name = _salesItemService.Get(quoteItem.ID).SalesCategory.Name + "/ " + quoteItem.Name;
+                    }
                 }
                 return Ok(response);
             }

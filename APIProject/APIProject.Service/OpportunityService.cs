@@ -284,7 +284,7 @@ namespace APIProject.Service
                 UpdatedStaffID = opp.CreatedStaffID
             };
             var ContactCus = _contactRepository.GetById(opp.ContactID.Value);
-            entity.CustomerID = ContactCus.ID;
+            entity.CustomerID = ContactCus.CustomerID;
             _opportunityRepository.Add(entity);
             _unitOfWork.Commit();
             return entity;
