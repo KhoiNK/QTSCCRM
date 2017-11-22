@@ -133,6 +133,7 @@ namespace APIProject.Controllers
         }
 
         [Route("PutUpdateIssue")]
+        [HttpPost]
         [ResponseType(typeof(PutUpdateIssueResponseViewModel))]
         public IHttpActionResult PutUpdateIssue(PutUpdateIssueViewModel request)
         {
@@ -170,6 +171,7 @@ namespace APIProject.Controllers
         }
 
         [Route("PutDoneIssue")]
+        [HttpPost]
         public IHttpActionResult PutDoneIssue(PutDoneIssueViewModel request)
         {
             if (!ModelState.IsValid || request == null)
@@ -192,6 +194,7 @@ namespace APIProject.Controllers
         }
 
         [Route("PutFailIssue")]
+        [HttpPost]
         [ResponseType(typeof(PutFailIssueResponseViewModel))]
         public IHttpActionResult PutFailIssue(PutFailIssueViewModel request)
         {

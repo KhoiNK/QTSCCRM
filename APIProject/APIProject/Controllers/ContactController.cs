@@ -76,6 +76,7 @@ namespace APIProject.Controllers
         }
 
         [Route("PutContactInformation")]
+        [HttpPost]
         [ResponseType(typeof(PutContactResponseViewModel))]
         public IHttpActionResult PutContactInformation(PutContactInformationViewModel request)
         {

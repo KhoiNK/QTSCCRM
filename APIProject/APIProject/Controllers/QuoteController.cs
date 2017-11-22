@@ -175,6 +175,7 @@ namespace APIProject.Controllers
         }
 
         [Route("PutValidQuote")]
+        [HttpPost]
         [ResponseType(typeof(PutValidQuoteResponseViewModel))]
         public IHttpActionResult PutValidQuote(PutValidQuoteViewModel request)
         {
@@ -206,6 +207,7 @@ namespace APIProject.Controllers
         }
 
         [Route("PutInvalidQuote")]
+        [HttpPost]
         [ResponseType(typeof(PutInvalidQuoteResponseViewModel))]
         public IHttpActionResult PutInvalidQuote(PutInValidQuoteViewModel request)
         {
@@ -238,6 +240,7 @@ namespace APIProject.Controllers
         }
 
         [Route("PutUpdateQuote")]
+        [HttpPost]
         [ResponseType(typeof(PutUpdateQuoteResponseViewModel))]
         public IHttpActionResult PutUpdateQuote(PutUpdateQuoteViewModel request)
         {
@@ -279,6 +282,7 @@ namespace APIProject.Controllers
         }
 
         [Route("PutSendQuote")]
+        [HttpPost]
         public IHttpActionResult PutSendQuote(PutSendQuoteViewModel request)
         {
             if (!ModelState.IsValid || request == null)
@@ -324,6 +328,7 @@ namespace APIProject.Controllers
             }
         }
 
+        [HttpPost]
         [Route("PutSendQuote2")]
         public IHttpActionResult PutSendQuote2(PutSendQuoteViewModel request)
         {

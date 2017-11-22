@@ -120,7 +120,7 @@ namespace APIProject.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPost]
         [Route("PutOpportunityInformation")]
         [ResponseType(typeof(PutOpportunityInformationResponseViewModel))]
         public IHttpActionResult PutOpportunityInformation(PutOpportunityInformationViewModel request)
@@ -170,6 +170,7 @@ namespace APIProject.Controllers
         }
 
         [Route("PutOpportunityNextStage")]
+        [HttpPost]
         [ResponseType(typeof(PutOpportunityNextStageResponseViewModel))]
         public IHttpActionResult PutOpportunityNextStage(PutOpportunityNextStageViewModel request)
         {
@@ -202,6 +203,7 @@ namespace APIProject.Controllers
         }
 
         [Route("PutWonOpportunity")]
+        [HttpPost]
         [ResponseType(typeof(PutWonOppResponseViewModel))]
         public IHttpActionResult PutWonOpportunity(PutWonOpportunityViewModel request)
         {
@@ -235,6 +237,7 @@ namespace APIProject.Controllers
         }
 
         [Route("PutLostOpportunity")]
+        [HttpPost]
         [ResponseType(typeof(PutLostOppResponseViewModel))]
         public IHttpActionResult PutLostOpportunity(PutLostOpportunityViewModdel request)
         {

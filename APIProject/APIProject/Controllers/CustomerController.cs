@@ -105,6 +105,7 @@ namespace APIProject.Controllers
         //}
 
         [Route("PutLeadInformation")]
+        [HttpPost]
         [ResponseType(typeof(PutCustomerViewModel))]
         public IHttpActionResult PutLeadInformation(PutLeadInformationViewModel request)
         {
@@ -136,6 +137,7 @@ namespace APIProject.Controllers
         }
 
         [Route("PutCustomerInformation")]
+        [HttpPost]
         [ResponseType(typeof(PutCustomerViewModel))]
         public IHttpActionResult PutCustomerInformation(PutCustomerInformationViewModel request)
         {

@@ -97,6 +97,7 @@ namespace APIProject.Controllers
             return NotFound();
         }
         [Route("PostNewActivity")]
+        [HttpPost]
         [ResponseType(typeof(PostNewActivityResponseViewModel))]
         public IHttpActionResult PostNewActivity(PostNewActivityViewModel request)
         {
@@ -193,6 +194,7 @@ namespace APIProject.Controllers
             }
         }
         [Route("PutSaveChangeActivity")]
+        [HttpPost]
         [ResponseType(typeof(PutSaveChangeActivityResponseViewModel))]
         public IHttpActionResult PutSaveChangeActivity(PutSaveChangeActivityViewModel request)
         {
@@ -232,6 +234,7 @@ namespace APIProject.Controllers
 
         }
         [Route("PutCompleteActivity")]
+        [HttpPost]
         [ResponseType(typeof(PutCompleteActivityResponseViewModel))]
         public IHttpActionResult PutCompleteActivity(PutCompleteActivityViewModel request)
         {
@@ -271,6 +274,7 @@ namespace APIProject.Controllers
         }
 
         [Route("PutCancelActivity")]
+        [HttpPost]
         [ResponseType(typeof(PutCancelActivityResponseViewModel))]
         public IHttpActionResult PutCancelActivity(PutCancelActivityViewModel request)
         {
