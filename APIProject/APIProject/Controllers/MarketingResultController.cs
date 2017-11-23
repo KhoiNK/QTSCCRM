@@ -231,5 +231,52 @@ namespace APIProject.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [Route("PostUpdateContact")]
+        public IHttpActionResult PostUpdateContact(int planResultID, int customerID)
+        {
+            try
+            {
+                var foundResult = _marketingResultService.Get(planResultID);
+                var foundCustomer = _customerService.Get(customerID);
+                foundResult.CustomerID = customerID;
+                foundResult.Status = MarketingResultStatus.BecameNewContact;
+                _marketingResultService.Update(foundResult);
+                var contact = _contactService.GetByEmail(foundCustomer, foundResult.Email);
+                contact.Phone = foundResult.Phone;
+                contact.Name = foundResult.ContactName;
+                _contactService.UpdateInfo(contact);
+                _marketingResultService.SaveChanges();
+                return Ok();
+            }catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+        [Route("PostNewContact")]
+        public IHttpActionResult PostNewContact(int planResultID, int customerID)
+        {
+            try
+            {
+                var foundResult = _marketingResultService.Get(planResultID);
+                var foundCustomer = _customerService.Get(customerID);
+                foundResult.CustomerID = customerID;
+                foundResult.Status = MarketingResultStatus.BecameNewContact;
+                _marketingResultService.Update(foundResult);
+                _contactService.Add(new Contact
+                {
+                    Name = foundResult.ContactName,
+                    Phone = foundResult.Phone,
+                    Email=foundResult.Email,
+                });
+                _marketingResultService.SaveChanges();
+
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+            return Ok();
+        }
     }
 }
