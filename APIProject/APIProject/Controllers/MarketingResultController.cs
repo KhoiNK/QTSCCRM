@@ -85,7 +85,7 @@ namespace APIProject.Controllers
 
                 var joinMoreCount = results.Where(c => c.IsWantMore).Count();
 
-                var leadGeneratedCount = results.Where(c => c.Status==MarketingResultStatus.BecameNewLead).Count();
+                var leadGeneratedCount = results.Where(c => c.Status == MarketingResultStatus.BecameNewLead).Count();
                 var totalResultCount = results.Count();
                 //customer generated count
                 return Ok(new
@@ -108,7 +108,6 @@ namespace APIProject.Controllers
             catch (Exception e)
             {
                 return BadRequest(e.Message);
-
             }
         }
 
@@ -136,10 +135,10 @@ namespace APIProject.Controllers
                     responseItem.Email = result.Email;
                     responseItem.Phone = result.Phone;
                     responseItem.AverageRate = (result.ArrangingRate +
-                        result.FacilityRate +
-                        result.IndicatorRate +
-                        result.OthersRate +
-                        result.ServicingRate) / 5;
+                                                result.FacilityRate +
+                                                result.IndicatorRate +
+                                                result.OthersRate +
+                                                result.ServicingRate) / 5;
                     responseItem.IsWantMore = result.IsWantMore;
                     responseItem.Notes = result.Notes;
                     responseItem.Status = result.Status;
@@ -147,7 +146,6 @@ namespace APIProject.Controllers
                 }
                 //todo next
                 return Ok(response);
-
             }
             catch (Exception e)
             {
@@ -178,7 +176,10 @@ namespace APIProject.Controllers
                 {
                     _marketingResultService.UpdateSimilar(addedResult);
                 }
-                _emailService.SendThankEmail(addedResult.CustomerName,addedResult.Email,foundPlan.Title,doingPlans);
+                _emailService.SendThankEmail(addedResult.CustomerName,
+                    addedResult.ContactName,
+                    addedResult.Email,
+                    foundPlan.Title, doingPlans);
                 _marketingResultService.SaveChanges();
                 return Ok(addedResult.ID);
             }
@@ -198,8 +199,8 @@ namespace APIProject.Controllers
             try
             {
                 var foundResult = _marketingResultService.Get(planResultID);
-                if (foundResult.Status == MarketingResultStatus.BecameNewContact||
-                    foundResult.Status==MarketingResultStatus.BecameNewLead)
+                if (foundResult.Status == MarketingResultStatus.BecameNewContact ||
+                    foundResult.Status == MarketingResultStatus.BecameNewLead)
                 {
                     throw new Exception("Không thể tạo mới thêm");
                 }
@@ -218,7 +219,7 @@ namespace APIProject.Controllers
                 };
                 var addedContact = _contactService.Add(newContact);
                 foundResult.CustomerID = addedCus.ID;
-                _marketingResultService.UpdateLeadGenerated(foundResult, addedCus,addedContact);
+                _marketingResultService.UpdateLeadGenerated(foundResult, addedCus, addedContact);
                 _marketingResultService.SaveChanges();
                 return Ok(new
                 {

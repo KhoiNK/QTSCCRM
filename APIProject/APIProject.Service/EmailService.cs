@@ -93,7 +93,7 @@ namespace APIProject.Service
             SendEmail(message, networkCredential);
         }
 
-        public void SendThankEmail(string customerName,string customerEmail, string marketingPlanTitle,
+        public void SendThankEmail(string customerName,string contactName,string customerEmail, string marketingPlanTitle,
             IEnumerable<MarketingPlan> doingPlans)
         {
             Template template = GetTemplate("ThankEmailTemplate.html");
@@ -104,6 +104,7 @@ namespace APIProject.Service
             string body = template.Render(Hash.FromAnonymousObject(new
             {
                 customerName,
+                contactName,
                 eventName = marketingPlanTitle,
                 marketingPlans
             }));
@@ -133,7 +134,7 @@ namespace APIProject.Service
 
         void SendQuoteEmail(Contact contact, Staff staff, IEnumerable<QuoteItemMapping> quoteItemMappings, Quote quote);
 
-        void SendThankEmail(String customerName, String customerEmail, String marketingPlanTitle,
+        void SendThankEmail(String customerName,String contactName, String customerEmail, String marketingPlanTitle,
             IEnumerable<MarketingPlan> marketingPlans);
     }
 }
