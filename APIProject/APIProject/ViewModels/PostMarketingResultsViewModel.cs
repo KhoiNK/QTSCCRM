@@ -53,6 +53,7 @@ namespace APIProject.ViewModels
                 ServicingRate = this.ServicingRate,
                 IndicatorRate = this.IndicatorRate,
                 OthersRate = this.OthersRate,
+                IsWantMore=this.IsWantMore
             };
             response.IsFromMedia = (IsFrom.Contains(MarketingResultIsFrom.IsFromMedia)) ? true : false;
             response.IsFromWebsite = (IsFrom.Contains(MarketingResultIsFrom.IsFromWebsite)) ? true : false;
