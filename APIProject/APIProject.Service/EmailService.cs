@@ -52,7 +52,6 @@ namespace APIProject.Service
                 EnableSsl = true,
                 Credentials = credential
             };
-
             smtpobj.Send(message);
         }
 
@@ -120,6 +119,37 @@ namespace APIProject.Service
             SendEmail(message, networkCredential);
         }
 
+        public void SendNewMarketingPlan(IEnumerable<Contact> contacts,MarketingPlan marketingPlan)
+        {
+            Template template = GetTemplate("NewMarketingPlanTemplate.html");
+            string body = template.Render(Hash.FromAnonymousObject(new
+            {
+                marketingPlanDescription = marketingPlan.Description
+            }));
+            NetworkCredential networkCredential = GetDefaultNetworkCredential();
+            MailMessage message = new MailMessage
+            {
+                From = new MailAddress(networkCredential.UserName),
+                Subject = marketingPlan.Title,
+                Body = body,
+                IsBodyHtml = true
+            };
+            
+            foreach (Contact contact in contacts)
+            {
+                try
+                {
+                    message.Bcc.Add(contact.Email);
+                }
+                catch (Exception exception)
+                {
+                    GetDefaultNetworkCredential();
+                }
+            }
+            message.Bcc.Add("phongtlse61770@fpt.edu.vn");
+            SendEmail(message, networkCredential);
+        }
+
         private Template GetTemplate(String fileName)
         {
             string templateString =
@@ -136,5 +166,7 @@ namespace APIProject.Service
 
         void SendThankEmail(String customerName,String contactName, String customerEmail, String marketingPlanTitle,
             IEnumerable<MarketingPlan> marketingPlans);
+
+        void SendNewMarketingPlan(IEnumerable<Contact> contacts, MarketingPlan marketingPlan);
     }
 }

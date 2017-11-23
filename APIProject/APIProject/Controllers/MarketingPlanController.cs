@@ -1,6 +1,7 @@
 ﻿using APIProject.Service;
 using APIProject.ViewModels;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
+using APIProject.Model.Models;
 
 namespace APIProject.Controllers
 {
@@ -20,12 +22,21 @@ namespace APIProject.Controllers
     {
         private readonly IMarketingPlanService _marketingPlanService;
         private readonly IStaffService _staffService;
+        private readonly IEmailService _emailService;
+        private readonly IContactService _contactService;
+        private readonly ICustomerService _customerService;
 
         public MarketingPlanController(IMarketingPlanService _marketingPlanService,
-            IStaffService _staffService)
+            IStaffService _staffService,
+            IEmailService _emailService,
+            IContactService _contactService,
+            ICustomerService _customerService)
         {
             this._staffService = _staffService;
             this._marketingPlanService = _marketingPlanService;
+            this._emailService = _emailService;
+            this._contactService = _contactService;
+            this._customerService = _customerService;
         }
 
         //[Authorize(Roles = "Admin,Employee")]
@@ -71,7 +82,21 @@ namespace APIProject.Controllers
             }
 
             var addedPlan = _marketingPlanService.Add(request.ToMarketingPlanModel());
-            _marketingPlanService.SaveChanges();
+//            _marketingPlanService.SaveChanges();
+            var customers = _customerService.GetAll().Where(cus => !cus.IsDelete);
+            List<Contact> contacts = new List<Contact>();
+            foreach (Customer customer in customers)
+            {
+                var customerContacts = _contactService.GetByCustomer(customer.ID).Where(contact => !contact.IsDelete);
+                foreach (Contact contact in customerContacts)
+                {
+                    if (!contacts.Exists(inlistContact => inlistContact.ID == contact.ID))
+                    {
+                        contacts.Add(contact);
+                    }
+                }
+            }
+            _emailService.SendNewMarketingPlan(contacts,addedPlan);
             //insert plan and get plan id
             return Ok(new { PlanID = addedPlan.ID });
         }
