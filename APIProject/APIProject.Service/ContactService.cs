@@ -111,7 +111,14 @@ namespace APIProject.Service
         {
             var entity = _contactRepository.GetAll().Where(c => c.IsDelete == false
             && c.CustomerID == customer.ID && c.Email.Equals(email)).FirstOrDefault();
-            return entity;
+            if (entity != null)
+            {
+                return entity;
+            }
+            else
+            {
+                throw new Exception("Không tìm thấy liên lạc tương ứng với email");
+            }
         }
 
         public IEnumerable<Contact> GetByCustomer(int customerID)

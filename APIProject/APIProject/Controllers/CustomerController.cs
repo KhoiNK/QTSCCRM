@@ -68,7 +68,7 @@ namespace APIProject.Controllers
             }
             try
             {
-                if(DateTime.Compare(DateTime.Now,request.EstablishedDate)< 0)
+                if (DateTime.Compare(DateTime.Now, request.EstablishedDate) < 0)
                 {
                     throw new Exception("Ngày thành lập không được sau thời gian hiện tại");
                 }
@@ -190,17 +190,22 @@ namespace APIProject.Controllers
                 Address = customerAddress
             });
             results.ToList().ForEach(c => _uploadNamingService.ConcatCustomerAvatar(c));
-            foreach(var result in results)
+            foreach (var result in results)
             {
                 _uploadNamingService.ConcatCustomerAvatar(result);
-                var resultContact= _contactService.GetByEmail(result, contactEmail);
                 var response = new SimilarCustomerDetailsViewModel();
                 response.Customer = new CustomerDetailViewModel(result);
-                if(resultContact!= null)
+                try
                 {
+                    var resultContact = _contactService.GetByEmail(result, contactEmail);
                     _uploadNamingService.ConcatContactAvatar(resultContact);
                     response.Contact = new ContactViewModel(resultContact);
                 }
+                catch (Exception e)
+                {
+                    response.Contact = null;
+                }
+
                 responseList.Add(response);
             }
             //var response = result.Select(c => new SimilarCustomerDetailsViewModel(c));
@@ -287,6 +292,13 @@ namespace APIProject.Controllers
         public IHttpActionResult GetCustomerTypes()
         {
             return Ok(_customerService.GetCustomerTypes());
+        }
+        [Route("GetAllCustomerTypes")]
+        public IHttpActionResult GetAllCustomerTypes()
+        {
+            var response = _customerService.GetCustomerTypes();
+            response.Add(CustomerType.Lead);
+            return Ok(response);
         }
         [Route("GetIssueCustomer")]
         [ResponseType(typeof(CustomerDetailViewModel))]

@@ -1,4 +1,4 @@
-<head>
+﻿<head>
     <meta charset="utf-8">
     <style>
       table, th, td{
@@ -9,6 +9,8 @@
 <body>
   <div class="content">
     Kính gửi: {{customerName}}<br/><br/>
+    Cám ơn anh/ chị đã quan tâm đến dịch vụ của QTSC.<br/>
+    Sau đây QTSC xin gửi anh/ chị bảng báo giá các hạng mục dịch vụ hiện bên công ty đang cung cấp.<br/><br />
     <table>
       <tr>
           <th>Hạng mục</th>
@@ -25,19 +27,20 @@
       {% endfor -%}
       <!--Loop end-->
       <tr>
-        <td>Tax</td>
+        <td>Thuế</td>
         <td colspan="2">{{tax}}</td>
       </tr>
       <tr>
-        <td>Discount</td>
+        <td>Giảm giá</td>
         <td colspan="2">{{discount}}</td>
       </tr>
     </table>
-    <br/>
+    <br/><br />
+      Mọi thắc mắc xin hãy liên hệ nhân viên đại diện của chúng tôi theo liên lạc dưới đây.<br/>
     <div class="staff">
-      Tên nhân viên: {{staffName}}<br/>
-      Email nhân viên: {{staffEmail}}<br/>
-      Điện thoại nhân viên:{{staffPhonenumber}}<br/>
+      Tên: {{staffName}}<br/>
+      Email: {{staffEmail}}<br/>
+      Điện:{{staffPhonenumber}}<br/>
     </div>
   </div>
 </body>

@@ -77,34 +77,31 @@ namespace APIProject.Controllers
                 var oppCus = _customerService.Get(oppContact.CustomerID);
                 var addedContracts = new List<Contract>();
                 var contractCode = _uploadNamingService.GetContractNaming();
-                foreach(var contract in request.Contracts)
+                foreach (var contract in request.Contracts)
                 {
                     var quoteItem = _quoteItemMappingService.Get(contract.QuoteItemID);
                     var quoteItemSalesItem = _salesItemService.Get(contract.QuoteItemID);
-                    for(int i =1; i<=contract.Quantity;i++)
+                    var addedContract = _contractService.Add(new Contract
                     {
-                        var addedContract = _contractService.Add(new Contract
-                        {
-                            ContactID = oppContact.ID,
-                            //Name = quoteItem.SalesItemName,
-                            //Price = quoteItem.Price.Value,
-                            //Unit = quoteItem.Unit,
+                        ContactID = oppContact.ID,
+                        //Name = quoteItem.SalesItemName,
+                        //Price = quoteItem.Price.Value,
+                        //Unit = quoteItem.Unit,
 
-                            Name = quoteItemSalesItem.Name,
-                            Price = quoteItemSalesItem.Price,
-                            Unit = quoteItemSalesItem.Unit,
+                        Name = quoteItemSalesItem.Name + " - " + contract.Quantity,
+                        Price = quoteItemSalesItem.Price,
+                        Unit = quoteItemSalesItem.Unit,
 
-                            StartDate = contract.StartDate.Date,
-                            EndDate = contract.EndDate.Date,
-                            SalesItemID = quoteItemSalesItem.ID,
-                            CreatedStaffID = foundStaff.ID,
-                            CreatedDate = DateTime.Now,
-                            UpdatedDate = DateTime.Now,
-                            Status = ContractStatus.Waiting,
-                            CustomerID = oppContact.CustomerID
-                        });
-                        addedContracts.Add(addedContract);
-                    }
+                        StartDate = contract.StartDate.Date,
+                        EndDate = contract.EndDate.Date,
+                        SalesItemID = quoteItemSalesItem.ID,
+                        CreatedStaffID = foundStaff.ID,
+                        CreatedDate = DateTime.Now,
+                        UpdatedDate = DateTime.Now,
+                        Status = ContractStatus.Waiting,
+                        CustomerID = oppContact.CustomerID
+                    });
+                    addedContracts.Add(addedContract);
                 }
                 response.ContractIDs = addedContracts.Select(c => c.ID).ToList();
                 _opportunityService.SetWon(foundOpp);
@@ -118,7 +115,8 @@ namespace APIProject.Controllers
                 //return Ok(response);
                 return Ok(addedContracts.Select(c => new ContractDetailsViewModel(
                     c, null, null, null)));
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
@@ -137,7 +135,7 @@ namespace APIProject.Controllers
             {
                 var foundStaff = _staffService.Get(request.StaffID);
                 var foundContract = _contractService.Get(request.ContractID);
-                
+
                 var recontractEntity = _contractService.Recontract(foundContract, request.EndDate);
                 _contractService.SaveChanges();
                 var oldContract = _contractService.Get(request.ContractID);
@@ -172,7 +170,8 @@ namespace APIProject.Controllers
                         Status = recontractEntity.Status
                     }
                 });
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
@@ -197,7 +196,7 @@ namespace APIProject.Controllers
                 _contractService.SaveChanges();
                 return Ok(new { ContractUpdated = true });
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
@@ -342,13 +341,13 @@ namespace APIProject.Controllers
                     ID = entity.ID,
                     //ContractCode = entity.ContractCode,
                     CustomerName = _customerService.Get(entity.CustomerID).Name,
-                    ContactName= _contactService.Get(entity.ContactID).Name,
+                    ContactName = _contactService.Get(entity.ContactID).Name,
                     Category = _salesItemService.Get(entity.SalesItemID).SalesCategory.Name,
                     Name = _salesItemService.Get(entity.SalesItemID).SalesCategory.Name + "/" + entity.Name,
-                    Price=entity.Price,
-                    Unit=entity.Unit,
-                    StartDate=entity.StartDate,
-                    EndDate=entity.EndDate,
+                    Price = entity.Price,
+                    Unit = entity.Unit,
+                    StartDate = entity.StartDate,
+                    EndDate = entity.EndDate,
                     Status = entity.Status
                 });
             }

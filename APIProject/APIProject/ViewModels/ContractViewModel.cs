@@ -42,8 +42,7 @@ namespace APIProject.ViewModels
     {
         [Required]
         public int QuoteItemID { get; set; }
-        [Required]
-        public int Quantity { get; set; }
+        public string Quantity { get; set; }
         [Required]
         public DateTime StartDate { get; set; }
         [Required]

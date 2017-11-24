@@ -229,7 +229,7 @@ namespace APIProject.Service
         #region private
         private void VerifyTaxCode(Customer customer)
         {
-            Regex regex = new Regex(@"^\d{13,13}$");
+            Regex regex = new Regex(@"^\d{10,13}$");
             if (!regex.IsMatch(customer.TaxCode))
             {
                 throw new Exception("Lỗi mã số thuế: mã số thuể gồm 13 chữ số");

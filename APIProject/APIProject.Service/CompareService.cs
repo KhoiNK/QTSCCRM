@@ -25,7 +25,7 @@ namespace APIProject.Service
             "XUAT NHAP KHAU", "XNK", "TM&DV", "MỘT THÀNH VIÊN", "MOT THANH VIEN", "MTV", "ĐẦU TƯ",
             "DAU TU", "PHÁT TRIỂN", "PHAT TRIEN", "VÀ", "NỘI THẤT", "NOI THAT", "KINH DOANH",
             "KINH DOANH", "XÂY DỰNG", "XAY DUNG", "DU LỊCH", "DU LICH", "TRUYỀN THÔNG", "TRUYEN THONG",
-            "CÔNG NGHỆ", "CONG NGHE", "TƯ NHÂN"
+            "CÔNG NGHỆ", "CONG NGHE", "TƯ NHÂN", "PHẦN MỀM", "PM", "PHAN MEM"
         };
 
         public CompareService(ICustomerRepository _customerRepository)
@@ -72,11 +72,22 @@ namespace APIProject.Service
         public IEnumerable<Customer> GetSimilarCustomers(Customer customer)
         {
             int percentage = 70;
+            var entities = _customerRepository.GetAll().Where(c => c.IsDelete == false);
+            var response = new List<Customer>();
+            foreach(var entity in entities)
+            {
+                var matchingPercentage = StringCompare(FilterIrrelevantWords(customer.Name), FilterIrrelevantWords(entity.Name));
+                if (matchingPercentage >= percentage)
+                {
+                    response.Add(entity);
+                }
+            }
             var customerEntities = _customerRepository.GetAll()
                 .Where(c => c.IsDelete == false &&
                             StringCompare(FilterIrrelevantWords(customer.Name), FilterIrrelevantWords(c.Name)) >=
                             percentage);
-            return customerEntities;
+            //return customerEntities;
+            return response;
         }
     }
 }

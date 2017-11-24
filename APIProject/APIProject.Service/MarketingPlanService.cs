@@ -121,7 +121,7 @@ namespace APIProject.Service
         public IEnumerable<MarketingPlan> GetDoing()
         {
             var entities = _marketingPlanRepository.GetAll().Where(c => c.IsDelete == false &&
-            c.Status == MarketingStatus.Executing);
+            c.Status != MarketingStatus.Finished);
             return entities;
         }
         public Dictionary<string, int> GetRates(int monthRange)
@@ -208,7 +208,15 @@ namespace APIProject.Service
 
         public void BackgroundUdate()
         {
-
+            var entities = GetAll();
+            foreach(var entity in entities)
+            {
+                if (DateTime.Compare(DateTime.Now.Date, entity.EndDate.Date) >= 0)
+                {
+                    entity.UpdatedDate = DateTime.Now;
+                    entity.Status = MarketingStatus.Reporting;
+                }
+            }
         }
         public void UpdateInfo(MarketingPlan marketingPlan)
         {

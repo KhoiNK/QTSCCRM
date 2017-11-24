@@ -69,7 +69,7 @@ namespace APIProject.Controllers
                 var results = _marketingResultService.GetByPlan(planID);
                 if (!results.Any())
                 {
-                    throw new Exception("Không có dữ liệu nào");
+                    return Ok(new { Message = "Chưa có ai nhập khảo sát" });
                 }
                 var facilityRate = results.Select(c => c.FacilityRate).ToList().Average();
                 var arrangingRate = results.Select(c => c.ArrangingRate).ToList().Average();
@@ -266,6 +266,7 @@ namespace APIProject.Controllers
                 _marketingResultService.Update(foundResult);
                 _contactService.Add(new Contact
                 {
+                    CustomerID=foundCustomer.ID,
                     Name = foundResult.ContactName,
                     Phone = foundResult.Phone,
                     Email=foundResult.Email,

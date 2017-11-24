@@ -9,6 +9,7 @@ namespace APIProject.GlobalVariables
     public static class MarketingStatus
     {
         public static string Executing = "Đang hoạt động";
+        public static string Reporting = "Tổng hợp ý kiến";
         public static string Finished = "Kết thúc";
     }
 
