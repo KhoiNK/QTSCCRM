@@ -90,7 +90,7 @@ namespace APIProject.Controllers
                 var customerContacts = _contactService.GetByCustomer(customer.ID).Where(contact => !contact.IsDelete);
                 foreach (Contact contact in customerContacts)
                 {
-                    if (!contacts.Exists(inlistContact => inlistContact.ID == contact.ID))
+                    if (!contacts.Exists(inlistContact => inlistContact.Email == contact.Email))
                     {
                         contacts.Add(contact);
                     }

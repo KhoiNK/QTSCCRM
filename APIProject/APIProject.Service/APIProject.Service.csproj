@@ -55,6 +55,7 @@
     <Compile Include="ContractService.cs" />
     <Compile Include="CustomerService.cs" />
     <Compile Include="DotliquidFilters\Filters.cs" />
+    <Compile Include="EmailBuilder.cs" />
     <Compile Include="EmailService.cs" />
     <Compile Include="IssueCategoryMappingService.cs" />
     <Compile Include="IssueService.cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -54,7 +55,7 @@ namespace APIProject.Service
             };
             smtpobj.Send(message);
         }
-
+        
         public void SendQuoteEmail(Contact contact, Staff staff, IEnumerable<QuoteItemMapping> quoteItemMappings,
             Quote quote)
         {
@@ -65,31 +66,27 @@ namespace APIProject.Service
                 quoteItem.SalesItem.Price,
                 quoteItem.SalesItem.Unit
             }));
-            RenderParameters renderParameters = new RenderParameters(CultureInfo.CurrentCulture)
+            object data = new
             {
-                Filters = new[] {typeof(CustomFilters)},
-                LocalVariables = Hash.FromAnonymousObject(new
-                {
-                    customerName = contact.Name,
-                    salesItems,
-                    tax = quote.Tax,
-                    discount = quote.Discount,
-                    staffName = staff.Name,
-                    staffEmail = staff.Email,
-                    staffPhonenumber = staff.Phone
-                })
+                customerName = contact.Name,
+                salesItems,
+                tax = quote.Tax,
+                discount = quote.Discount,
+                staffName = staff.Name,
+                staffEmail = staff.Email,
+                staffPhonenumber = staff.Phone
             };
-            string body = template.Render(renderParameters);
             NetworkCredential networkCredential = GetDefaultNetworkCredential();
-            MailMessage message = new MailMessage
+            MailMessage[] mailMessages = new EmailBuilder()
+                .SetSubject($"QTSC - Báo giá ngày {DateTime.Now.ToShortDateString()}")
+                .SetBody(template,data,new[] {typeof(CustomFilters)})
+                .SetFrom(networkCredential.UserName)
+                .SetTO(new[]{contact.Email})
+                .getEmails();
+            foreach (MailMessage mailMessage in mailMessages)
             {
-                From = new MailAddress(networkCredential.UserName),
-                Subject = $"QTSC - Báo giá ngày {DateTime.Now.ToShortDateString()}",
-                To = {contact.Email},
-                Body = body,
-                IsBodyHtml = true
-            };
-            SendEmail(message, networkCredential);
+                SendEmail(mailMessage, networkCredential);
+            }
         }
 
         public void SendThankEmail(string customerName,string contactName,string customerEmail, string marketingPlanTitle,
@@ -100,54 +97,44 @@ namespace APIProject.Service
             {
                 name = marketingPlan.Title
             }));
-            string body = template.Render(Hash.FromAnonymousObject(new
+            object data = new
             {
                 customerName,
                 contactName,
                 eventName = marketingPlanTitle,
                 marketingPlans
-            }));
-            NetworkCredential networkCredential = GetDefaultNetworkCredential();
-            MailMessage message = new MailMessage
-            {
-                From = new MailAddress(networkCredential.UserName),
-                Subject = $"Sự kiện {marketingPlanTitle} - Lời cảm ơn",
-                To = {customerEmail},
-                Body = body,
-                IsBodyHtml = true
             };
-            SendEmail(message, networkCredential);
+            NetworkCredential networkCredential = GetDefaultNetworkCredential();
+            MailMessage[] mailMessages = new EmailBuilder()
+                .SetSubject($"Sự kiện {marketingPlanTitle} - Lời cảm ơn")
+                .SetBody(template,data)
+                .SetFrom(networkCredential.UserName)
+                .SetTO(new[]{customerEmail})
+                .getEmails();
+            foreach (MailMessage mailMessage in mailMessages)
+            {
+                SendEmail(mailMessage, networkCredential);                
+            }
         }
 
         public void SendNewMarketingPlan(IEnumerable<Contact> contacts,MarketingPlan marketingPlan)
         {
             Template template = GetTemplate("NewMarketingPlanTemplate.html");
-            string body = template.Render(Hash.FromAnonymousObject(new
+            object data = new
             {
                 marketingPlanDescription = marketingPlan.Description
-            }));
-            NetworkCredential networkCredential = GetDefaultNetworkCredential();
-            MailMessage message = new MailMessage
-            {
-                From = new MailAddress(networkCredential.UserName),
-                Subject = marketingPlan.Title,
-                Body = body,
-                IsBodyHtml = true
             };
-            
-            foreach (Contact contact in contacts)
+            NetworkCredential networkCredential = GetDefaultNetworkCredential();
+            MailMessage[] messages = new EmailBuilder()
+                .SetSubject(marketingPlan.Title)
+                .SetBody(template, data)
+                .SetFrom(networkCredential.UserName)
+                .SetBCC(contacts.Select(contact => contact.Email).ToArray())
+                .getEmails();
+            foreach (MailMessage mailMessage in messages)
             {
-                try
-                {
-                    message.Bcc.Add(contact.Email);
-                }
-                catch (Exception exception)
-                {
-                    GetDefaultNetworkCredential();
-                }
+                SendEmail(mailMessage, networkCredential);
             }
-            message.Bcc.Add("phongtlse61770@fpt.edu.vn");
-            SendEmail(message, networkCredential);
         }
 
         private Template GetTemplate(String fileName)
