@@ -82,7 +82,7 @@ namespace APIProject.Controllers
             }
 
             var addedPlan = _marketingPlanService.Add(request.ToMarketingPlanModel());
-//            _marketingPlanService.SaveChanges();
+            _marketingPlanService.SaveChanges();
             var customers = _customerService.GetAll().Where(cus => !cus.IsDelete);
             List<Contact> contacts = new List<Contact>();
             foreach (Customer customer in customers)
