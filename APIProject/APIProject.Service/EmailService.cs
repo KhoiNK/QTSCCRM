@@ -122,11 +122,13 @@ namespace APIProject.Service
             Template template = GetTemplate("NewMarketingPlanTemplate.html");
             object data = new
             {
-                marketingPlanDescription = marketingPlan.Description
+                eventName = marketingPlan.Title,
+                eventDescription = marketingPlan.Description,
+                linkEventPage = "https://qtsc.com.vn/web/guest/home"
             };
             NetworkCredential networkCredential = GetDefaultNetworkCredential();
             MailMessage[] messages = new EmailBuilder()
-                .SetSubject(marketingPlan.Title)
+                .SetSubject("Thư mời tham gia sự kiện của QTSC")
                 .SetBody(template, data)
                 .SetFrom(networkCredential.UserName)
                 .SetBCC(contacts.Select(contact => contact.Email).ToArray())
