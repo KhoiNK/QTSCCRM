@@ -42,11 +42,11 @@ namespace APIProject.ViewModels
     {
         [Required]
         public int QuoteItemID { get; set; }
-        public string Quantity { get; set; }
+        public string Description { get; set; }
         [Required]
         public DateTime StartDate { get; set; }
         [Required]
-        public DateTime EndDate { get; set; }
+        public int Duration { get; set; }
     }
     public class PostCloseContractViewModel
     {
@@ -63,7 +63,7 @@ namespace APIProject.ViewModels
         [Required]
         public int ContractID { get; set; }
         [Required]
-        public DateTime EndDate { get; set; }
+        public int Duration { get; set; }
     }
 
     public class ContractDetailsViewModel

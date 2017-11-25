@@ -79,6 +79,10 @@ namespace APIProject.Controllers
                 var contractCode = _uploadNamingService.GetContractNaming();
                 foreach (var contract in request.Contracts)
                 {
+                    if(contract.Duration<1 || contract.Duration > 600)
+                    {
+                        throw new Exception("Thời gian sử dụng chỉ cho phép từ 1 tháng đến 50 năm (600 tháng)");
+                    }
                     var quoteItem = _quoteItemMappingService.Get(contract.QuoteItemID);
                     var quoteItemSalesItem = _salesItemService.Get(contract.QuoteItemID);
                     var addedContract = _contractService.Add(new Contract
@@ -88,12 +92,12 @@ namespace APIProject.Controllers
                         //Price = quoteItem.Price.Value,
                         //Unit = quoteItem.Unit,
 
-                        Name = quoteItemSalesItem.Name + " - " + contract.Quantity,
+                        Name = quoteItemSalesItem.Name + " - " + contract.Description,
                         Price = quoteItemSalesItem.Price,
                         Unit = quoteItemSalesItem.Unit,
 
                         StartDate = contract.StartDate.Date,
-                        EndDate = contract.EndDate.Date,
+                        EndDate = contract.StartDate.AddMonths(contract.Duration),
                         SalesItemID = quoteItemSalesItem.ID,
                         CreatedStaffID = foundStaff.ID,
                         CreatedDate = DateTime.Now,
@@ -135,8 +139,11 @@ namespace APIProject.Controllers
             {
                 var foundStaff = _staffService.Get(request.StaffID);
                 var foundContract = _contractService.Get(request.ContractID);
-
-                var recontractEntity = _contractService.Recontract(foundContract, request.EndDate);
+                if (request.Duration < 1 || request.Duration > 600)
+                {
+                    throw new Exception("Thời gian sử dụng chỉ cho phép từ 1 tháng đến 50 năm (600 tháng)");
+                }
+                var recontractEntity = _contractService.Recontract(foundContract, foundContract.EndDate.AddMonths(request.Duration));
                 _contractService.SaveChanges();
                 var oldContract = _contractService.Get(request.ContractID);
                 return Ok(new

@@ -236,7 +236,7 @@ namespace APIProject.Service
             }
 
             var existedCustomer = _customerRepository.GetAll().Where(c => c.TaxCode == customer.TaxCode &&
-            c.IsDelete == false).FirstOrDefault();
+            c.IsDelete == false && c.ID != customer.ID).FirstOrDefault();
             if (existedCustomer != null)
             {
                 throw new Exception(CustomError.TaxCodeIsUsed);

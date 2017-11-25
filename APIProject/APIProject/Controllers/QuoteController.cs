@@ -118,12 +118,15 @@ namespace APIProject.Controllers
                     var categoryItemIDs = _salesItemService.GetByCategory(category.ID).Select(c => c.ID);
                     var intersectQuoteItems = quoteItems.Where(c => categoryItemIDs.Contains(c.SalesItemID))
                         .Select(c => new QuoteItemViewModel(c)).ToList();
-                    response.Categories.Add(new QuoteCategotyViewModel
+                    if (intersectQuoteItems.Any())
                     {
-                        ID = category.ID,
-                        Name = category.Name,
-                        Items = intersectQuoteItems.ToList()
-                    });
+                        response.Categories.Add(new QuoteCategotyViewModel
+                        {
+                            ID = category.ID,
+                            Name = category.Name,
+                            Items = intersectQuoteItems.ToList()
+                        });
+                    }
                 }
                 return Ok(response);
             }
