@@ -1,5 +1,9 @@
 ﻿using APIProject.Data.Repositories;
 using APIProject.Model.Models;
+using GoogleApi;
+using GoogleApi.Entities.Common.Enums;
+using GoogleApi.Entities.Maps.DistanceMatrix.Request;
+using GoogleApi.Entities.Maps.DistanceMatrix.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +16,8 @@ namespace APIProject.Service
     public interface ICompareService
     {
         IEnumerable<Customer> GetSimilarCustomers(Customer customer);
+        Customer GetExistedCustomer(Customer newCustomer);
+
     }
 
     public class CompareService : ICompareService
@@ -74,7 +80,7 @@ namespace APIProject.Service
             int percentage = 70;
             var entities = _customerRepository.GetAll().Where(c => c.IsDelete == false);
             var response = new List<Customer>();
-            foreach(var entity in entities)
+            foreach (var entity in entities)
             {
                 var matchingPercentage = StringCompare(FilterIrrelevantWords(customer.Name), FilterIrrelevantWords(entity.Name));
                 if (matchingPercentage >= percentage)
@@ -87,6 +93,68 @@ namespace APIProject.Service
                             StringCompare(FilterIrrelevantWords(customer.Name), FilterIrrelevantWords(c.Name)) >=
                             percentage);
             //return customerEntities;
+            return response;
+        }
+
+        public Customer GetExistedCustomer(Customer newCustomer)
+        {
+            var newCustomerAddressNumbers = GetAddressNumbers(newCustomer.Address);
+            int safeRadiusMeters = 50;
+            var similarCustomers = GetSimilarCustomers(newCustomer).ToList();
+            var matrix = GoogleApi.GoogleMaps.DistanceMatrix;
+            var request = new GoogleApi.Entities.Maps.DistanceMatrix.Request.DistanceMatrixRequest
+            {
+                OriginsRaw =newCustomer.Address,
+                DestinationsRaw = String.Join("|",similarCustomers.Select(c=>c.Address).ToList()),
+                Language =GoogleApi.Entities.Common.Enums.Language.Vietnamese,
+            };
+            var matrix2 = new HttpEngine<DistanceMatrixRequest, DistanceMatrixResponse>();
+            var response = matrix2.Query(request);
+            var rowResponse = response.Rows.FirstOrDefault();
+            int index = -1;
+            foreach(var element in rowResponse.Elements)
+            {
+                index++;
+                if(element.Status == Status.Ok)
+                {
+                    if (element.Distance.Value < safeRadiusMeters)
+                    {
+                        var similarCustomer = similarCustomers.ElementAt(index);
+                        var similarCustomerAddressNumbers = GetAddressNumbers(similarCustomer.Address);
+                        if(newCustomerAddressNumbers.Any() && similarCustomerAddressNumbers.Any())
+                        {
+                            if(newCustomerAddressNumbers.Count == similarCustomerAddressNumbers.Count)
+                            {
+                                if(newCustomerAddressNumbers.Intersect(similarCustomerAddressNumbers).Count()
+                                    == newCustomerAddressNumbers.Count)
+                                {
+                                    return similarCustomer;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        private string GetFirstNumber(string address)
+        {
+            address = Regex.Replace(address, @"\s+", "");
+            var houseNumber = new string(address.SkipWhile(c => !char.IsDigit(c))
+                .TakeWhile(c => char.IsDigit(c) || c == '/').ToArray());
+            return houseNumber;
+        }
+        private List<string> GetAddressNumbers(string address)
+        {
+            address = Regex.Replace(address, @"\s+", "");
+            var response = new List<string>();
+            while (address.Any(char.IsDigit))
+            {
+                var responseItem = GetFirstNumber(address);
+                response.Add(responseItem);
+                address = address.Replace(responseItem, "");
+            }
             return response;
         }
     }

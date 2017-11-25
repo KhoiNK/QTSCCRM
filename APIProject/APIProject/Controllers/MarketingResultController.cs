@@ -167,21 +167,63 @@ namespace APIProject.Controllers
                 var doingPlans = _marketingPlanService.GetDoing().Where(plan => plan.ID != foundPlan.ID);
                 var addedResult = _marketingResultService.Add(request.ToResultModel());
                 _marketingResultService.SaveChanges();
-                var similarCustomers = _compareService.GetSimilarCustomers(new Customer
+                var newCustomer = new Customer
                 {
                     Name = addedResult.CustomerName,
                     Address = addedResult.CustomerAddress
-                });
+                };
+                Customer existed = null;
+                var similarCustomers = _compareService.GetSimilarCustomers(newCustomer);
+
                 if (similarCustomers.Any())
                 {
                     _marketingResultService.UpdateSimilar(addedResult);
+                    existed = _compareService.GetExistedCustomer(newCustomer);
+                    //todo next
+                    if (existed != null)
+                    {
+                        //existed email or not
+                        addedResult.CustomerID = existed.ID;
+                        try
+                        {
+                            var existedContact = _contactService.GetByEmail(existed, addedResult.Email);
+
+                            existedContact.Name = addedResult.ContactName;
+                            existedContact.Phone = addedResult.Phone;
+                            _contactService.UpdateInfo(existedContact);
+
+                            addedResult.Status = MarketingResultStatus.UpdatedContact;
+                        }
+                        catch (Exception e)
+                        {
+                            _contactService.Add(new Contact
+                            {
+                                Name = addedResult.ContactName,
+                                Email = addedResult.Email,
+                                Phone = addedResult.Phone,
+                                CustomerID = existed.ID
+                            });
+                            addedResult.Status = MarketingResultStatus.BecameNewContact;
+                        }
+                        _marketingResultService.Update(addedResult);
+                    }
                 }
+                _marketingResultService.SaveChanges();
                 _emailService.SendThankEmail(addedResult.CustomerName,
                     addedResult.ContactName,
                     addedResult.Email,
                     foundPlan.Title, doingPlans);
-                _marketingResultService.SaveChanges();
-                return Ok(addedResult.ID);
+                return Ok(new
+                {
+                    ResultID = addedResult.ID,
+                    Customer = existed != null ? new CustomerViewModel(existed) : null,
+                    Result = new MarketingResultParticipantViewModel
+                    {
+                        ID = addedResult.ID,
+                        CustomerID=addedResult.CustomerID,
+                        Status=addedResult.Status
+                    },
+                });
             }
             catch (Exception e)
             {
@@ -241,7 +283,7 @@ namespace APIProject.Controllers
                 var foundResult = _marketingResultService.Get(planResultID);
                 var foundCustomer = _customerService.Get(customerID);
                 foundResult.CustomerID = customerID;
-                foundResult.Status = MarketingResultStatus.BecameNewContact;
+                foundResult.Status = MarketingResultStatus.UpdatedContact;
                 _marketingResultService.Update(foundResult);
                 var contact = _contactService.GetByEmail(foundCustomer, foundResult.Email);
                 contact.Phone = foundResult.Phone;
@@ -249,7 +291,8 @@ namespace APIProject.Controllers
                 _contactService.UpdateInfo(contact);
                 _marketingResultService.SaveChanges();
                 return Ok();
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
@@ -266,15 +309,15 @@ namespace APIProject.Controllers
                 _marketingResultService.Update(foundResult);
                 _contactService.Add(new Contact
                 {
-                    CustomerID=foundCustomer.ID,
+                    CustomerID = foundCustomer.ID,
                     Name = foundResult.ContactName,
                     Phone = foundResult.Phone,
-                    Email=foundResult.Email,
+                    Email = foundResult.Email,
                 });
                 _marketingResultService.SaveChanges();
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }

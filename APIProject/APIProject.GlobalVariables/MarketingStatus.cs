@@ -18,7 +18,8 @@ namespace APIProject.GlobalVariables
         public static string HasSimilar = "Có tương đồng";
         public static string New = "Khách hàng mới";
         public static string BecameNewLead = "Đã cập nhật khách hàng tiềm năng";
-        public static string BecameNewContact = "Đã cập nhật liên lạc";
+        public static string BecameNewContact = "Liên lạc mới";
+        public static string UpdatedContact = "Cập nhật liên lạc";
     }
 
     public static class MarketingResultIsFrom
