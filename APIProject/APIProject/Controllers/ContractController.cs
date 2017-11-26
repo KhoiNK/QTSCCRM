@@ -85,6 +85,12 @@ namespace APIProject.Controllers
                     }
                     var quoteItem = _quoteItemMappingService.Get(contract.QuoteItemID);
                     var quoteItemSalesItem = _salesItemService.Get(contract.QuoteItemID);
+                    var contractName = quoteItemSalesItem.Name;
+                    contract.Description = contract.Description.Trim();
+                    if(contract.Description.Length != 0)
+                    {
+                        contractName += " - " + contract.Description;
+                    }
                     var addedContract = _contractService.Add(new Contract
                     {
                         ContactID = oppContact.ID,
@@ -92,7 +98,7 @@ namespace APIProject.Controllers
                         //Price = quoteItem.Price.Value,
                         //Unit = quoteItem.Unit,
 
-                        Name = quoteItemSalesItem.Name + " - " + contract.Description,
+                        Name = contractName,
                         Price = quoteItemSalesItem.Price,
                         Unit = quoteItemSalesItem.Unit,
 
