@@ -1,4 +1,6 @@
-﻿using Spire.Pdf;
+﻿using APIProject.Model.Models;
+using APIProject.ViewModels;
+using Spire.Pdf;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -67,6 +69,24 @@ namespace APIProject.Helper
             }
         }
 
+        public CustomB64ImageFileViewModel GetContactAvatarBase64View(Contact contact)
+        {
+            try
+            {
+                string fileRoot = HttpContext.Current.Server.MapPath("~/Resources/ContactAvatarFiles");
+                string filePath = Path.Combine(fileRoot, contact.AvatarSrc);
+                byte[] imageArray = System.IO.File.ReadAllBytes(filePath);
+                string base64ImageRepresentation = Convert.ToBase64String(imageArray);
+                return new CustomB64ImageFileViewModel
+                {
+                    Name = contact.AvatarSrc,
+                    Base64Content = base64ImageRepresentation
+                };
+            }catch(Exception e)
+            {
+                return null;
+            }
+        }
         public string SavePdfQuoteFile(PdfDocument doc, string fileName)
         {
             string fileRoot = HttpContext.Current.Server.MapPath("~/Resources/QuoteFiles");

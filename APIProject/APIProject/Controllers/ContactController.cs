@@ -103,6 +103,7 @@ namespace APIProject.Controllers
             {
                 var foundContact = _contactService.Get(request.ID);
                 _contactService.UpdateInfo(request.ToContactModel());
+                _contactService.SaveChanges();
                 response.ContactUpdated = true;
                 return Ok(response);
             }

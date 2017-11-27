@@ -127,6 +127,11 @@ namespace APIProject.Service
                 c => c.CustomerID == customerID && c.IsDelete == false);
             return entities;
         }
+        public void SaveChanges()
+        {
+            _unitOfWork.Commit();
+        }
+
 
         #region private verify
         private void VerifyPhone(Contact contact)
@@ -152,6 +157,6 @@ namespace APIProject.Service
         Contact Add(Contact contact);
         void UpdateInfo(Contact contact);
         IEnumerable<Contact> GetByCustomer(int customerID);
-
+        void SaveChanges();
     }
 }
