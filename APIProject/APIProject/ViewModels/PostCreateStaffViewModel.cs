@@ -19,7 +19,6 @@ namespace APIProject.ViewModels
         public string Phone { get; set; }
         [Required]
         public int RoleID { get; set; }
-        [Required]
         public CustomB64ImageFileViewModel Avatar { get; set; }
         public Staff ToStaffModel()
         {
@@ -30,7 +29,7 @@ namespace APIProject.ViewModels
                 Email=this.Username,
                 Phone = this.Phone,
                 RoleID = this.RoleID,
-                AvatarSrc = this.Avatar.Name
+                AvatarSrc = Avatar!=null? this.Avatar.Name:null
             };
         }
     }
