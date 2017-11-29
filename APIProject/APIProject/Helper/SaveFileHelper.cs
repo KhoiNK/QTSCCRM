@@ -69,6 +69,29 @@ namespace APIProject.Helper
             }
         }
 
+        public CustomB64ImageFileViewModel GetCustomerAvatarBase64View(Customer customer)
+        {
+            try
+            {
+                string fileRoot = HttpContext.Current.Server.MapPath("~/Resources/CustomerAvatarFiles");
+                string fileName = Path.GetFileName(customer.AvatarSrc);
+                string filePath = Path.Combine(fileRoot, fileName);
+
+                byte[] imageArray = System.IO.File.ReadAllBytes(filePath);
+                string base64ImageRepresentation = Convert.ToBase64String(imageArray);
+                var extension = Path.GetExtension(filePath).Replace(".", "");
+                string firstConcat = "data:image/" + extension + ";base64,";
+                return new CustomB64ImageFileViewModel
+                {
+                    Name = fileName,
+                    Base64Content = firstConcat + base64ImageRepresentation
+                };
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
         public CustomB64ImageFileViewModel GetContactAvatarBase64View(Contact contact)
         {
             try
@@ -77,10 +100,12 @@ namespace APIProject.Helper
                 string filePath = Path.Combine(fileRoot, contact.AvatarSrc);
                 byte[] imageArray = System.IO.File.ReadAllBytes(filePath);
                 string base64ImageRepresentation = Convert.ToBase64String(imageArray);
+                var extension = Path.GetExtension(filePath).Replace(".","");
+                string firstConcat = "data:image/" + extension + ";base64,";
                 return new CustomB64ImageFileViewModel
                 {
                     Name = contact.AvatarSrc,
-                    Base64Content = base64ImageRepresentation
+                    Base64Content = firstConcat +base64ImageRepresentation
                 };
             }catch(Exception e)
             {

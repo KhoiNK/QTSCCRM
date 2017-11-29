@@ -13,6 +13,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using APIProject.Model.Models;
+using APIProject.GlobalVariables;
 
 namespace APIProject.Controllers
 {
@@ -109,6 +110,10 @@ namespace APIProject.Controllers
             }
             try
             {
+                if(DateTime.Compare(request.StartDate.Date,request.EndDate.Date) > 0)
+                {
+                    throw new Exception("Ngày bắt đầu không được quá ngày kết thúc");
+                }
                 var foundPlan = _marketingPlanService.Get(request.ID);
                 var foundStaff = _staffService.Get(request.StaffID);
                 _marketingPlanService.UpdateInfo(request.ToMarketingPlanModel());
@@ -197,6 +202,16 @@ namespace APIProject.Controllers
         //    }
         //    return Ok(_marketingPlanService.AcceptPlan(request.ToMarketingPlanModel(), request.Accept));
         //}
+        [Route("GetMarketingStatus")]
+        public IHttpActionResult GetMarketingStatus()
+        {
+            return Ok(new List<string>
+            {
+                MarketingStatus.Executing,
+                MarketingStatus.Reporting,
+                MarketingStatus.Finished
+            });
+        }
 
         [Route("DeleteMarketingPlan")]
         public IHttpActionResult DeleteMarketingPlan()

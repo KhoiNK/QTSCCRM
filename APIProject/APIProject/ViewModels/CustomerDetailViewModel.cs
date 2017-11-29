@@ -1,4 +1,5 @@
-﻿using APIProject.Model.Models;
+﻿using APIProject.Helper;
+using APIProject.Model.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace APIProject.ViewModels
     {
         public int ID { get; set; }
         public string AvatarUrl { get; set; }
+        public CustomB64ImageFileViewModel Avatar { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
         public DateTime? EstablishedDate { get; set; }
@@ -25,6 +27,7 @@ namespace APIProject.ViewModels
             TaxCode = customer.TaxCode;
             CustomerType = customer.CustomerType;
             AvatarUrl = customer.AvatarSrc;
+            Avatar = AvatarUrl != null ? new SaveFileHelper().GetCustomerAvatarBase64View(customer) : null;
         }
     }
 

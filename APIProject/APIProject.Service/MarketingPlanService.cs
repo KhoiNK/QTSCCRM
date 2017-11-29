@@ -237,10 +237,15 @@ namespace APIProject.Service
         #region private verify
         private void VerifyCanFinish(MarketingPlan plan)
         {
-            if (plan.Status != MarketingStatus.Executing)
+            List<string> requiredStatus = new List<string>
+            {
+                MarketingStatus.Executing,
+                MarketingStatus.Reporting
+            };
+            if (!requiredStatus.Contains(plan.Status))
             {
                 throw new Exception(CustomError.MarketingPlanStatusRequired
-                    + MarketingStatus.Executing);
+                    + String.Join(", ", requiredStatus));
             }
         }
 #endregion

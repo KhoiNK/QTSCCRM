@@ -44,7 +44,6 @@ namespace APIProject.Controllers
             this._uploadNamingService = _uploadNamingService;
             this._contactService = _contactService;
         }
-
         [Route("PostLeadCustomer")]
         [ResponseType(typeof(PostLeadCustomerResponseViewModel))]
         public IHttpActionResult PostLeadCustomer(PostLeadCustomerViewModel request)
@@ -115,10 +114,11 @@ namespace APIProject.Controllers
             var response = new PutCustomerViewModel();
             if (request.Avatar != null)
             {
+                String[] splitBase64 = request.Avatar.Base64Content.Split(',');
                 string avatarExtension = Path.GetExtension(request.Avatar.Name).ToLower();
                 request.Avatar.Name = _uploadNamingService.GetCustomerAvatarNaming() + avatarExtension;
                 SaveFileHelper saveFileHelper = new SaveFileHelper();
-                saveFileHelper.SaveCustomerImage(request.Avatar.Name, request.Avatar.Base64Content);
+                saveFileHelper.SaveCustomerImage(request.Avatar.Name, splitBase64.ToList().Last());
                 response.CustomerImageUpdated = true;
             }
             try
@@ -227,7 +227,7 @@ namespace APIProject.Controllers
                 var foundCustomer = _customerService.Get(ID);
                 _uploadNamingService.ConcatCustomerAvatar(foundCustomer);
                 var customerContacts = _contactService.GetByCustomer(ID).ToList();
-                //customerContacts.ForEach(c => _uploadNamingService.ConcatContactAvatar(c));
+                customerContacts.ForEach(c => _uploadNamingService.ConcatContactAvatar(c));
                 var customerIssues = _issueService.GetByCustomer(ID).ToList();
                 var customerOppors = _opportunityService.GetByCustomer(ID).ToList();
                 var customerActivities = _activityService.GetByCustomer(ID).ToList();

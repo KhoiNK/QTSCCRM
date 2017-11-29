@@ -287,7 +287,7 @@ namespace APIProject.Controllers
             _activityService.BackgroundUpdateStatus();
 
             var overdueActivities = _activityService.GetOverdue();
-            var todayActivities = _activityService.GetByDate(DateTime.Now);
+            var todayActivities = _activityService.GetByDate(DateTime.Now).Where(c=>c.Status==ActivityStatus.Open||c.Status==ActivityStatus.Overdue);
             var futureActivities = _activityService.GetFuture();
             var response = new DashboardActivity();
             if (overdueActivities.Any())

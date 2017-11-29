@@ -79,7 +79,7 @@ namespace APIProject.Controllers
                 var contractCode = _uploadNamingService.GetContractNaming();
                 foreach (var contract in request.Contracts)
                 {
-                    if(contract.Duration<1 || contract.Duration > 600)
+                    if (contract.Duration < 1 || contract.Duration > 600)
                     {
                         throw new Exception("Thời gian sử dụng chỉ cho phép từ 1 tháng đến 50 năm (600 tháng)");
                     }
@@ -87,7 +87,7 @@ namespace APIProject.Controllers
                     var quoteItemSalesItem = _salesItemService.Get(contract.QuoteItemID);
                     var contractName = quoteItemSalesItem.Name;
                     contract.Description = contract.Description.Trim();
-                    if(contract.Description.Length != 0)
+                    if (contract.Description.Length != 0)
                     {
                         contractName += " - " + contract.Description;
                     }
@@ -349,10 +349,13 @@ namespace APIProject.Controllers
             var response = new List<ContractViewModel>();
             foreach (var entity in entities)
             {
+                var customer = _customerService.Get(entity.CustomerID);
+                _uploadNamingService.ConcatCustomerAvatar(customer);
                 response.Add(new ContractViewModel
                 {
                     ID = entity.ID,
                     //ContractCode = entity.ContractCode,
+                    Avatar = customer.AvatarSrc,
                     CustomerName = _customerService.Get(entity.CustomerID).Name,
                     ContactName = _contactService.Get(entity.ContactID).Name,
                     Category = _salesItemService.Get(entity.SalesItemID).SalesCategory.Name,
@@ -396,5 +399,6 @@ namespace APIProject.Controllers
                 return BadRequest(e.Message);
             }
         }
+
     }
 }
