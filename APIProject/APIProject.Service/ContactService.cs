@@ -53,6 +53,10 @@ namespace APIProject.Service
                 UpdatedDate = DateTime.Now
             };
             VerifyPhone(contact);
+            if (!VerifyEmail(contact))
+            {
+                throw new Exception("Email này đã được sử dụng");
+            }
             _contactRepository.Add(entity);
             _unitOfWork.Commit();
             return entity;
@@ -142,6 +146,20 @@ namespace APIProject.Service
                 throw new Exception("Lỗi số điện thoại: chỉ được nhập chữ số");
             }
         }
+        private bool VerifyEmail(Contact contact)
+        {
+            var customer = _customerRepository.GetAll().Where(c => c.IsDelete == false && c.ID == contact.CustomerID).FirstOrDefault();
+            try
+            {
+                var existedContact = GetByEmail(customer, contact.Email);
+            }
+            catch(Exception e)
+            {
+                return true;
+            }
+            return false;
+        }
+
 
         #endregion
 
