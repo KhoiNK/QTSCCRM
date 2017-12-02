@@ -63,9 +63,10 @@ namespace APIProject.Controllers
 
         [Route("GetStaffs")]
         [ResponseType(typeof(StaffDetailViewModel))]
-        public IHttpActionResult GetStaffs(int page = 1, int pageSize=10)
+        public IHttpActionResult GetStaffs(int page = 1, int pageSize=100)
         {
             var staffs = _staffService.GetAllStaffs().Skip(pageSize * (page - 1)).Take(pageSize);
+            staffs.ToList().ForEach(c => _uploadNamingService.ConcatStaffAvatar(c));
             return Ok(staffs.Select(c => new StaffDetailViewModel(c)));
         }
 

@@ -231,10 +231,10 @@ namespace APIProject.Service
         private void VerifyCanSetValidStaff(Staff staff)
         {
             var staffRoleName = _roleRepository.GetById(staff.RoleID).Name;
-            if(staffRoleName != RoleName.Director)
+            if(staffRoleName != RoleName.Officer)
             {
                 throw new Exception(CustomError.StaffRoleRequired
-                    + RoleName.Director);
+                    + RoleName.Officer);
             }
         }
         private void VerifyCanSetInvalid(Quote quote)
@@ -248,10 +248,10 @@ namespace APIProject.Service
         private void VerifyCanSetInvalidStaff(Staff staff)
         {
             var staffRoleName = _roleRepository.GetById(staff.RoleID).Name;
-            if (staffRoleName != RoleName.Director)
+            if (staffRoleName != RoleName.Officer)
             {
                 throw new Exception(CustomError.StaffRoleRequired
-                    + RoleName.Director);
+                    + RoleName.Officer);
             }
         }
         private void VerifyCanUpdateQuoteStatus(Quote quote)

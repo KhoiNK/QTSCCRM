@@ -16,7 +16,7 @@ namespace APIProject.Service
         IEnumerable<Contract> GetAll();
         IEnumerable<Contract> GetNeedAction();
         Dictionary<string, int> GetAllUsingRates(List<int> usingYears);
-        Dictionary<string, int> GetUsingRates(SalesCategory category,List<int> usingYears);
+        Dictionary<string, int> GetUsingRates(SalesCategory category, List<int> usingYears);
         Contract Add(Contract contract);
         Contract Recontract(Contract foundContract, DateTime endDate);
         void Close(Contract contract);
@@ -70,7 +70,7 @@ namespace APIProject.Service
         {
             var response = new Dictionary<string, int>();
             var categoryItemIDs = _salesItemRepository.GetAll().Where(c => c.SalesCategoryID == category.ID
-            && c.IsDelete == false).Select(c=>c.ID).ToList();
+            && c.IsDelete == false).Select(c => c.ID).ToList();
             var entities = GetAll().Where(c => categoryItemIDs.Contains(c.SalesItemID));
             usingYears.Sort();
             foreach (int usingYear in usingYears)
@@ -88,14 +88,14 @@ namespace APIProject.Service
             var response = new Dictionary<string, int>();
             var entities = GetAll();
             usingYears.Sort();
-            foreach(int usingYear in usingYears)
+            foreach (int usingYear in usingYears)
             {
                 response.Add("Dưới " + usingYear + " năm",
-                    entities.Where(c => (c.EndDate - c.StartDate).TotalDays<=(usingYear*daysInYear)).Count());
+                    entities.Where(c => (c.EndDate - c.StartDate).TotalDays <= (usingYear * daysInYear)).Count());
             }
             response.Add("Trên " + usingYears.Last() + " năm",
                 entities.Where(c => (c.EndDate - c.StartDate).TotalDays > (usingYears.Last() * daysInYear)).Count());
-            return response;    
+            return response;
         }
 
         public Contract Add(Contract contract)
@@ -115,7 +115,7 @@ namespace APIProject.Service
             {
                 throw new Exception("Ngày kết thúc không hợp lệ");
             }
-            if(entity.Status!= ContractStatus.NeedAction)
+            if (entity.Status != ContractStatus.NeedAction)
             {
                 throw new Exception("Yêu cầu ở trạng thái:" + ContractStatus.NeedAction);
             }
@@ -172,27 +172,39 @@ namespace APIProject.Service
             var entities = GetAll();
             foreach (var entity in entities)
             {
-                if (DateTime.Compare(DateTime.Now, entity.StartDate) >= 0)
-                {
-                    entity.Status = ContractStatus.Active;
-                }
-                else
-                {
-                    entity.Status = ContractStatus.Waiting;
-                }
-                if (DateTime.Compare(DateTime.Now, entity.EndDate) > 0)
-                {
-                    entity.Status = ContractStatus.Done;
-                }
-                else if ((entity.EndDate - DateTime.Now).TotalDays <= remindDays)
-                {
-                    entity.Status = ContractStatus.NeedAction;
-                }
+                ChangeContractStatus(entity, remindDays);
                 entity.UpdatedDate = DateTime.Now;
                 _contractRepository.Update(entity);
             }
         }
 
+        private void ChangeContractStatus(Contract contract, int remindDays)
+        {
+            if (contract.Status == ContractStatus.Waiting)
+            {
+                if (DateTime.Compare(DateTime.Now.Date, contract.StartDate.Date) >= 0)
+                {
+                    contract.Status = ContractStatus.Active;
+                }
+            }
+            if (contract.Status == ContractStatus.Active)
+            {
+                if ((contract.EndDate - DateTime.Now).TotalDays <= remindDays)
+                {
+                    contract.Status = ContractStatus.NeedAction;
+                }
+            }
+
+            if(contract.Status == ContractStatus.NeedAction
+                ||contract.Status==ContractStatus.Closing
+                || contract.Status == ContractStatus.Recontracted)
+            {
+                if (DateTime.Compare(DateTime.Now.Date, contract.EndDate.Date) > 0)
+                {
+                    contract.Status = ContractStatus.Done;
+                }
+            }
+        }
 
         public void SaveChanges()
         {

@@ -285,6 +285,7 @@ namespace APIProject.Controllers
         public IHttpActionResult GetActivityDashboard(int monthRange = 12)
         {
             _activityService.BackgroundUpdateStatus();
+            _activityService.SaveChanges();
 
             var overdueActivities = _activityService.GetOverdue();
             var todayActivities = _activityService.GetByDate(DateTime.Now).Where(c=>c.Status==ActivityStatus.Open||c.Status==ActivityStatus.Overdue);
@@ -311,7 +312,7 @@ namespace APIProject.Controllers
         {
             int contractRemindDays = 10;
             _contractService.BackgroundUpdateStatus(contractRemindDays);
-
+            _contractService.SaveChanges();
 
             var totalCount = _contractService.GetAll().Count();
             var needActionCount = _contractService.GetNeedAction().Count();

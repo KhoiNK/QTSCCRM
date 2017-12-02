@@ -153,7 +153,7 @@ namespace APIProject.Controllers
             {
                 var response = new PutUpdateIssueResponseViewModel();
                 var foundIssue = _issueService.Get(request.ID);
-                var foundStaff = _issueService.Get(request.StaffID);
+                var foundStaff = _staffService.Get(request.StaffID);
                 _issueService.UpdateInfo(request.ToIssueModel());
 
                 if (request.SolveDate.HasValue)

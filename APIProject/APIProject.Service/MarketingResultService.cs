@@ -64,7 +64,8 @@ namespace APIProject.Service
             for (int i = 1; i <= monthRange; i++)
             {
                 response.Add(startTime.Month + "/" + startTime.Year,
-                    entities.Where(c => c.Status == MarketingResultStatus.BecameNewLead).Count());
+                    entities.Where(c => c.Status == MarketingResultStatus.BecameNewLead
+                    && c.CreatedDate.Value.Month == startTime.Month).Count());
                 startTime = startTime.AddMonths(1);
             }
             return response;

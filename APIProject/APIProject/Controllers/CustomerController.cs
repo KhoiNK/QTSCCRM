@@ -67,9 +67,12 @@ namespace APIProject.Controllers
             }
             try
             {
-                if (DateTime.Compare(DateTime.Now, request.EstablishedDate) < 0)
+                if (request.EstablishedDate.HasValue)
                 {
-                    throw new Exception("Ngày thành lập không được sau thời gian hiện tại");
+                    if (DateTime.Compare(DateTime.Now, request.EstablishedDate.Value) < 0)
+                    {
+                        throw new Exception("Ngày thành lập không được sau thời gian hiện tại");
+                    }
                 }
                 var insertedCustomer = _customerService.Add(request.ToCustomerModel());
                 response.CustomerCreated = true;

@@ -98,6 +98,7 @@ namespace APIProject.Controllers
                 var oppCategories = _salesCategoryService.GetByOpportunity(foundOpp.ID);
                 _uploadNamingService.ConcatContactAvatar(oppContact);
                 _uploadNamingService.ConcatCustomerAvatar(oppCus);
+                _uploadNamingService.ConcatStaffAvatar(oppStaff);
                 var response = new OpportunityDetailsViewModel(foundOpp,
                     oppActivities.ToList(),
                     oppQuote,
