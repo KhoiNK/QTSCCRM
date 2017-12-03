@@ -106,13 +106,13 @@ namespace APIProject.Controllers
                     oppCus,
                     oppContact,
                     oppCategories.ToList());
-                if (response.QuoteDetail != null)
-                {
-                    foreach (var quoteItem in response.QuoteDetail.Items)
-                    {
-                        quoteItem.Name = _salesItemService.Get(quoteItem.ID).SalesCategory.Name + "/ " + quoteItem.Name;
-                    }
-                }
+                //if (response.QuoteDetail != null)
+                //{
+                //    foreach (var quoteItem in response.QuoteDetail.Items)
+                //    {
+                //        quoteItem.Name = quoteItem.Name;
+                //    }
+                //}
                 return Ok(response);
             }
             catch (Exception e)
