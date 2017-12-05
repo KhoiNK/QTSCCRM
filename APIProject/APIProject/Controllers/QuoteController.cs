@@ -6,6 +6,7 @@ using APIProject.ViewModels;
 using Spire.Pdf;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -27,6 +28,7 @@ namespace APIProject.Controllers
         private readonly ISalesCategoryService _salesCategoryService;
         private readonly IUploadNamingService _uploadNamingService;
         private readonly IEmailService _emailService;
+        private readonly IExcelService _excelService;
 
         public QuoteController(IQuoteService _quoteService, IOpportunityService _opportunityService,
             IStaffService _staffService, ISalesItemService _salesItemService,
@@ -34,7 +36,8 @@ namespace APIProject.Controllers
             IContactService _contactService,
             ISalesCategoryService _salesCategoryService,
             IUploadNamingService _uploadNamingService,
-            IEmailService _emailService
+            IEmailService _emailService,
+            IExcelService _excelService
             )
         {
             this._uploadNamingService = _uploadNamingService;
@@ -46,6 +49,7 @@ namespace APIProject.Controllers
             this._salesItemService = _salesItemService;
             this._quoteItemMappingService = _quoteItemMappingService;
             this._emailService = _emailService;
+            this._excelService = _excelService;
         }
 
         [Route("GetOpportunityQuote")]
@@ -296,7 +300,7 @@ namespace APIProject.Controllers
                 var quoteOpp = _opportunityService.GetByQuote(request.ID);
                 var oppContact = _contactService.Get(quoteOpp.ContactID.Value);
                 //insert email service
-                var quoteItems = _quoteItemMappingService.GetByQuote(request.ID);
+                var quoteItems = _quoteItemMappingService.GetByQuote(request.ID).ToList();
                 var pdfData = new List<string>();
                 //initial header
                 //string dataHeader = "Hạng mục;Giá thành;Đơn vị tính";
@@ -310,7 +314,9 @@ namespace APIProject.Controllers
 
                 //EmailHelper emailHelper = new EmailHelper();
                 //emailHelper.SendQuote(oppContact.Email, oppContact.Name, null);
-                _emailService.SendQuoteEmail(oppContact,foundStaff,quoteItems,foundQuote);
+                FileInfo[] files = _excelService.GenerateQuoteExcels(oppContact, foundStaff, quoteItems, foundQuote);
+                var attachments = files.Select(fileInfo => fileInfo.FullName).ToArray();
+                _emailService.SendQuoteEmail(oppContact,foundStaff,attachments,quoteItems,foundQuote);
 
                 _quoteService.SetSend(request.ToQuoteModel());
                 response.QuoteSent = true;

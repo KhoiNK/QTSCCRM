@@ -16,6 +16,7 @@ namespace APIProject.Service
         private String _subject;
         private String _body;
         private bool _isHtml;
+        private string[] _attachments;
 
         public EmailBuilder SetFrom(string emailAddress)
         {
@@ -90,6 +91,12 @@ namespace APIProject.Service
             return this;
         }
 
+        public EmailBuilder SetAttachments(string[] attachments)
+        {
+            _attachments = attachments;
+            return this;
+        }
+
         public MailMessage[] getEmails()
         {
             List<MailMessage> mailMessages = new List<MailMessage>();
@@ -103,7 +110,7 @@ namespace APIProject.Service
             }
             else
             {
-                MailMessage mailMessage = GetEmailWithoutRecipient();
+                MailMessage mailMessage = GetEmailWithoutRecipients();
                 if (_to != null)
                 {
                     foreach (MailAddress mailAddress in _to)
@@ -130,7 +137,7 @@ namespace APIProject.Service
         {
             List<MailMessage> mailMessages = new List<MailMessage>();
             Queue<MailAddress> queue = new Queue<MailAddress>(addresses);
-            MailMessage mailMessage = GetEmailWithoutRecipient();
+            MailMessage mailMessage = GetEmailWithoutRecipients();
             int count = 0;
             while (queue.Count > 0)
             {
@@ -139,7 +146,7 @@ namespace APIProject.Service
                 if (count == 100 || queue.Count == 0)
                 {
                     mailMessages.Add(mailMessage);
-                    mailMessage = GetEmailWithoutRecipient();
+                    mailMessage = GetEmailWithoutRecipients();
                     count = 0;
                 }
             }
@@ -151,7 +158,7 @@ namespace APIProject.Service
         {
             List<MailMessage> mailMessages = new List<MailMessage>();
             Queue<MailAddress> queue = new Queue<MailAddress>(addresses);
-            MailMessage mailMessage = GetEmailWithoutRecipient();
+            MailMessage mailMessage = GetEmailWithoutRecipients();
             int count = 0;
             while (queue.Count > 0)
             {
@@ -160,7 +167,7 @@ namespace APIProject.Service
                 if (count == 100 || queue.Count == 0)
                 {
                     mailMessages.Add(mailMessage);
-                    mailMessage = GetEmailWithoutRecipient();
+                    mailMessage = GetEmailWithoutRecipients();
                     count = 0;
                 }
             }
@@ -168,15 +175,23 @@ namespace APIProject.Service
             return mailMessages;
         }
 
-        private MailMessage GetEmailWithoutRecipient()
+        private MailMessage GetEmailWithoutRecipients()
         {
-            return new MailMessage
+            
+            var message =  new MailMessage
             {
                 From = _from,
                 Subject = _subject,
                 Body = _body,
-                IsBodyHtml = _isHtml
+                IsBodyHtml = _isHtml 
             };
+
+            foreach (string attachment in _attachments)
+            {
+                message.Attachments.Add(new Attachment(attachment));
+            }
+
+            return message;
         }
 
         private MailAddressCollection StringArrayToMailAddressCollection(string[] mailAddresses)

@@ -20,8 +20,9 @@ namespace APIProject.Service
         {
             return new NetworkCredential
             {
-                UserName = "qtsccrmemailsender@gmail.com",
-                Password = "kenejnzwmzwboknd"
+                UserName = "phongtlse61770@fpt.edu.vn",
+                Password = "ugodedyupyaccrbl"
+//                Password = "kenejnzwmzwboknd"
             };
         }
 
@@ -56,7 +57,16 @@ namespace APIProject.Service
             smtpobj.Send(message);
         }
         
-        public void SendQuoteEmail(Contact contact, Staff staff, IEnumerable<QuoteItemMapping> quoteItemMappings,
+//        public void SendTestEmail(MailMessage message)
+//        {
+//            SmtpClient smtpobj = new SmtpClient("localhost", 25)
+//            {
+//                EnableSsl = false
+//            };
+//            smtpobj.Send(message);
+//        }
+        
+        public void SendQuoteEmail(Contact contact, Staff staff,string[] attactments, IEnumerable<QuoteItemMapping> quoteItemMappings,
             Quote quote)
         {
             Template template = GetTemplate("PriceEmailTemplate.html");
@@ -68,14 +78,16 @@ namespace APIProject.Service
             }));
             object data = new
             {
-                customerName = contact.Name,
-                salesItems,
+                customerName = contact.Customer.Name,
+                contactName = contact.Name,
+                salesItems = salesItems,
                 tax = quote.Tax,
                 discount = quote.Discount,
                 staffName = staff.Name,
                 staffEmail = staff.Email,
                 staffPhonenumber = staff.Phone
             };
+            
             NetworkCredential networkCredential = GetDefaultNetworkCredential();
             MailMessage[] mailMessages = new EmailBuilder()
                 .SetSubject($"QTSC - Báo giá ngày {DateTime.Now.ToShortDateString()}")
@@ -149,9 +161,9 @@ namespace APIProject.Service
 
     public interface IEmailService
     {
-        void SendEmail(MailMessage message, NetworkCredential credential);
-
-        void SendQuoteEmail(Contact contact, Staff staff, IEnumerable<QuoteItemMapping> quoteItemMappings, Quote quote);
+        void SendQuoteEmail(Contact contact, Staff staff,string[] attactments,
+            IEnumerable<QuoteItemMapping> quoteItemMappings,
+            Quote quote);
 
         void SendThankEmail(String customerName,String contactName, String customerEmail, String marketingPlanTitle,
             IEnumerable<MarketingPlan> marketingPlans);
