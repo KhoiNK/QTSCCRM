@@ -40,6 +40,9 @@
     <Reference Include="DotLiquid, Version=2.0.200.0, Culture=neutral, PublicKeyToken=82e46016ecf9f07c">
       <HintPath>..\packages\DotLiquid.2.0.200\lib\net45\DotLiquid.dll</HintPath>
     </Reference>
+    <Reference Include="EPPlus, Version=4.1.1.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1">
+      <HintPath>..\packages\EPPlus.4.1.1\lib\net40\EPPlus.dll</HintPath>
+    </Reference>
     <Reference Include="GoogleApi, Version=3.2.10.0, Culture=neutral, PublicKeyToken=781851e053b06e74, processorArchitecture=MSIL">
       <HintPath>..\packages\GoogleApi.3.2.10\lib\net45\GoogleApi.dll</HintPath>
     </Reference>
@@ -66,6 +69,14 @@
     <Compile Include="DotliquidFilters\Filters.cs" />
     <Compile Include="EmailBuilder.cs" />
     <Compile Include="EmailService.cs" />
+    <Compile Include="ExcelService.cs" />
+    <Compile Include="Excel\ExcelRenderer.cs" />
+    <Compile Include="Excel\ExcelTemplateParser.cs" />
+    <Compile Include="Excel\ForloopCollection.cs" />
+    <Compile Include="Excel\ForloopElement.cs" />
+    <Compile Include="Excel\IExcelElement.cs" />
+    <Compile Include="Excel\Utils.cs" />
+    <Compile Include="Excel\ValueElement.cs" />
     <Compile Include="IssueCategoryMappingService.cs" />
     <Compile Include="IssueService.cs" />
     <Compile Include="MarketingPlanService.cs" />
