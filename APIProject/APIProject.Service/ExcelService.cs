@@ -38,7 +38,7 @@ namespace APIProject.Service
             foreach (Hash dataHash in dataHashs)
             {
                 Template.RegisterFilter(typeof(CustomFilters));
-                var fileName = $"{_quoteTemplateFile.Name.Split('.').First()}_{dataHash["categoryGroup"]}.{_fileExtension}";
+                var fileName = $"{_quoteTemplateFile.Name.Split('.').First()}_{dataHash["categoryGroup"]}_{Guid.NewGuid()}.{_fileExtension}";
 
                 string filePath = Path.Combine(fileRoot, fileName);
 
