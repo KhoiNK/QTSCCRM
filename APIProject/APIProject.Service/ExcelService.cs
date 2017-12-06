@@ -27,12 +27,14 @@ namespace APIProject.Service
             IEnumerable<QuoteItemMapping> quoteItemMappings, Quote quote)
         {
             List<FileInfo> results = new List<FileInfo>();
-            object[] dataHashs = GetQuoteDataObjects(contact, staff, quoteItemMappings.ToList(), quote);
+            Hash[] dataHashs = GetQuoteDataObjects(contact, staff, quoteItemMappings.ToList(), quote);
             var excelRenderer = new ExcelRenderer();
             foreach (Hash dataHash in dataHashs)
             {
                 Template.RegisterFilter(typeof(CustomFilters));
-                var outputFile = new FileInfo($"ExcelOutput/{_quoteTemplateFile.Name.Split('.').First()}_{dataHash["categoryGroup"]}.{_fileExtension}");
+                var outputFile =
+                    new FileInfo(
+                        $"ExcelOutput/{_quoteTemplateFile.Name.Split('.').First()}_{dataHash["categoryGroup"]}.{_fileExtension}");
                 excelRenderer.Render(_quoteTemplateFile, outputFile, dataHash);
                 results.Add(outputFile);
             }
@@ -47,33 +49,31 @@ namespace APIProject.Service
             List<Hash> dataObjects = new List<Hash>();
             List<SalesCategory> categories =
                 quoteItemMappings.Select(mapping => mapping.SalesItem.SalesCategory).ToList();
-            if (categories.Any(item => item.ID == specialCategoryId)) //Thuê văn phòng
+            if (categories.Any(item => item.ID == specialCategoryId))
             {
                 SalesCategory category = categories.Find(item => item.ID == 1);
                 var itemMappings =
-                    quoteItemMappings.Where(mapping => mapping.SalesItem.SalesCategory.ID == specialCategoryId).ToList(); 
-                dataObjects.Add(GetQuoteDataObject(contact,staff,category.Name,itemMappings,quote));
+                    quoteItemMappings.Where(mapping => mapping.SalesItem.SalesCategory.ID == specialCategoryId)
+                        .ToList();
+                dataObjects.Add(GetQuoteDataObject(contact, staff, "dịch vụ thuê văn phòng", itemMappings, quote));
                 categories = categories.Where(salesCategory => salesCategory.Name != category.Name).ToList();
             }
 
             if (categories.Count != 0)
             {
-                string categoryGroup = "";
+                var itemMappings =
+                    quoteItemMappings.Where(mapping => mapping.SalesItem.SalesCategory.ID != specialCategoryId)
+                        .ToList();
                 foreach (SalesCategory category in categories)
                 {
                     string cateName = category.Name.Split('-').First().Trim();
-                    if (String.IsNullOrEmpty(categoryGroup))
+                    foreach (QuoteItemMapping itemMapping in itemMappings)
                     {
-                        categoryGroup += cateName;
-                    }
-                    else
-                    {
-                        categoryGroup += " " + cateName;
+                        itemMapping.SalesItemName = cateName + " " + itemMapping.SalesItemName;
                     }
                 }
-                var itemMappings =
-                    quoteItemMappings.Where(mapping => mapping.SalesItem.SalesCategory.ID != specialCategoryId).ToList(); 
-                dataObjects.Add(GetQuoteDataObject(contact,staff,categoryGroup,itemMappings,quote));
+
+                dataObjects.Add(GetQuoteDataObject(contact, staff, "dịch vụ viễn thông", itemMappings, quote));
             }
 
             return dataObjects.ToArray();
@@ -85,9 +85,9 @@ namespace APIProject.Service
         {
             var salesItems = quoteItemMappings.Select(quoteItem => Hash.FromAnonymousObject(new
             {
-                quoteItem.SalesItem.Name,
-                quoteItem.SalesItem.Price,
-                quoteItem.SalesItem.Unit
+                Name = quoteItem.SalesItemName,
+                Price = quoteItem.Price,
+                Unit = quoteItem.Unit
             }));
             object dataObject = new
             {
