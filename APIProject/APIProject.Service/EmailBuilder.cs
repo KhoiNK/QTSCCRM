@@ -177,18 +177,20 @@ namespace APIProject.Service
 
         private MailMessage GetEmailWithoutRecipients()
         {
-            
-            var message =  new MailMessage
+            var message = new MailMessage
             {
                 From = _from,
                 Subject = _subject,
                 Body = _body,
-                IsBodyHtml = _isHtml 
+                IsBodyHtml = _isHtml
             };
 
-            foreach (string attachment in _attachments)
+            if (_attachments != null)
             {
-                message.Attachments.Add(new Attachment(attachment));
+                foreach (string attachment in _attachments)
+                {
+                    message.Attachments.Add(new Attachment(attachment));
+                }
             }
 
             return message;
@@ -202,7 +204,6 @@ namespace APIProject.Service
                 try
                 {
                     addressCollection.Add(address);
-
                 }
                 catch (FormatException)
                 {
