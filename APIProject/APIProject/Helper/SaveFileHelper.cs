@@ -112,6 +112,14 @@ namespace APIProject.Helper
                 return null;
             }
         }
+        public void GenerateQuoteDir()
+        {
+            string fileRoot = HttpContext.Current.Server.MapPath("~/Resources/QuoteFiles");
+            if (!Directory.Exists(fileRoot))
+            {
+                Directory.CreateDirectory(fileRoot);
+            }
+        }
         public string SavePdfQuoteFile(PdfDocument doc, string fileName)
         {
             string fileRoot = HttpContext.Current.Server.MapPath("~/Resources/QuoteFiles");

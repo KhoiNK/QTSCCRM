@@ -6,6 +6,7 @@ using APIProject.Model.Models;
 using APIProject.Service.DotliquidFilters;
 using APIProject.Service.Excel;
 using DotLiquid;
+using System.Web;
 
 namespace APIProject.Service
 {
@@ -29,12 +30,22 @@ namespace APIProject.Service
             List<FileInfo> results = new List<FileInfo>();
             Hash[] dataHashs = GetQuoteDataObjects(contact, staff, quoteItemMappings.ToList(), quote);
             var excelRenderer = new ExcelRenderer();
+            string fileRoot = HttpContext.Current.Server.MapPath("~/Resources/QuoteFiles");
+            if (!Directory.Exists(fileRoot))
+            {
+                Directory.CreateDirectory(fileRoot);
+            }
             foreach (Hash dataHash in dataHashs)
             {
                 Template.RegisterFilter(typeof(CustomFilters));
-                var outputFile =
-                    new FileInfo(
-                        $"ExcelOutput/{_quoteTemplateFile.Name.Split('.').First()}_{dataHash["categoryGroup"]}.{_fileExtension}");
+                var fileName = $"{_quoteTemplateFile.Name.Split('.').First()}_{dataHash["categoryGroup"]}.{_fileExtension}";
+
+                string filePath = Path.Combine(fileRoot, fileName);
+
+                //var outputFile =
+                //    new FileInfo(
+                //        $"ExcelOutput/{_quoteTemplateFile.Name.Split('.').First()}_{dataHash["categoryGroup"]}.{_fileExtension}");
+                var outputFile = new FileInfo(filePath);
                 excelRenderer.Render(_quoteTemplateFile, outputFile, dataHash);
                 results.Add(outputFile);
             }
