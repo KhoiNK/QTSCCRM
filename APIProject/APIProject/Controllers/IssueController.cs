@@ -180,7 +180,7 @@ namespace APIProject.Controllers
             {
                 var response = new PutDoneIssueResponseViewModel();
                 var foundIssue = _issueService.Get(request.ID);
-                var foundStaff = _issueService.Get(request.StaffID);
+                var foundStaff = _staffService.Get(request.StaffID);
                 _issueService.SetDone(request.ToIssueModel());
                 response.IssueUpdated = true;
                 _issueService.SaveChanges();

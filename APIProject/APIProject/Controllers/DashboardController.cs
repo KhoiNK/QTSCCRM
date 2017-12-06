@@ -294,14 +294,19 @@ namespace APIProject.Controllers
             if (overdueActivities.Any())
             {
                 response.OverdueActivities = overdueActivities.Select(c => new ActivityViewModel(c)).ToList();
+                response.OverdueActivities.Sort((x, y) => DateTime.Compare(x.TodoTime, y.TodoTime));
             }
             if (todayActivities.Any())
             {
                 response.TodayActivities = todayActivities.Select(c => new ActivityViewModel(c)).ToList();
+                response.TodayActivities.Sort((x, y) => DateTime.Compare(x.TodoTime, y.TodoTime));
+
             }
             if (futureActivities.Any())
             {
                 response.FutureActivities = futureActivities.Select(c => new ActivityViewModel(c)).ToList();
+                response.FutureActivities.Sort((x, y) => DateTime.Compare(x.TodoTime, y.TodoTime));
+
             }
             return Ok(response);
         }

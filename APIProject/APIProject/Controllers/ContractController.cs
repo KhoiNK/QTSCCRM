@@ -351,13 +351,17 @@ namespace APIProject.Controllers
             {
                 var customer = _customerService.Get(entity.CustomerID);
                 _uploadNamingService.ConcatCustomerAvatar(customer);
+                var contact = _contactService.Get(entity.ContactID);
+
                 response.Add(new ContractViewModel
                 {
                     ID = entity.ID,
                     //ContractCode = entity.ContractCode,
+                    CustomerID=customer.ID,
+                    ContactID=contact.ID,
                     Avatar = customer.AvatarSrc,
-                    CustomerName = _customerService.Get(entity.CustomerID).Name,
-                    ContactName = _contactService.Get(entity.ContactID).Name,
+                    CustomerName = customer.Name,
+                    ContactName = contact.Name,
                     Category = _salesItemService.Get(entity.SalesItemID).SalesCategory.Name,
                     Name = _salesItemService.Get(entity.SalesItemID).SalesCategory.Name + "/" + entity.Name,
                     Price = entity.Price,

@@ -282,6 +282,12 @@ namespace APIProject.Controllers
             {
                 var foundResult = _marketingResultService.Get(planResultID);
                 var foundCustomer = _customerService.Get(customerID);
+                if (_compareService.GetAddressNumbers(foundCustomer.Address).Count
+                    < _compareService.GetAddressNumbers(foundResult.CustomerAddress).Count)
+                {
+                    foundCustomer.Address = foundResult.CustomerAddress;
+                }
+                _customerService.Update(foundCustomer);
                 foundResult.CustomerID = customerID;
                 foundResult.Status = MarketingResultStatus.UpdatedContact;
                 _marketingResultService.Update(foundResult);
@@ -304,6 +310,13 @@ namespace APIProject.Controllers
             {
                 var foundResult = _marketingResultService.Get(planResultID);
                 var foundCustomer = _customerService.Get(customerID);
+                //change address here
+                if(_compareService.GetAddressNumbers(foundCustomer.Address).Count
+                    < _compareService.GetAddressNumbers(foundResult.CustomerAddress).Count)
+                {
+                    foundCustomer.Address = foundResult.CustomerAddress;
+                }
+                _customerService.Update(foundCustomer);
                 foundResult.CustomerID = customerID;
                 foundResult.Status = MarketingResultStatus.BecameNewContact;
                 _marketingResultService.Update(foundResult);

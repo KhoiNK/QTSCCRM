@@ -211,10 +211,13 @@ namespace APIProject.Service
             var entities = GetAll();
             foreach(var entity in entities)
             {
-                if (DateTime.Compare(DateTime.Now.Date, entity.EndDate.Date) >= 0)
+                if (entity.Status != MarketingStatus.Finished)
                 {
-                    entity.UpdatedDate = DateTime.Now;
-                    entity.Status = MarketingStatus.Reporting;
+                    if (DateTime.Compare(DateTime.Now.Date, entity.EndDate.Date) >= 0)
+                    {
+                        entity.UpdatedDate = DateTime.Now;
+                        entity.Status = MarketingStatus.Reporting;
+                    }
                 }
             }
         }

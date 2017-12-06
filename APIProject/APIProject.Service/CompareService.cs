@@ -17,6 +17,8 @@ namespace APIProject.Service
     {
         IEnumerable<Customer> GetSimilarCustomers(Customer customer);
         Customer GetExistedCustomer(Customer newCustomer);
+        List<string> GetAddressNumbers(string address);
+
 
     }
 
@@ -145,7 +147,7 @@ namespace APIProject.Service
                 .TakeWhile(c => char.IsDigit(c) || c == '/').ToArray());
             return houseNumber;
         }
-        private List<string> GetAddressNumbers(string address)
+        public List<string> GetAddressNumbers(string address)
         {
             address = Regex.Replace(address, @"\s+", "");
             var response = new List<string>();

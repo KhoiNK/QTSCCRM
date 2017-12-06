@@ -12,6 +12,8 @@ namespace APIProject.ViewModels
         public int ID { get; set; }
         public string Avatar { get; set; }
         public string ContractCode { get; set; }
+        public int CustomerID { get; set; }
+        public int ContactID { get; set; }
         public string CustomerName { get; set; }
         public string ContactName { get; set; }
         public string Category { get; set; }
