@@ -10,32 +10,8 @@
   <div class="content">
     Kính gửi: {{customerName}}<br/><br/>
     Cám ơn anh/ chị đã quan tâm đến dịch vụ của QTSC.<br/>
-    Sau đây QTSC xin gửi anh/ chị bảng báo giá các hạng mục dịch vụ hiện bên công ty đang cung cấp.<br/><br />
-    <table>
-      <tr>
-          <th>Hạng mục</th>
-          <th>Giá thành</th>
-          <th>Đơn vị tính</th>
-      </tr>
-      <!--Loop start-->
-      {% for salesItem in salesItems -%}
-      <tr>
-        <td>{{salesItem.Name}}</td>
-        <td>{{salesItem.Price | money }}</td>
-        <td>{{salesItem.Unit}}</td>
-      </tr>
-      {% endfor -%}
-      <!--Loop end-->
-      <tr>
-        <td>Thuế</td>
-        <td colspan="2">{{tax}}</td>
-      </tr>
-      <tr>
-        <td>Giảm giá</td>
-        <td colspan="2">{{discount}}</td>
-      </tr>
-    </table>
-    <br/><br />
+    Sau đây QTSC xin gửi anh/ chị bảng báo giá các hạng mục dịch vụ hiện bên công ty đang cung cấp được đính kèm trong mail này.<br/><br />
+    <br />
       Mọi thắc mắc xin hãy liên hệ nhân viên đại diện của chúng tôi theo liên lạc dưới đây.<br/>
     <div class="staff">
       Tên: {{staffName}}<br/>
