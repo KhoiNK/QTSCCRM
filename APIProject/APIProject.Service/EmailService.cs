@@ -78,7 +78,7 @@ namespace APIProject.Service
             }));
             object data = new
             {
-                customerName = contact.Customer.Name,
+                customerName = contact.Name,
                 contactName = contact.Name,
                 salesItems = salesItems,
                 tax = quote.Tax,
