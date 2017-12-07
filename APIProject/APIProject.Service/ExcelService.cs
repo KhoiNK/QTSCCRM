@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -60,52 +61,61 @@ namespace APIProject.Service
             List<Hash> dataObjects = new List<Hash>();
             List<SalesCategory> categories =
                 quoteItemMappings.Select(mapping => mapping.SalesItem.SalesCategory).ToList();
+            
             if (categories.Any(item => item.ID == specialCategoryId))
             {
                 SalesCategory category = categories.Find(item => item.ID == 1);
-                var itemMappings =
-                    quoteItemMappings.Where(mapping => mapping.SalesItem.SalesCategory.ID == specialCategoryId)
-                        .ToList();
-                dataObjects.Add(GetQuoteDataObject(contact, staff, "dịch vụ thuê văn phòng", itemMappings, quote));
+                var items = quoteItemMappings
+                    .Where(mapping => mapping.SalesItem.SalesCategory.ID == specialCategoryId)
+                    .Select(quoteMapping => Hash.FromAnonymousObject(new
+                {
+                    Name = quoteMapping.SalesItem.Name,
+                    Price = quoteMapping.Price,
+                    Unit = quoteMapping.Unit
+                }));
+                dataObjects.Add(GetQuoteDataObject(contact, staff, "dịch vụ thuê văn phòng", items, quote));
                 categories = categories.Where(salesCategory => salesCategory.Name != category.Name).ToList();
             }
 
             if (categories.Count != 0)
             {
-                var itemMappings =
-                    quoteItemMappings.Where(mapping => mapping.SalesItem.SalesCategory.ID != specialCategoryId)
-                        .ToList();
+                Dictionary<int,string> cateDic = new Dictionary<int, string>();
                 foreach (SalesCategory category in categories)
                 {
                     string cateName = category.Name.Split('-').First().Trim();
-                    foreach (QuoteItemMapping itemMapping in itemMappings)
-                    {
-                        itemMapping.SalesItemName = cateName + " " + itemMapping.SalesItemName;
-                    }
+                    cateDic[category.ID] = cateName;
                 }
 
-                dataObjects.Add(GetQuoteDataObject(contact, staff, "dịch vụ viễn thông", itemMappings, quote));
+                var items = quoteItemMappings
+                    .Where(mapping => mapping.SalesItem.SalesCategory.ID != specialCategoryId)
+                    .Select(quoteMapping => Hash.FromAnonymousObject(new
+                {
+                    Name = cateDic[quoteMapping.SalesItem.SalesCategory.ID] + " " + quoteMapping.SalesItem.Name,
+                    Price = quoteMapping.Price,
+                    Unit = quoteMapping.Unit
+                }));
+                dataObjects.Add(GetQuoteDataObject(contact, staff, "dịch vụ viễn thông", items, quote));
             }
 
             return dataObjects.ToArray();
         }
 
         private Hash GetQuoteDataObject(Contact contact, Staff staff, string categoryGroup,
-            IList<QuoteItemMapping> quoteItemMappings,
+            IEnumerable<Hash> items,
             Quote quote)
         {
-            var salesItems = quoteItemMappings.Select(quoteItem => Hash.FromAnonymousObject(new
-            {
-                Name = quoteItem.SalesItemName,
-                Price = quoteItem.Price,
-                Unit = quoteItem.Unit
-            }));
+//            var salesItems = quoteItemMappings.Select(quoteItem => Hash.FromAnonymousObject(new
+//            {
+//                Name = quoteItem.SalesItemName,
+//                Price = quoteItem.Price,
+//                Unit = quoteItem.Unit
+//            }));
             object dataObject = new
             {
                 customerName = contact.Customer.Name,
                 contactName = contact.Name,
                 categoryGroup = categoryGroup,
-                salesItems = salesItems,
+                salesItems = items,
                 tax = quote.Tax,
                 discount = quote.Discount,
                 staffName = staff.Name,

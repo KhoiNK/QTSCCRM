@@ -94,6 +94,7 @@ namespace APIProject.Service
                 .SetBody(template,data,new[] {typeof(CustomFilters)})
                 .SetFrom(networkCredential.UserName)
                 .SetTO(new[]{contact.Email})
+                .SetAttachments(attactments)
                 .getEmails();
             foreach (MailMessage mailMessage in mailMessages)
             {
