@@ -74,6 +74,7 @@ namespace APIProject.Controllers
                     oppLastActivity,
                     oppStaff));
             }
+            responseList.Reverse();
             return Ok(responseList);
         }
 
