@@ -22,8 +22,8 @@ namespace APIProject.ViewModels
         {
             ID = plan.ID;
             Title = plan.Title;
-            CreatedDate = plan.CreatedDate.Value;
-            StartDate = plan.StartDate;
+            CreatedDate = plan.StartDate;
+            StartDate = plan.EndDate;
             Status = plan.Status;
         }
     }

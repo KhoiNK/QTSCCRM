@@ -10,7 +10,7 @@ namespace APIProject.ViewModels
     public class ContractViewModel
     {
         public int ID { get; set; }
-        public string Avatar { get; set; }
+        public string AvatarSrc { get; set; }
         public string ContractCode { get; set; }
         public int CustomerID { get; set; }
         public int ContactID { get; set; }

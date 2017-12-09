@@ -125,6 +125,7 @@ namespace APIProject.Service
                 Name = entity.Name,
                 Price = entity.Price,
                 Unit = entity.Unit,
+                Status=ContractStatus.Waiting,
                 CustomerID = entity.CustomerID,
                 ContactID = entity.ContactID,
                 CreatedStaffID = entity.CreatedStaffID,

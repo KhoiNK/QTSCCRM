@@ -359,7 +359,7 @@ namespace APIProject.Controllers
                     //ContractCode = entity.ContractCode,
                     CustomerID=customer.ID,
                     ContactID=contact.ID,
-                    Avatar = customer.AvatarSrc,
+                    AvatarSrc = customer.AvatarSrc,
                     CustomerName = customer.Name,
                     ContactName = contact.Name,
                     Category = _salesItemService.Get(entity.SalesItemID).SalesCategory.Name,

@@ -11,7 +11,7 @@ namespace APIProject.ViewModels
     public class OpportunityViewModel
     {
         public int ID { get; set; }
-        public string CustomerAvatarUrl { get; set; }
+        public string AvatarSrc { get; set; }
         public string CustomerName { get; set; }
         public string Title { get; set; }
         public string StageName { get; set; }
@@ -23,7 +23,7 @@ namespace APIProject.ViewModels
             Staff staffDto)
         {
             this.ID = oppDto.ID;
-            this.CustomerAvatarUrl = customerDto.AvatarSrc;
+            this.AvatarSrc = customerDto.AvatarSrc;
             this.CustomerName = customerDto.Name;
             this.Title = oppDto.Title;
             this.StageName = oppDto.StageName;
@@ -36,7 +36,7 @@ namespace APIProject.ViewModels
         public OpportunityViewModel(Opportunity dto)
         {
             this.ID = dto.ID;
-            this.CustomerAvatarUrl = dto.Customer.AvatarSrc;
+            this.AvatarSrc = dto.Customer.AvatarSrc;
             this.CustomerName = dto.Customer.Name;
             this.Title = dto.Title;
             this.StageName = dto.StageName;
