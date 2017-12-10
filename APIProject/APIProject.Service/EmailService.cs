@@ -20,9 +20,10 @@ namespace APIProject.Service
         {
             return new NetworkCredential
             {
-                UserName = "phongtlse61770@fpt.edu.vn",
-                Password = "ugodedyupyaccrbl"
-//                Password = "kenejnzwmzwboknd"
+                //UserName = "phongtlse61770@fpt.edu.vn",
+                UserName="qtsccrmemailsender@gmail.com",
+                //Password = "ugodedyupyaccrbl"
+                Password = "kenejnzwmzwboknd"
             };
         }
 

@@ -49,8 +49,7 @@ namespace APIProject.Controllers
             {
                 var list = _marketingPlanService.GetAll().Skip(pageSize * (page - 1)).Take(pageSize)
                 .Select(c => new MarketingPlanViewModel(c));
-                list.Reverse();
-                return list;
+                return list.Reverse();
             });
             return Ok(await task);
         }
@@ -98,7 +97,7 @@ namespace APIProject.Controllers
                     }
                 }
             }
-            _emailService.SendNewMarketingPlan(contacts,addedPlan);
+            //_emailService.SendNewMarketingPlan(contacts,addedPlan);
             //insert plan and get plan id
             return Ok(new { PlanID = addedPlan.ID });
         }

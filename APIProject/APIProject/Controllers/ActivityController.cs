@@ -58,8 +58,7 @@ namespace APIProject.Controllers
         {
             var response = _activityService.GetAllActivities().Skip(pageSize * (page - 1)).Take(pageSize)
                 .Select(c => new ActivityViewModel(c));
-            response.Reverse();
-            return Ok(response);
+            return Ok(response.Reverse());
         }
 
         [Route("GetActivity")]
