@@ -25,7 +25,7 @@ namespace APIProject.GlobalVariables
 
         public static string ConsiderDetails = "Kiểm tra xem công ty có đủ khả năng đáp ứng nhu cầu của khách hàng hay không?";
         public static string MakeQuoteDetails = "Tạo báo giá với đủ hạng mục dịch vụ mà khách yêu cầu";
-        public static string ValidateQuoteDetails = "Chờ giám đốc duyệt báo giá";
+        public static string ValidateQuoteDetails = "Chờ trưởng phòng duyệt báo giá";
         public static string SendQuoteDetails = "Gửi báo giá cho khách hàng thông qua email khách đã cung cấp";
         public static string NegotiationDetails = "Trao đổi lần cuối với khách hàng, xác định rõ các hạng mục để lập hợp đồng";
         //public static string WonDetails = "Khách hàng đã đồng ý sử dụng dịch vụ";
