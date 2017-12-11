@@ -49,8 +49,7 @@ namespace APIProject.Controllers
             {
                 var list = _marketingPlanService.GetAll().Skip(pageSize * (page - 1)).Take(pageSize)
                 .Select(c => new MarketingPlanViewModel(c));
-                list.Reverse();
-                return list;
+                return list.Reverse();
             });
             return Ok(await task);
         }
