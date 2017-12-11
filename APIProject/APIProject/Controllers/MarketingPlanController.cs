@@ -98,7 +98,7 @@ namespace APIProject.Controllers
                     }
                 }
             }
-            _emailService.SendNewMarketingPlan(contacts,addedPlan);
+            //_emailService.SendNewMarketingPlan(contacts,addedPlan);
             //insert plan and get plan id
             return Ok(new { PlanID = addedPlan.ID });
         }
