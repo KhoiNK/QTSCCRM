@@ -87,6 +87,26 @@ namespace APIProject.Controllers
 
                 var leadGeneratedCount = results.Where(c => c.Status == MarketingResultStatus.BecameNewLead).Count();
                 var totalResultCount = results.Count();
+
+                //background update
+                foreach (var result in foundPlan.MarketingResults.Where(c => c.Status == MarketingResultStatus.New))
+                {
+                    var newCustomer = new Customer
+                    {
+                        Name = result.CustomerName,
+                        Address = result.CustomerAddress
+                    };
+                    Customer existed = null;
+                    var similarCustomers = _compareService.GetSimilarCustomers(newCustomer);
+
+                    if (similarCustomers.Any())
+                    {
+                        _marketingResultService.UpdateSimilar(result);
+                        existed = _compareService.GetExistedCustomer(newCustomer);
+                    }
+                }
+                _marketingResultService.SaveChanges();
+
                 //customer generated count
                 return Ok(new
                 {
@@ -263,6 +283,28 @@ namespace APIProject.Controllers
                 foundResult.CustomerID = addedCus.ID;
                 _marketingResultService.UpdateLeadGenerated(foundResult, addedCus, addedContact);
                 _marketingResultService.SaveChanges();
+
+                //background update
+                MarketingPlan _plan = foundResult.MarketingPlan;
+                foreach (var result in _plan.MarketingResults.Where(c=>c.Status==MarketingResultStatus.New))
+                {
+                    var newCustomer = new Customer
+                    {
+                        Name = result.CustomerName,
+                        Address = result.CustomerAddress
+                    };
+                    Customer existed = null;
+                    var similarCustomers = _compareService.GetSimilarCustomers(newCustomer);
+
+                    if (similarCustomers.Any())
+                    {
+                        _marketingResultService.UpdateSimilar(result);
+                        existed = _compareService.GetExistedCustomer(newCustomer);
+                    }
+                }
+                _marketingResultService.SaveChanges();
+
+
                 return Ok(new
                 {
                     CustomerID = addedCus.ID,
@@ -296,6 +338,9 @@ namespace APIProject.Controllers
                 contact.Name = foundResult.ContactName;
                 _contactService.UpdateInfo(contact);
                 _marketingResultService.SaveChanges();
+
+
+
                 return Ok();
             }
             catch (Exception e)
