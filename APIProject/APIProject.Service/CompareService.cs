@@ -28,7 +28,7 @@ namespace APIProject.Service
 
         private readonly string[] irrelevantWords =
         {
-            "CÔNG TY", "CONG TY", "TNHH", "TRÁCH NHIỆM", "HỮU HẠN", "CTY", "COMPANY", "INC", "CỔ PHẦN",
+            "CÔNG TY", "CONG TY", "TNHH", "TRÁCH NHIỆM", "HỮU HẠN", "CTY", "COMPANY", "INC", "CỔ PHẦN",
             "CP", "THƯƠNG MẠI", "THUONG MAI", "TM", "DỊCH VỤ", "DICH VU", "DV", "XUẤT NHẬP KHẨU",
             "XUAT NHAP KHAU", "XNK", "TM&DV", "MỘT THÀNH VIÊN", "MOT THANH VIEN", "MTV", "ĐẦU TƯ",
             "DAU TU", "PHÁT TRIỂN", "PHAT TRIEN", "VÀ", "NỘI THẤT", "NOI THAT", "KINH DOANH",
@@ -74,6 +74,7 @@ namespace APIProject.Service
             {
                 input = input.Replace(irrelevantWord, "");
             }
+            input = Regex.Replace(input, @"\s+", " ");
             return input.Trim();
         }
 
